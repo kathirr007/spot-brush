@@ -9,11 +9,21 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.12.0",
+    "@nuxtjs/axios": "^5.12.1",
     "@nuxtjs/pwa": "^3.0.0-beta.20",
+    "amazon-cognito-identity-js": "^4.3.3",
     "bootstrap": "^4.5.0",
     "bootstrap-vue": "^2.15.0",
-    "nuxt": "^2.14.0"
+    "cross-env": "^7.0.2",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "moment": "^2.27.0",
+    "nuxt": "^2.14.0",
+    "vuelidate": "^0.7.5"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "node-sass": "^4.14.1",
+    "nodemon": "^2.0.4",
+    "sass-loader": "^9.0.3"
+  }
 }

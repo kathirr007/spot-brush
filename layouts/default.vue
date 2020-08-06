@@ -1,8 +1,18 @@
 <template>
   <div>
+    <topNavBar></topNavBar>
     <Nuxt />
   </div>
 </template>
+
+<script>
+import topNavBar from '~/components/topNavBar'
+export default {
+    components: {
+        topNavBar
+    }
+}
+</script>
 
 <style>
 html {
