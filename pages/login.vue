@@ -53,29 +53,45 @@
                     <b-card no-body>
                         <b-tabs pills card align="center">
                             <b-tab title="Sign-in" active>
-                                <b-form @submit="SignIn" v-if="show">
+                                <b-form @submit.prevent="SignIn" v-if="show">
                                     <b-form-group
                                         id="input-group-1"
                                         label="Email address"
-                                        label-for="input-1"
+                                        label-for="email"
                                         description=""
                                     >
                                         <b-form-input
-                                        id="input-1"
-                                        v-model="form.email"
+                                        id="email"
+                                        name="email"
+                                        v-model.trim="$v.signIn.email.$model"
                                         type="email"
                                         required
                                         placeholder="Enter email"
+                                        :state="validateSignIn('email')"
+                                        :class="{ 'is-invalid': formValid && $v.signIn.email.$error }"
+                                        aria-describedby="email-live-feedback"
                                         ></b-form-input>
+                                        <b-form-invalid-feedback id="email-live-feedback">
+                                            <span v-if="!$v.signIn.email.required">Email is required</span>
+                                            <span v-if="!$v.signIn.email.email">Email is invalid</span>
+                                        </b-form-invalid-feedback>
                                     </b-form-group>
 
-                                    <b-form-group id="input-group-2" label="Password" label-for="input-2" description="">
+                                    <b-form-group id="input-group-2" label="Password" label-for="userPassword" description="">
                                         <b-form-input
-                                        id="input-2"
-                                        v-model="form.password"
+                                        id="userPassword"
+                                        name="userPassword"
+                                        v-model="$v.signIn.password.$model"
                                         required
                                         type="password"
+                                        :state="validateSignIn('password')"
+                                        :class="{ 'is-invalid': formValid && $v.signIn.password.$error }"
+                                        aria-describedby="userPassword-live-feedback"
                                         ></b-form-input>
+                                        <b-form-invalid-feedback id="userPassword-live-feedback">
+                                            <span v-if="!$v.signIn.password.required">Password is required</span>
+                                            <span v-if="!$v.signIn.password.minLength">Password must be at least 8 characters</span>
+                                        </b-form-invalid-feedback>
                                     </b-form-group>
 
                                     <b-button type="submit" variant="primary">Sign In</b-button>
@@ -83,67 +99,108 @@
                                 </b-form>
                             </b-tab>
                             <b-tab title="Sign-up" lazy>
-                                <b-form @submit="onSignUp" v-if="show">
-                                    <b-form-group
-                                        id="input-group-1"
-                                        label="First Name"
-                                        label-for="input-1"
-                                        description=""
-                                    >
-                                        <b-form-input
-                                        id="input-1"
-                                        v-model="form.firstName"
-                                        type="text"
-                                        placeholder="Enter your first name"
-                                        ></b-form-input>
-                                    </b-form-group>
-                                    <b-form-group
-                                        id="input-group-2"
-                                        label="First Name"
-                                        label-for="input-2"
-                                        description=""
-                                    >
-                                        <b-form-input
-                                        id="input-2"
-                                        v-model="form.lastName"
-                                        type="text"
-                                        placeholder="Enter your last name"
-                                        ></b-form-input>
-                                    </b-form-group>
+                                <b-form @submit.prevent="SignUp" @reset="onReset" v-if="show">
                                     <b-form-group
                                         id="input-group-3"
+                                        label="First Name"
+                                        label-for="firstName"
+                                        description=""
+                                    >
+                                        <b-form-input
+                                        id="firstName"
+                                        name="firstName"
+                                        required
+                                        v-model="$v.signUp.firstName.$model"
+                                        type="text"
+                                        placeholder="Enter your first name"
+                                        :state="validateSignup('firstName')"
+                                        :class="{ 'is-invalid': formValid && $v.signUp.firstName.$error }"
+                                        aria-describedby="firstName-live-feedback"
+                                        ></b-form-input>
+                                        <b-form-invalid-feedback id="firstName-live-feedback">
+                                            <span v-if="!$v.signUp.firstName.required">First Name is required</span>
+                                        </b-form-invalid-feedback>
+                                    </b-form-group>
+                                    <b-form-group
+                                        id="input-group-4"
+                                        label="Last Name"
+                                        label-for="lastName"
+                                        description=""
+                                    >
+                                        <b-form-input
+                                        id="lastName"
+                                        name="lastName"
+                                        required
+                                        v-model="$v.signUp.lastName.$model"
+                                        type="text"
+                                        placeholder="Enter your last name"
+                                        :state="validateSignup('lastName')"
+                                        :class="{ 'is-invalid': formValid && $v.signUp.lastName.$error }"
+                                        aria-describedby="lastName-live-feedback"
+                                        ></b-form-input>
+                                        <b-form-invalid-feedback id="lastName-live-feedback">
+                                            <span v-if="!$v.signUp.lastName.required">Last Name is required</span>
+                                        </b-form-invalid-feedback>
+                                    </b-form-group>
+                                    <b-form-group
+                                        id="input-group-5"
                                         label="Email address"
-                                        label-for="input-3"
+                                        label-for="userEmail"
                                         description="We'll never share your email with anyone else."
                                     >
                                         <b-form-input
-                                        id="input-3"
-                                        v-model="form.email"
+                                        id="userEmail"
+                                        name="userEmail"
+                                        v-model.trim="$v.signUp.email.$model"
                                         type="email"
                                         required
                                         placeholder="Enter email"
+                                        :state="validateSignup('email')"
+                                        :class="{ 'is-invalid': formValid && $v.signUp.email.$error }"
+                                        aria-describedby="userEmail-live-feedback"
                                         ></b-form-input>
+                                        <b-form-invalid-feedback id="userEmail-live-feedback">
+                                            <span v-if="!$v.signUp.email.required">Email is required</span>
+                                            <span v-if="!$v.signUp.email.email">Please Enter valid email address</span>
+                                        </b-form-invalid-feedback>
                                     </b-form-group>
 
-                                    <b-form-group id="input-group-4" label="New Password" label-for="input-4" description="Please choose strong password.">
+                                    <b-form-group id="input-group-26" label="Password" label-for="userPassword" description="">
                                         <b-form-input
-                                        id="input-4"
-                                        v-model="form.password"
+                                        id="userPassword"
+                                        name="userPassword"
+                                        v-model="$v.signUp.password.$model"
                                         required
                                         type="password"
+                                        :state="validateSignup('password')"
+                                        :class="{ 'is-invalid': formValid && $v.signUp.password.$error }"
+                                        aria-describedby="userPassword-live-feedback"
                                         ></b-form-input>
+                                        <b-form-invalid-feedback id="userPassword-live-feedback">
+                                            <span v-if="!$v.signUp.password.required">Password is required. <br></span>
+                                            <span v-if="!$v.signUp.password.minLength">Password must be at least 8 characters.<br></span>
+                                            <span v-if="!$v.signUp.password.isPasswordStrong && $v.signUp.password.required && $v.signUp.password.minLength">Password must contain at least one alphabetic character and one numeric and one special character.</span>
+                                        </b-form-invalid-feedback>
                                     </b-form-group>
-                                    <b-form-group id="input-group-5" label="Confirm Password" label-for="input-5" description="It should match new password.">
+                                    <b-form-group id="input-group-57" label="Confirm Password" label-for="userConfirmPassword">
                                         <b-form-input
-                                        id="input-5"
-                                        v-model="form.confirmPassword"
+                                        id="userConfirmPassword"
+                                        name="userConfirmPassword"
+                                        v-model="$v.signUp.confirmPassword.$model"
                                         required
                                         type="password"
+                                        :state="validateSignup('confirmPassword')"
+                                        :class="{ 'is-invalid': formValid && $v.signUp.confirmPassword.$error }"
+                                        aria-describedby="userConfirmPassword-live-feedback"
                                         ></b-form-input>
+                                        <b-form-invalid-feedback id="userConfirmPassword-live-feedback">
+                                            <span v-if="!$v.signUp.confirmPassword.required">Confirm Password is required</span>
+                                            <span v-else-if="!$v.signUp.confirmPassword.sameAsPassword">Passwords must match</span>
+                                        </b-form-invalid-feedback>
                                     </b-form-group>
 
                                     <b-button type="submit" variant="primary">Sign Up</b-button>
-                                    <!-- <b-button type="reset" variant="danger">Reset</b-button> -->
+                                    <b-button type="reset" variant="danger">Reset</b-button>
                                 </b-form>
                             </b-tab>
                         </b-tabs>
@@ -155,25 +212,67 @@
 </template>
 
 <script>
-    import { AmazonCognitoIdentity } from 'amazon-cognito-identity-js';
+    // import { AmazonCognitoIdentity } from 'amazon-cognito-identity-js';
+    import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
+    import { required, email, minLength, sameAs, alphaNum } from "vuelidate/lib/validators";
+    import isPasswordStrong from "@/customvalidators/passwordComplexity";
     export default {
         data() {
             return {
-                form: {
+                signIn: {
+                    email: '',
+                    password: ''
+                },
+                signUp: {
                     firstName: '',
                     lastName: '',
                     email: '',
                     password: '',
                     confirmPassword: ''
                 },
-                show: true
+                show: true,
+                formValid: false
+            }
+        },
+        validations: {
+            signUp: {
+                firstName: { required },
+                lastName: { required },
+                email: { required, email },
+                password: { required, minLength: minLength(8), isPasswordStrong },
+                confirmPassword: { required, sameAsPassword: sameAs('password') }
+            },
+            signIn: {
+                email: { required, email },
+                password: { required, minLength: minLength(8) }
             }
         },
         methods: {
+            onReset(){
+                this.signUp = {
+                    firstName: '',
+                    lastName: '',
+                    email: '',
+                    password: '',
+                    confirmPassword: ''
+                };
+
+                this.$nextTick(() => {
+                    this.$v.$reset();
+                });
+            },
+            validateSignup(name) {
+                const { $dirty, $error} = this.$v.signUp[name];
+                return $dirty ? !$error : null;
+            },
+            validateSignIn(name) {
+                const { $dirty, $error} = this.$v.signIn[name];
+                return $dirty ? !$error : null;
+            },
             SignIn() {
                 var authenticationData = {
-                    Username : this.form.email,
-                    Password : this.form.password
+                    Username : this.signIn.email,
+                    Password : this.signIn.password
                 };
 
                 var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
@@ -186,7 +285,7 @@
                 var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
                 var userData = {
-                    Username : this.form.email,
+                    Username : this.signIn.email,
                     Pool : userPool,
                 };
 
@@ -203,6 +302,9 @@
                         return alert(err.message || JSON.stringify(err));
                     }
                 });
+            },
+            SignUp(){
+                /* Signup codes here */
             }
         }
     }
