@@ -215,108 +215,180 @@
                 </div>
             </div>
         </div>
+        <b-toast id="my-toast" variant="warning" solid>
+            <template v-slot:toast-title>
+                <div class="d-flex flex-grow-1 align-items-baseline">
+                    <b-img blank blank-color="#ff5555" class="mr-2" width="12" height="12"></b-img>
+                    <strong class="mr-auto">Notice!</strong>
+                    <small class="text-muted mr-2">42 seconds ago</small>
+                </div>
+            </template> This is the content of the toast. It is short and to the point.
+        </b-toast>
     </div>
 </template>
 
 <script>
-    // import { AmazonCognitoIdentity } from 'amazon-cognito-identity-js';
-    import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
-    import { required, email, minLength, sameAs, alphaNum } from "vuelidate/lib/validators";
-    import isPasswordStrong from "@/customvalidators/passwordComplexity";
-    export default {
-        data() {
-            return {
-                signIn: {
-                    email: '',
-                    password: ''
-                },
-                signUp: {
-                    firstName: '',
-                    lastName: '',
-                    email: '',
-                    password: '',
-                    confirmPassword: ''
-                },
-                show: true,
-                formValid: false
-            }
+// import { AmazonCognitoIdentity } from 'amazon-cognito-identity-js';
+import * as AmazonCognitoIdentity from "amazon-cognito-identity-js";
+import { CognitoAuth } from 'amazon-cognito-auth-js';
+import isPasswordStrong from "@/customvalidators/passwordComplexity";
+// import _config from "@/assets/js/cognito_config";
+import {
+  required,
+  email,
+  minLength,
+  sameAs,
+  alphaNum,
+} from "vuelidate/lib/validators";
+export default {
+  head: {
+    title: process.env.npm_package_name || "",
+    meta: [
+    ],
+    link: [
+      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+      // { rel: 'stylesheet', type: 'text/css', href: 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css' }
+      // { rel: 'stylesheet', type: 'text/css', href: 'https://unpkg.com/bulma-modal-fx/dist/css/modal-fx.min.css' }
+    ],
+    script: [
+        // {src: '~assets/js/amazon-cognito-auth.min.js', crossorigin :'anonymous'},
+        {src: 'js/cognito_config.js', crossorigin :'anonymous', body: true},
+      // {src: 'https://unpkg.com/bulma-modal-fx/dist/js/modal-fx.min.js', crossorigin :'anonymous'}
+    ],
+  },
+  data() {
+    return {
+      signIn: {
+        email: "",
+        password: "",
+      },
+      signUp: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      },
+      show: true,
+      formValid: false,
+    };
+  },
+  validations: {
+    signUp: {
+      firstName: { required },
+      lastName: { required },
+      email: { required, email },
+      password: { required, minLength: minLength(8), isPasswordStrong },
+      confirmPassword: { required, sameAsPassword: sameAs("password") },
+    },
+    signIn: {
+      email: { required, email },
+      password: { required, minLength: minLength(8) },
+    },
+  },
+  methods: {
+    onReset() {
+      this.signUp = {
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      };
+
+      this.$nextTick(() => {
+        this.$v.$reset();
+      });
+    },
+    validateSignup(name) {
+      const { $dirty, $error } = this.$v.signUp[name];
+      return $dirty ? !$error : null;
+    },
+    validateSignIn(name) {
+      const { $dirty, $error } = this.$v.signIn[name];
+      return $dirty ? !$error : null;
+    },
+    SignIn() {
+      var authenticationData = {
+        Username: this.signIn.email,
+        Password: this.signIn.password,
+      };
+
+      var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
+        authenticationData
+      );
+
+      var poolData = {
+        UserPoolId: _config.cognito.userPoolId, // Your user pool id here
+        ClientId: _config.cognito.clientId, // Your client id here
+      };
+
+      var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+      var userData = {
+        Username: this.signIn.email,
+        Pool: userPool,
+      };
+
+      var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+
+      cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: function (result) {
+          // window.location.href = '/index-old.html';
+          debugger
+        //   this.$router.push("/login");
+          this.$router.push({
+                path: '/'
+            })
+          return;
         },
-        validations: {
-            signUp: {
-                firstName: { required },
-                lastName: { required },
-                email: { required, email },
-                password: { required, minLength: minLength(8), isPasswordStrong },
-                confirmPassword: { required, sameAsPassword: sameAs('password') }
-            },
-            signIn: {
-                email: { required, email },
-                password: { required, minLength: minLength(8) }
-            }
+
+        onFailure: function (err) {
+          return alert(err.message || JSON.stringify(err));
         },
-        methods: {
-            onReset(){
-                this.signUp = {
-                    firstName: '',
-                    lastName: '',
-                    email: '',
-                    password: '',
-                    confirmPassword: ''
-                };
+      });
+    },
+    SignUp() {
+        /* Signup codes here */
+        var firstname = this.signUp.firstName,
+            lastname = this.signUp.lastName,
+            email = this.signUp.email,
+            password = this.signUp.password,
+            cognitoUser;
 
-                this.$nextTick(() => {
-                    this.$v.$reset();
-                });
-            },
-            validateSignup(name) {
-                const { $dirty, $error} = this.$v.signUp[name];
-                return $dirty ? !$error : null;
-            },
-            validateSignIn(name) {
-                const { $dirty, $error} = this.$v.signIn[name];
-                return $dirty ? !$error : null;
-            },
-            SignIn() {
-                var authenticationData = {
-                    Username : this.signIn.email,
-                    Password : this.signIn.password
-                };
-
-                var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
-
-                var poolData = {
-                    UserPoolId : _config.cognito.userPoolId, // Your user pool id here
-                    ClientId : _config.cognito.clientId, // Your client id here
-                };
-
-                var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-
-                var userData = {
-                    Username : this.signIn.email,
-                    Pool : userPool,
-                };
-
-                var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-
-                cognitoUser.authenticateUser(authenticationDetails, {
-                    onSuccess: function (result) {
-                        // window.location.href = '/index-old.html';
-                        this.$router.push('/login')
-                        return;
-                    },
-
-                    onFailure: function(err) {
-                        return alert(err.message || JSON.stringify(err));
-                    }
-                });
-            },
-            SignUp(){
-                /* Signup codes here */
+        var poolData = {
+            UserPoolId: _config.cognito.userPoolId, // Your user pool id here
+            ClientId: _config.cognito.clientId // Your client id here
+        };
+        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        var attributeList = [];
+        var attrFirstname = {
+            Name: 'given_name',
+            Value: firstname, //get from form field
+        };
+        var attrLastname = {
+            Name: 'family_name',
+            Value: lastname, //get from form field
+        };
+        var attributeFirstname = new AmazonCognitoIdentity.CognitoUserAttribute(attrFirstname);
+        var attributeLastname = new AmazonCognitoIdentity.CognitoUserAttribute(attrLastname);
+        attributeList.push(attributeFirstname);
+        attributeList.push(attributeLastname);
+        userPool.signUp(email, password, attributeList, null, function(err, result) {
+            if (err) {
+                alert(err.message || JSON.stringify(err));
+                return;
             }
-        }
-    }
+            cognitoUser = result.user;
+            // document.getElementById("titleheader").innerHTML = "<strong>Check your email for a verification link</strong>";
+            $bvToast.show('my-toast')
+            //change elements of page
+            // alert('success');
+        });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-
 </style>

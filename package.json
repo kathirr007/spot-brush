@@ -11,6 +11,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.12.1",
     "@nuxtjs/pwa": "^3.0.0-beta.20",
+    "amazon-cognito-auth-js": "^1.3.3",
     "amazon-cognito-identity-js": "^4.3.3",
     "aws-sdk": "^2.728.0",
     "bootstrap": "^4.5.0",
@@ -19,7 +20,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "moment": "^2.27.0",
-    "nuxt": "^2.14.0",
+    "nuxt": "^2.14.1",
     "vuelidate": "^0.7.5"
   },
   "devDependencies": {
