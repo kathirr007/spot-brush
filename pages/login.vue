@@ -73,7 +73,7 @@
                                         ></b-form-input>
                                         <b-form-invalid-feedback id="email-live-feedback">
                                             <span v-if="!$v.signIn.email.required">Email is required</span>
-                                            <span v-if="!$v.signIn.email.email">Email is invalid</span>
+                                            <span v-if="!$v.signIn.email.email">Please Enter valid email address</span>
                                         </b-form-invalid-feedback>
                                     </b-form-group>
 
@@ -89,8 +89,15 @@
                                         aria-describedby="userPassword-live-feedback"
                                         ></b-form-input>
                                         <b-form-invalid-feedback id="userPassword-live-feedback">
-                                            <span v-if="!$v.signIn.password.required">Password is required</span>
-                                            <span v-if="!$v.signIn.password.minLength">Password must be at least 8 characters</span>
+                                            <span class="error-feedback" v-if="!$v.signIn.password.required">Password is required</span>
+                                            <span class="error-feedback" v-if="!$v.signIn.password.minLength">Password must be at least 8 characters</span>
+
+                                            <!-- <transition name="slideUp" mode="out-in">
+                                                <span class="error-feedback" v-if="!$v.signIn.password.required">Password is required</span>
+                                            </transition>
+                                            <transition name="slideUp" mode="out-in">
+                                                <span class="error-feedback" v-if="!$v.signIn.password.minLength">Password must be at least 8 characters</span>
+                                            </transition> -->
                                         </b-form-invalid-feedback>
                                     </b-form-group>
 
