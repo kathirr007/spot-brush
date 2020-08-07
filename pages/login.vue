@@ -92,10 +92,10 @@
                                             <span class="error-feedback" v-if="!$v.signIn.password.required">Password is required</span>
                                             <span class="error-feedback" v-if="!$v.signIn.password.minLength">Password must be at least 8 characters</span>
 
-                                            <!-- <transition name="slideUp" mode="out-in">
+                                            <!-- <transition name="slide-left" mode="out-in">
                                                 <span class="error-feedback" v-if="!$v.signIn.password.required">Password is required</span>
                                             </transition>
-                                            <transition name="slideUp" mode="out-in">
+                                            <transition name="slide-right" mode="in-out">
                                                 <span class="error-feedback" v-if="!$v.signIn.password.minLength">Password must be at least 8 characters</span>
                                             </transition> -->
                                         </b-form-invalid-feedback>
