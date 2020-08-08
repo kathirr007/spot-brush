@@ -309,6 +309,7 @@ export default {
       return $dirty ? !$error : null;
     },
     SignIn() {
+      var $vm = this
       var authenticationData = {
         Username: this.signIn.email,
         Password: this.signIn.password,
@@ -335,11 +336,11 @@ export default {
       cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: function (result) {
           // window.location.href = '/index-old.html';
-          debugger
         //   this.$router.push("/login");
-          this.$router.push({
-                path: '/'
+          $vm.$router.push({
+            path: '/'
             })
+          // debugger
           return;
         },
 
