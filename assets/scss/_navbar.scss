@@ -1,0 +1,10 @@
+.navbar-dark {
+    .navbar-nav {
+        .nav-link {
+            &.nuxt-link-exact-active, &:focus {
+                color: #ff6634;
+                font-weight: bold;
+            }
+        }
+    }
+}
