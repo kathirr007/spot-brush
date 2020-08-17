@@ -6,7 +6,7 @@
     <div class="col-12 col-sm-7 d-flex align-center justify-center">
       <v-card
         color="" class="px-5 pb-5 w-100 rounded-xl">
-        <v-card-title class="headline justify-center text-center primary--text break-word text-h4 font-weight-bold">Sign Up with us </v-card-title>
+        <v-card-title class="headline justify-center text-center primary--text break-word text-h5">Sign Up with us </v-card-title>
         <!-- <v-card-actions>
           <v-btn text>Listen Now</v-btn>
         </v-card-actions> -->
@@ -69,7 +69,7 @@
             color="primary"
             x-large
             class="w-100 my-5"
-            @click="SignUp">
+            @click="registerUser">
             Sign Up
           </v-btn>
           <v-card-text class="text-center text-body-1 px-0">
@@ -112,11 +112,7 @@
       ],
       script: [
         // {src: '~assets/js/amazon-cognito-auth.min.js', crossorigin :'anonymous'},
-        {
-          src: 'js/cognito_config.js',
-          crossorigin: 'anonymous',
-          body: true
-        },
+        { src: '../js/cognito_config.js', crossorigin: 'anonymous', body: true },
         // {src: 'https://unpkg.com/bulma-modal-fx/dist/js/modal-fx.min.js', crossorigin :'anonymous'}
       ],
     },
@@ -219,11 +215,34 @@
           // document.getElementById("titleheader").innerHTML = "<strong>Check your email for a verification link</strong>";
         //   $bvToast.show('my-toast')
             $vm.$toasted.show(`The user <strong> ${email} </strong> has been created successfully. <br>Please check your email <strong>${email}</strong> inbox for confirmation before sign in.`, {duration: 6000})
-            $vm.$router.push('/signin')
+            $vm.$router.push('/auth/signin')
           //change elements of page
           // alert('success');
         });
       },
+      registerUser() {
+          const { email, password, firstName, lastName, organisation } = this
+          const data = { email, password, firstName, lastName, organisation }
+          this.$axios('/auth/register', {
+              method: 'post',
+              headers: {
+                  Accept: 'application/json',
+                  Content: 'application/json'
+              },
+              data: data
+          }).then(res => {
+              const auth = res.data
+              this.$toasted.show(`The user <strong> ${email} </strong> has been created successfully. <br>Please check your email <strong>${email}</strong> inbox for confirmation before sign in.`, {duration: 6000})
+              this.$router.push(`/auth/confirm/${email}`)
+          }).catch((err) => {
+              this.error = err.response.data.error.message
+              if (err.response.data.error.code == 'UsernameExistsException') {
+                  setTimeout(() => {
+                      this.$router.push('/auth/signin')
+                  }, 3000)
+              }
+          })
+      }
     },
   };
 

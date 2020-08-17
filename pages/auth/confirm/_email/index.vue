@@ -1,31 +1,30 @@
 <template>
-  <b-container>
-    <b-row align-v="center">
-      <b-col>
-        <b-card bg-variant="light" label-cols-lg="12">
-          <p v-if="error">{{error}}</p>
-          <form @submit.prevent="confirm"> 
-            <b-form-group label-cols-lg="12" label="Confirm" label-size="lg" label-class="font-weight-bold pt-0" class="mb-0">
-              {{email}}
-              <b-form-group label-cols-sm="4" label="Code:" label-align-sm="right" label-for="nested-code">
-                <b-form-input id="nested-email" type="text" value=""  v-model="code" required></b-form-input>
-              </b-form-group> 
-
-              <b-button type="submit">Confirm</b-button>  
-            </b-form-group>
-          </form>  
-        </b-card>
-      </b-col>
-    </b-row> 
-  </b-container>
+  <v-row>
+      <v-col cols="7" class="mx-auto">
+          <v-card
+            color=""
+            class="w-100 rounded-xl pa-5"
+          >
+            <v-card-title class="headline justify-center text-center primary--text break-word text-h5">Please confirm your email</v-card-title>
+            <v-card-text class="text-center">
+                We've send an email confirmation to your registered <strong class="primary--text">{{ email }}</strong>. <br>
+                Please check and confirm your registration.
+            </v-card-text>
+            <v-card-text class="text-center text-body-1 px-0">
+                Already confirmed the registration?
+                <nuxt-link to="/auth/signin">Click Here</nuxt-link>
+            </v-card-text>
+          </v-card>
+      </v-col>
+  </v-row>
 </template>
 
 <script>
- 
+
 export default {
   middleware: ['refreshToken','notAuthenticated'],
-  validate ({ params }) { 
-    if(!params.email) return false 
+  validate ({ params }) {
+    if(!params.email) return false
     return true
   },
   data() {
@@ -34,7 +33,7 @@ export default {
       error: '',
       email: ''
     }
-  }, 
+  },
   asyncData(context) {
     return  {
       email: context.params.email
@@ -44,21 +43,21 @@ export default {
     confirm() {
       const { code, email } = this
       const data = { code, email }
-    
+
       this.$axios('/auth/confirm', {
-        method: 'post', 
+        method: 'post',
         headers: {
           Accept: 'application/json',
           Content: 'application/json'
         },
         data: data
-      }).then(res => { 
-        const auth = res.data 
+      }).then(res => {
+        const auth = res.data
         this.$router.push('/auth/login')
       }).catch((err) => {
-        this.error = err.response.data.error 
+        this.error = err.response.data.error
       })
-    } 
+    }
   }
 }
 </script>

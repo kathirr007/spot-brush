@@ -6,7 +6,7 @@
     <div class="col-12 col-sm-7 d-flex align-center justify-center">
       <v-card
         color="" class="px-5 pb-5 w-100 rounded-xl">
-        <v-card-title class="headline justify-center text-center primary--text break-word text-h4 font-weight-bold">Login to your account</v-card-title>
+        <v-card-title class="headline justify-center text-center primary--text break-word text-h5">Login to your account</v-card-title>
         <!-- <v-card-actions>
           <v-btn text>Listen Now</v-btn>
         </v-card-actions> -->
@@ -14,7 +14,7 @@
           ref="form"
           v-model="valid"
           class="w-100"
-          @submit.prevent="SignIn"
+          @submit.prevent="loginUser"
         >
           <!-- <v-text-field
             v-model="name"
@@ -45,7 +45,7 @@
             Forgot password?
             <!-- <v-btn text small to="/signup">Click Here</v-btn> -->
             <!-- <a to="/signup">Click Here</a> -->
-            <nuxt-link to="/forgotpassword">Click Here</nuxt-link>
+            <nuxt-link to="/auth/forgotpassword">Click Here</nuxt-link>
           </v-card-text>
 
           <v-btn
@@ -54,6 +54,7 @@
             x-large
             class="w-100"
             @click="loginUser"
+            @keyup.enter="loginUser"
             depressed
             >
             Sign In
@@ -188,6 +189,7 @@
         });
       },
       loginUser() {
+        //   debugger
           const { email, password } = this
           const data = { email, password }
           this.$axios('/auth/login', {
@@ -199,13 +201,15 @@
               data: data
           }).then(res => {
               const auth = res.data
+              debugger
               this.$store.commit('setAuth', auth)
               this.$toasted.show(
-                `Hello..! Welcome to our SbotBrush. A Collabarative Whiteboard...`,
+                `Hello <stron>${auth.email}</stron>! Welcome to our SbotBrush. A Collabarative Whiteboard...`,
                 {duration: 6000}
               )
               this.$router.push('/')
           }).catch((err) => {
+              debugger
               this.error = err.response.data.error.message
               this.$store.commit('setAuth', null)
               if (err.response.data.error.code == 'UserNotConfirmedException') {

@@ -5,6 +5,7 @@ module.exports = {
     // port: 3100, // default 3000
     port: process.env.PORT || 5600,
   },
+  telemetry: false,
   /*
   ** Nuxt rendering mode
   ** See https://nuxtjs.org/api/configuration-mode
@@ -20,7 +21,7 @@ module.exports = {
   ** See https://nuxtjs.org/api/configuration-head
   */
   head: {
-    titleTemplate: '%s - ' + process.env.npm_package_name,
+    // titleTemplate: '%s - ' + process.env.npm_package_name,
     title: process.env.npm_package_name || '',
     meta: [
       { charset: 'utf-8' },
