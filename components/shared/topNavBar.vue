@@ -70,6 +70,17 @@
             <v-list-item-title class="primary--text">{{ item.title }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <!-- <v-btn text v-if="$store.state.auth" class="text-capitalize grey--text text-lighten-1" @click="onLogout">
+              <v-icon left dark class="hidden-sm-and-down">mdi-logout</v-icon> Logout
+          </v-btn> -->
+        <v-list-item v-if="$store.state.auth" @click="onLogout">
+            <v-list-item-action>
+                <v-icon class="primary--text">mdi-logout</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+                <v-list-item-title class="primary--text">Logout</v-list-item-title>
+            </v-list-item-content>
+        </v-list-item>
       </v-list>
       <!-- <div class="primary--text text-center">Test</div> -->
       <v-footer color="white" class="primary--text justify-center">
@@ -112,9 +123,9 @@
               <v-icon left dark class="d-none d-md-flex">{{item.icon}}</v-icon>
               {{item.title}}
           </v-btn>
-          <!-- <v-btn v-if="userIsAuthenticated" class="text-capitalize" text @click="onLogout">
-              <v-icon left dark class="hidden-sm-and-down">exit_to_app</v-icon> Logout
-          </v-btn> -->
+          <v-btn text v-if="$store.state.auth" class="text-capitalize grey--text text-lighten-1" @click="onLogout">
+              <v-icon left dark class="hidden-sm-and-down">mdi-logout</v-icon> Logout
+          </v-btn>
       </v-toolbar-items>
     </v-app-bar>
   </div>
@@ -127,18 +138,6 @@
         clipped: false,
         drawer: false,
         background: false,
-        items: [
-          {
-            icon: 'mdi-apps',
-            title: 'Welcome',
-            to: '/'
-          },
-          {
-            icon: 'mdi-chart-bubble',
-            title: 'Inspire',
-            to: '/inspire'
-          }
-        ],
         miniVariant: true,
         rightDrawer: false,
         title: 'spotbrush',
@@ -153,18 +152,14 @@
             { icon: "mdi-home", title: "Home", link: "/" },
             { icon: "mdi-information", title: "About", link: "/about" },
             { icon: "mdi-server", title: "Service", link: "/service" },
-            { icon: "mdi-lock-open", title: "Sign in", link: "/signin" }
+            { icon: "mdi-lock-open", title: "Sign in", link: "/auth/signin" }
           ];
 
-          if (this.userIsAuthenticated) {
+          if (this.$store.state.auth) {
             menuItems = [
-              {
-                icon: "supervisor_account",
-                title: "View Meetups",
-                link: "/meetups"
-              },
-              { icon: "room", title: "Organize Meetup", link: "/meetup/new" },
-              { icon: "person", title: "Profile", link: "/profile" }
+                { icon: "mdi-home", title: "Home", link: "/" },
+                { icon: "mdi-information", title: "About", link: "/about" },
+                { icon: "mdi-server", title: "Service", link: "/service" },
             ];
           }
 
@@ -179,6 +174,24 @@
       bg () {
         return this.background ? 'https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg' : undefined
       },
+    },
+    methods: {
+        onLogout() {
+            this.$axios('/auth/logout', {
+                method: 'post',
+                headers: {
+                    Accept: 'application/json',
+                    Content: 'application/json'
+                }
+            }).then(res => {
+                this.$store.commit('setAuth', null)
+                this.$router.push('/')
+            }).catch(err => {
+                console.log(err)
+                this.$store.commit('setAuth', null)
+                this.$router.push('/')
+            })
+        },
     }
   }
 </script>

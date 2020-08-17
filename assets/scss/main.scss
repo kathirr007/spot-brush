@@ -23,6 +23,34 @@
   xl: 1200px
 ));
 
+body {
+    font-family: "Roboto", sans-serif;
+}
+
 .break-word {
   word-break: break-word !important;
+}
+
+.v-messages {
+    &__message {
+        line-height: normal !important;
+    }
+}
+
+.toasted-container {
+    .toasted {
+        justify-content: center !important;
+        &.toasted-primary {
+            display: block;
+            text-align: center;
+            line-height: normal;
+            background-color: $primary;
+            &.info {
+                background-color: $info;
+            }
+            &.error {
+                background-color: $error;
+            }
+        }
+    }
 }

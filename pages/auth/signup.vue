@@ -13,51 +13,53 @@
         <v-form
           ref="form"
           v-model="valid"
-          class="w-100"
-          lazy-validation>
+          class="w-100">
           <v-text-field
-            v-model="name"
-            :counter="10"
-            :rules="nameRules"
+            v-model="firstName"
+            counter
+            :rules="[rules.required('First Name')]"
+            name="firstName"
             label="Firstname"
             required></v-text-field>
           <v-text-field
-            v-model="name"
-            :counter="10"
-            :rules="nameRules"
+            v-model="lastName"
+            counter
+            name="lastName"
             label="Lastname"
-            required></v-text-field>
+            ></v-text-field>
           <v-text-field
-            v-model="name"
-            :counter="10"
-            :rules="nameRules"
+            v-model="organisation"
+            counter
+            name="organisation"
             label="Organisation"
-            required></v-text-field>
+            ></v-text-field>
 
           <v-text-field
             v-model="email"
-            :rules="emailRules"
+            :rules="[rules.required('Email'), rules.email]"
+            name="email"
             label="E-mail Address"
             required></v-text-field>
 
           <v-text-field
             v-model="password"
             :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-            :rules="[rules.required, rules.min]"
+            :rules="[rules.required('Password'), rules.length('Password', 8), rules.password]"
             :type="show1 ? 'text' : 'password'"
-            name="input-10-1"
+            name="password"
             label="Password"
             hint="At least 8 characters"
             counter
             @click:append="show1 = !show1"
           ></v-text-field>
           <v-text-field
-            v-model="password"
+            v-model="confirmPassword"
             :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-            :rules="[rules.required, rules.min]"
-            name="input-10-1"
+            :type="show1 ? 'text' : 'password'"
+            :rules="[rules.required('Password'), rules.length('Password', 8), rules.password, confirmPasswordRule]"
+            name="confirmPassword"
             label="Confirm Password"
-            hint="At least 8 characters"
+            hint="Shout be same as the password"
             counter
             @click:append="show1 = !show1"
           ></v-text-field>
@@ -66,15 +68,15 @@
             :disabled="!valid"
             color="primary"
             x-large
-            class="w-100"
-            @click="validate">
+            class="w-100 my-5"
+            @click="SignUp">
             Sign Up
           </v-btn>
           <v-card-text class="text-center text-body-1 px-0">
             Already have an account?
             <!-- <v-btn text small to="/signup">Click Here</v-btn> -->
             <!-- <a to="/signup">Click Here</a> -->
-            <nuxt-link to="/signin">Click Here</nuxt-link>
+            <nuxt-link to="/auth/signin">Click Here</nuxt-link>
           </v-card-text>
 
           <!-- <v-btn
@@ -95,19 +97,10 @@
   import {
     CognitoAuth
   } from 'amazon-cognito-auth-js';
-  import isPasswordStrong from "@/customvalidators/passwordComplexity";
-  // import _config from "@/assets/js/cognito_config";
-  import {
-    required,
-    email,
-    minLength,
-    sameAs,
-    alphaNum,
-  } from "vuelidate/lib/validators";
   export default {
     head: {
       // title: process.env.npm_package_name || "",
-      title: `SpotBrush | Sign In`,
+      title: `SpotBrush | Sign Up`,
       meta: [],
       link: [{
           rel: "icon",
@@ -130,80 +123,45 @@
     data() {
       return {
         valid: false,
-        name: '',
-        nameRules: [
-          v => !!v || 'Name is required',
-          v => (v && v.length <= 10) || 'Name must be less than 10 characters',
-        ],
+        firstName: '',
+        lastName: '',
+        organisation: '',
         email: '',
-        emailRules: [
-          v => !!v || 'E-mail is required',
-          v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-        ],
-        signIn: {
-          email: "",
-          password: "",
-        },
-        signUp: {
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-        },
-        show: true,
-        formValid: false,
-        show1: false,
         password: '',
+        confirmPassword: '',
+        show: true,
+        show1: false,
         rules: {
-          required: value => !!value || 'Required.',
-          min: v => v.length >= 8 || 'Min 8 characters',
-          emailMatch: () => ('The email and password you entered don\'t match'),
+          required(propName) {
+                return v => !!v || `${propName} field is required`
+            },
+            length(propName, len){
+                return v => (v || '').length >= len || `${propName} should be at least ${len} characters`
+            },
+            email: v => !!(v || '').match(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i) || 'Please enter a valid email address',
+            // length: len => v => (v || '').length >= len || `Password should be at least ${len} characters`,
+            password: v => !!(v || '').match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*(_|[^\w])).+$/) ||
+            'Password must contain an upper case letter, a numeric character, and a special character',
         },
       };
     },
-    validations: {
-      signUp: {
-        firstName: {
-          required
-        },
-        lastName: {
-          required
-        },
-        email: {
-          required,
-          email
-        },
-        password: {
-          required,
-          minLength: minLength(8),
-          isPasswordStrong
-        },
-        confirmPassword: {
-          required,
-          sameAsPassword: sameAs("password")
-        },
-      },
-      signIn: {
-        email: {
-          required,
-          email
-        },
-        password: {
-          required,
-          minLength: minLength(8)
-        },
-      },
+    computed: {
+        confirmPasswordRule() {
+            return this.password === this.confirmPassword || "Confirm Password must match with password";
+        }
     },
     methods: {
+        test() {
+            /* let email = 'Test@test.com';
+            this.$toast.show(`The user <strong> ${email} </strong> has been created successfully. <br> Please check your email <strong>${email}</strong> inbox for confirmation before sign in.`, {duration: 35000})
+            this.$router.push('/') */
+        },
       onReset() {
-        this.signUp = {
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-        };
+        this.firstName = ""
+        this.lastName = ""
+        this.email = ""
+        this.password = ""
+        this.confirmPassword = ""
 
         this.$nextTick(() => {
           this.$v.$reset();
@@ -218,67 +176,14 @@
       resetValidation () {
         this.$refs.form.resetValidation()
       },
-      validateSignup(name) {
-        const {
-          $dirty,
-          $error
-        } = this.$v.signUp[name];
-        return $dirty ? !$error : null;
-      },
-      validateSignIn(name) {
-        const {
-          $dirty,
-          $error
-        } = this.$v.signIn[name];
-        return $dirty ? !$error : null;
-      },
-      SignIn() {
-        var $vm = this
-        var authenticationData = {
-          Username: this.signIn.email,
-          Password: this.signIn.password,
-        };
-
-        var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(
-          authenticationData
-        );
-
-        var poolData = {
-          UserPoolId: _config.cognito.userPoolId, // Your user pool id here
-          ClientId: _config.cognito.clientId, // Your client id here
-        };
-
-        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
-
-        var userData = {
-          Username: this.signIn.email,
-          Pool: userPool,
-        };
-
-        var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-
-        cognitoUser.authenticateUser(authenticationDetails, {
-          onSuccess: function (result) {
-            // window.location.href = '/index-old.html';
-            //   this.$router.push("/login");
-            $vm.$router.push({
-              path: '/'
-            })
-            // debugger
-            return;
-          },
-
-          onFailure: function (err) {
-            return alert(err.message || JSON.stringify(err));
-          },
-        });
-      },
       SignUp() {
         /* Signup codes here */
-        var firstname = this.signUp.firstName,
-          lastname = this.signUp.lastName,
-          email = this.signUp.email,
-          password = this.signUp.password,
+        var $vm = this
+        var firstname = this.firstName,
+          lastname = this.lastName,
+          organisation = this.organisation,
+          email = this.email,
+          password = this.password,
           cognitoUser;
 
         var poolData = {
@@ -295,10 +200,16 @@
           Name: 'family_name',
           Value: lastname, //get from form field
         };
-        var attributeFirstname = new AmazonCognitoIdentity.CognitoUserAttribute(attrFirstname);
-        var attributeLastname = new AmazonCognitoIdentity.CognitoUserAttribute(attrLastname);
+        var attrOrganisation = {
+          Name: 'organisation',
+          Value: organisation, //get from form field
+        };
+        var attributeFirstname = new AmazonCognitoIdentity.CognitoUserAttribute(attrFirstname),
+            attributeLastname = new AmazonCognitoIdentity.CognitoUserAttribute(attrLastname);
+            // attributeOrganisation = new AmazonCognitoIdentity.CognitoUserAttribute(attrOrganisation);
         attributeList.push(attributeFirstname);
         attributeList.push(attributeLastname);
+        // attributeList.push(attributeOrganisation);
         userPool.signUp(email, password, attributeList, null, function (err, result) {
           if (err) {
             alert(err.message || JSON.stringify(err));
@@ -306,7 +217,9 @@
           }
           cognitoUser = result.user;
           // document.getElementById("titleheader").innerHTML = "<strong>Check your email for a verification link</strong>";
-          $bvToast.show('my-toast')
+        //   $bvToast.show('my-toast')
+            $vm.$toasted.show(`The user <strong> ${email} </strong> has been created successfully. <br>Please check your email <strong>${email}</strong> inbox for confirmation before sign in.`, {duration: 6000})
+            $vm.$router.push('/signin')
           //change elements of page
           // alert('success');
         });

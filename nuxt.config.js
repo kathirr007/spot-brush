@@ -1,6 +1,6 @@
-import colors from 'vuetify/es5/util/colors'
+// import colors from 'vuetify/es5/util/colors'
 
-export default {
+module.exports = {
   server: {
     // port: 3100, // default 3000
     port: process.env.PORT || 5600,
@@ -58,6 +58,7 @@ export default {
   */
   plugins: [
     { src: '~/plugins/vuelidate' },
+    { src: '~/plugins/setTokenAxios' },
   ],
   /*
   ** Auto import components
@@ -78,12 +79,31 @@ export default {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
+    '@nuxtjs/toast',
   ],
+
+  toast: {
+      position: 'top-right',
+      register: [ // Register custom toasts
+          {
+              name: 'my-error',
+              message: 'Oops...Something went wrong',
+              options: {
+                  type: 'error'
+              }
+          },
+      ]
+  },
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
   */
-  axios: {},
+ axios: {
+    baseURL: process.env.BASE_URL || 'http://localhost:5600'
+  },
+  env: {
+    baseUrl: process.env.BASE_URL || 'http://localhost:5600',
+  },
   /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module
