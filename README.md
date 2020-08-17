@@ -1,4 +1,5 @@
-# test2
+# Spot-Brush UI
+### A collobarative Whiteboard
 
 ## Build Setup
 
