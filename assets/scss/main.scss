@@ -1,0 +1,28 @@
+// src/sass/main.scss
+@import '~vuetify/src/styles/styles.sass';
+
+@import './variables';
+@import './sizing';
+@import './transitions';
+
+// You need to map-merge your new SASS variables
+/* $grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px
+);
+ */
+
+ $grid-breakpoints: map-merge($grid-breakpoints, (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px
+));
+
+.break-word {
+  word-break: break-word !important;
+}
