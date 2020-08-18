@@ -160,7 +160,7 @@ async function start () {
     })
   })
 
-  app.post('auth/resendConfirmEmail', (req, res, next) => {
+  /* app.post('auth/resendConfirmEmail', (req, res, next) => {
     const cognitoUser = new AmazonCognitoIdentity.CognitoUser({
         Username : req.body.email,
         Pool : userPool
@@ -178,7 +178,7 @@ async function start () {
             }
         });
     });
-  })
+  }) */
 
   app.post('/auth/confirmPasswordChange', (req, res, next) => {
     console.log(req.body)

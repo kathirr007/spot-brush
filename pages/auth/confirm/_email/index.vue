@@ -10,10 +10,10 @@
                 We've send an email confirmation to your registered <strong class="primary--text">{{ email }}</strong>. <br>
                 Please check and confirm your registration.
             </v-card-text>
-            <v-card-text class="text-center text-body-1 px-0">
+            <!-- <v-card-text class="text-center text-body-1 px-0">
                 If you've not recieved confirmation email. Please
                 <a @click.prevent="resendConfirmEmail">Click Here</a>
-            </v-card-text>
+            </v-card-text> -->
             <v-card-text class="text-center text-body-1 px-0">
                 Already confirmed the registration?
                 <nuxt-link to="/auth/signin">Click Here</nuxt-link>
