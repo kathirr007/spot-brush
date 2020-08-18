@@ -7,9 +7,9 @@
       <v-card
         color="" class="px-5 pb-5 w-100 rounded-xl">
         <v-card-title class="headline justify-center text-center primary--text break-word text-h5">Login to your account</v-card-title>
-        <!-- <v-card-actions>
-          <v-btn text>Listen Now</v-btn>
-        </v-card-actions> -->
+        <v-card-text v-if="error" class="error--text text-center text-body-1 px-0">
+            {{ error }}
+        </v-card-text>
         <v-form
           ref="form"
           v-model="valid"
@@ -103,6 +103,7 @@
         email: '',
         show1: false,
         password: '',
+        error: '',
         rules: {
             required(propName){
                 return v => !!v || `${propName} field is required`
@@ -201,7 +202,7 @@
               data: data
           }).then(res => {
               const auth = res.data
-              debugger
+            //   debugger
               this.$store.commit('setAuth', auth)
               this.$toasted.show(
                 `Hello <stron>${auth.email}</stron>! Welcome to our SbotBrush. A Collabarative Whiteboard...`,
@@ -209,14 +210,21 @@
               )
               this.$router.push('/')
           }).catch((err) => {
-              debugger
+            //   debugger
               this.error = err.response.data.error.message
               this.$store.commit('setAuth', null)
               if (err.response.data.error.code == 'UserNotConfirmedException') {
-                  setTimeout(() => {
-                      this.$router.push('/auth/confirm/' + email)
-                  }, 3000)
-              }
+                this.$toasted.show(
+                    `Hello..! <br>You've not confirmed email verification. Please check your email and confirm registration.`,
+                    {duration: 6000}
+                )
+                this.$router.push('/auth/confirm/' + email)
+              } else if (err.response.data.error.code == 'NotAuthorizedException') {
+                this.$toasted.show(
+                    `${err.response.data.error.message}<br>Please try again with correct username and password or try Forgot password.`,
+                    {duration: 6000}
+                )
+            }
           })
       }
     },

@@ -7,9 +7,9 @@
       <v-card
         color="" class="px-5 pb-5 w-100 rounded-xl">
         <v-card-title class="headline justify-center text-center primary--text break-word text-h5">Sign Up with us </v-card-title>
-        <!-- <v-card-actions>
-          <v-btn text>Listen Now</v-btn>
-        </v-card-actions> -->
+        <v-card-text v-if="error" class="error--text text-center text-body-1 px-0">
+            {{ error }}
+        </v-card-text>
         <v-form
           ref="form"
           v-model="valid"
@@ -111,14 +111,13 @@
         // { rel: 'stylesheet', type: 'text/css', href: 'https://unpkg.com/bulma-modal-fx/dist/css/modal-fx.min.css' }
       ],
       script: [
-        // {src: '~assets/js/amazon-cognito-auth.min.js', crossorigin :'anonymous'},
         { src: '../js/cognito_config.js', crossorigin: 'anonymous', body: true },
-        // {src: 'https://unpkg.com/bulma-modal-fx/dist/js/modal-fx.min.js', crossorigin :'anonymous'}
-      ],
+    ],
     },
     data() {
       return {
         valid: false,
+        error: '',
         firstName: '',
         lastName: '',
         organisation: '',
@@ -235,6 +234,7 @@
               this.$toasted.show(`The user <strong> ${email} </strong> has been created successfully. <br>Please check your email <strong>${email}</strong> inbox for confirmation before sign in.`, {duration: 6000})
               this.$router.push(`/auth/confirm/${email}`)
           }).catch((err) => {
+              debugger
               this.error = err.response.data.error.message
               if (err.response.data.error.code == 'UsernameExistsException') {
                   setTimeout(() => {

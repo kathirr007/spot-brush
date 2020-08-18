@@ -54,3 +54,17 @@ body {
         }
     }
 }
+
+.v-card{
+    &.rounded-xl {
+        .v-progress-linear {
+            height: 4px;
+            position: absolute;
+            left: 50%;
+            top: 0px;
+            overflow: hidden;
+            width: calc(100% - 32px);
+            transform: translateX(-50%);
+        }
+    }
+}

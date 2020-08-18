@@ -160,7 +160,7 @@ async function start () {
     })
   })
 
-  app.post('/auth/confirmpassword', (req, res, next) => {
+  app.post('/auth/confirmPasswordChange', (req, res, next) => {
     console.log(req.body)
     const confirmationDetails = {
         verificationCode: req.body.verificationCode,
@@ -172,16 +172,24 @@ async function start () {
       Pool : userPool
     });
 
-
-
-    cognitoUser.confirmPassword(confirmationDetails, true, function(err, result) {
-      if (err) {
-        console.log(err);
-        err.message = err.message;
-        return res.status(400).json({error: err.message});
-      }
-      res.json({success: true});
-    })
+    return new Promise((resolve, reject) => {
+        cognitoUser.confirmPassword(req.body.verificationCode, req.body.newPassword, {
+            onFailure(err) {
+                console.log(err.message)
+                res.json({
+                    message: err.message
+                })
+                reject(err);
+            },
+            onSuccess() {
+                console.log('Password has been changed/updated successfully.')
+                res.json({
+                    message: 'Password has been changed/updated successfully.'
+                })
+                resolve()
+            },
+        });
+    });
   })
 
   app.post('/auth/forgotpassword', (req, res, next) => {
@@ -193,18 +201,16 @@ async function start () {
 
     cognitoUser.forgotPassword({
         onSuccess: function(result) {
-            console.log(result);
+            // console.log(result);
             res.json({message: 'Sucess'});
         },
         onFailure: function(err) {
-            // alert(err);
-            console.log(err);
-        },
-        /* inputVerificationCode() {
-            var verificationCode = prompt('Please input verification code ', '');
-            var newPassword = prompt('Enter new password ', '');
-            cognitoUser.confirmPassword(verificationCode, newPassword, this);
-        } */
+            // debugger
+            // console.log(err);
+            res.json({
+                message: err
+            })
+        }
     });
   })
 
