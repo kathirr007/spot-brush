@@ -210,7 +210,7 @@
               )
               this.$router.push('/')
           }).catch((err) => {
-            //   debugger
+              debugger
               this.error = err.response.data.error.message
               this.$store.commit('setAuth', null)
               if (err.response.data.error.code == 'UserNotConfirmedException') {

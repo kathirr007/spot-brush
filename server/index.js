@@ -160,6 +160,26 @@ async function start () {
     })
   })
 
+  app.post('auth/resendConfirmEmail', (req, res, next) => {
+    const cognitoUser = new AmazonCognitoIdentity.CognitoUser({
+        Username : req.body.email,
+        Pool : userPool
+    });
+    return new Promise((resolve, reject) => {
+        cognitoUser.resendConfirmationCode((err, data) => {
+            if (err) {
+                res.json({err: err})
+                console.log(err)
+                reject(err);
+            } else {
+                res.json({data: data})
+                console.log(data)
+                resolve(data);
+            }
+        });
+    });
+  })
+
   app.post('/auth/confirmPasswordChange', (req, res, next) => {
     console.log(req.body)
     const confirmationDetails = {

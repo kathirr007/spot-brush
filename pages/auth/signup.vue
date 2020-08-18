@@ -230,6 +230,7 @@
               },
               data: data
           }).then(res => {
+              debugger
               const auth = res.data
               this.$toasted.show(`The user <strong> ${email} </strong> has been created successfully. <br>Please check your email <strong>${email}</strong> inbox for confirmation before sign in.`, {duration: 6000})
               this.$router.push(`/auth/confirm/${email}`)
