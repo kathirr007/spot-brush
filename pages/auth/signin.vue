@@ -1,81 +1,83 @@
 <template>
-  <div class="row">
-    <div class="d-none d-sm-flex col-sm-5">
-      <img class="w-75 form-promo" src="~assets/images/sb-logo.svg" alt="">
-    </div>
-    <div class="col-12 col-sm-7 d-flex align-center justify-center">
-      <v-card
-        color="" class="px-5 pb-5 w-100 rounded-xl">
-        <v-card-title class="headline justify-center text-center primary--text break-word text-h5">Login to your account</v-card-title>
-        <v-card-text v-if="error" class="error--text text-center text-body-1 px-0">
-            {{ error }}
-        </v-card-text>
-        <v-form
-          ref="form"
-          v-model="valid"
-          class="w-100"
-          @submit.prevent="loginUser"
-        >
-          <!-- <v-text-field
-            v-model="name"
-            :counter="10"
-            :rules="nameRules"
-            label="Name"
-            required></v-text-field> -->
-
-          <v-text-field
-            v-model="email"
-            :rules="[rules.required('Email'), rules.email]"
-            name="email"
-            label="E-mail"
-            required></v-text-field>
-
-          <v-text-field
-            v-model="password"
-            :rules="[rules.required('Password'), rules.length('Password', 8), rules.password]"
-            :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-            :type="show1 ? 'text' : 'password'"
-            name="password"
-            label="Password"
-            counter
-            @click:append="show1 = !show1"
-          ></v-text-field>
-
-          <v-card-text class="text-right text-body-1 px-0">
-            Forgot password?
-            <!-- <v-btn text small to="/signup">Click Here</v-btn> -->
-            <!-- <a to="/signup">Click Here</a> -->
-            <nuxt-link to="/auth/forgotpassword">Click Here</nuxt-link>
-          </v-card-text>
-
-          <v-btn
-            :disabled="!valid"
-            color="primary"
-            x-large
-            class="w-100"
-            @click="loginUser"
-            @keyup.enter="loginUser"
-            depressed
+    <v-container>
+      <div class="row">
+        <div class="d-none d-sm-flex col-sm-5 justify-center">
+          <img class="w-60 form-promo" src="~assets/images/sb-logo.svg" alt="">
+        </div>
+        <div class="col-12 col-sm-7 d-flex align-center justify-center">
+          <v-card
+            color="" class="px-5 pb-5 w-100 rounded-xl">
+            <v-card-title class="headline justify-center text-center primary--text break-word text-h5">Login to your account</v-card-title>
+            <v-card-text v-if="error" class="error--text text-center text-body-1 px-0">
+                {{ error }}
+            </v-card-text>
+            <v-form
+              ref="form"
+              v-model="valid"
+              class="w-100"
+              @submit.prevent="loginUser"
             >
-            Sign In
-          </v-btn>
-          <v-card-text class="text-center text-body-1 px-0">
-            Not Registered with us?
-            <!-- <v-btn text small to="/signup">Click Here</v-btn> -->
-            <!-- <a to="/signup">Click Here</a> -->
-            <nuxt-link to="/auth/signup">Click Here</nuxt-link>
-          </v-card-text>
+              <!-- <v-text-field
+                v-model="name"
+                :counter="10"
+                :rules="nameRules"
+                label="Name"
+                required></v-text-field> -->
 
-          <!-- <v-btn
-            color="error"
-            class="mr-4"
-            @click="reset">
-            Reset
-          </v-btn> -->
-        </v-form>
-      </v-card>
-    </div>
-  </div>
+              <v-text-field
+                v-model="email"
+                :rules="[rules.required('Email'), rules.email]"
+                name="email"
+                label="E-mail"
+                required></v-text-field>
+
+              <v-text-field
+                v-model="password"
+                :rules="[rules.required('Password'), rules.length('Password', 8), rules.password]"
+                :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+                :type="show1 ? 'text' : 'password'"
+                name="password"
+                label="Password"
+                counter
+                @click:append="show1 = !show1"
+              ></v-text-field>
+
+              <v-card-text class="text-right text-body-1 px-0">
+                Forgot password?
+                <!-- <v-btn text small to="/signup">Click Here</v-btn> -->
+                <!-- <a to="/signup">Click Here</a> -->
+                <nuxt-link to="/auth/forgotpassword">Click Here</nuxt-link>
+              </v-card-text>
+
+              <v-btn
+                :disabled="!valid"
+                color="primary"
+                x-large
+                class="w-100"
+                @click="loginUser"
+                @keyup.enter="loginUser"
+                depressed
+                >
+                Sign In
+              </v-btn>
+              <v-card-text class="text-center text-body-1 px-0">
+                Not Registered with us?
+                <!-- <v-btn text small to="/signup">Click Here</v-btn> -->
+                <!-- <a to="/signup">Click Here</a> -->
+                <nuxt-link to="/auth/signup">Click Here</nuxt-link>
+              </v-card-text>
+
+              <!-- <v-btn
+                color="error"
+                class="mr-4"
+                @click="reset">
+                Reset
+              </v-btn> -->
+            </v-form>
+          </v-card>
+        </div>
+      </div>
+    </v-container>
 </template>
 
 <script>
@@ -174,7 +176,7 @@
           onSuccess: function (result) {
             $vm.$toasted.show(
                 `Hello..! Welcome to our SbotBrush. A Collabarative Whiteboard...`,
-                {duration: 6000}
+                {duration: 3000}
             )
 
             $vm.$router.push({
@@ -206,23 +208,23 @@
               this.$store.commit('setAuth', auth)
               this.$toasted.show(
                 `Hello <stron>${auth.email}</stron>! Welcome to our SbotBrush. A Collabarative Whiteboard...`,
-                {duration: 6000}
+                {duration: 3000}
               )
-              this.$router.push('/')
+              this.$router.push('/dashboard')
           }).catch((err) => {
-              debugger
+              // debugger
               this.error = err.response.data.error.message
               this.$store.commit('setAuth', null)
               if (err.response.data.error.code == 'UserNotConfirmedException') {
                 this.$toasted.show(
                     `Hello..! <br>You've not confirmed email verification. Please check your email and confirm registration.`,
-                    {duration: 6000}
+                    {duration: 3000}
                 )
                 this.$router.push('/auth/confirm/' + email)
               } else if (err.response.data.error.code == 'NotAuthorizedException') {
                 this.$toasted.show(
                     `${err.response.data.error.message}<br>Please try again with correct username and password or try Forgot password.`,
-                    {duration: 6000}
+                    {duration: 3000}
                 )
             }
           })

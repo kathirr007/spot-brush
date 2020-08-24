@@ -68,8 +68,8 @@ async function start () {
       });
       cognitoUser.authenticateUser(authenticationDetails, {
           onSuccess: function(result) {
-              debugger
-              console.log(result.getIdToken().payload)
+              // debugger
+              // console.log(result.getIdToken().payload)
               const userName = `${result.getIdToken().payload.given_name}`
               const expirationTime = new Date(result.getAccessToken().payload.exp * 1000)
               const auth = {

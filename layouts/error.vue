@@ -1,44 +1,24 @@
 <template>
-  <v-app dark>
-    <h1 v-if="error.statusCode === 404">
-      {{ pageNotFound }}
-    </h1>
-    <h1 v-else>
-      {{ otherError }}
-    </h1>
-    <NuxtLink to="/">
-      Home page
-    </NuxtLink>
-  </v-app>
+    <div class="container pa-0 align-center d-flex h-100">
+        <ErrorView :title="`Ooooops, the page you are trying to access doesn't exist.`" :status="'404'" :navigateToPage="userIsAuthenticated ? '/dashboard' : '/'" :navigateToText="userIsAuthenticated ? 'Navigate back to Dashboard' : 'Navigate back to Home Page'"
+        />
+    </div>
 </template>
 
 <script>
+import ErrorView from '@/components/shared/ErrorView'
 export default {
-  layout: 'empty',
-  props: {
-    error: {
-      type: Object,
-      default: null
+    components: {
+        ErrorView
+    },
+    computed: {
+        userIsAuthenticated() {
+            return this.$store.state.auth != null ? true : false
+        },
     }
-  },
-  data () {
-    return {
-      pageNotFound: '404 Not Found',
-      otherError: 'An error occurred'
-    }
-  },
-  head () {
-    const title =
-      this.error.statusCode === 404 ? this.pageNotFound : this.otherError
-    return {
-      title
-    }
-  }
 }
 </script>
 
 <style scoped>
-h1 {
-  font-size: 20px;
-}
+
 </style>

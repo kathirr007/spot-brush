@@ -2,15 +2,16 @@
   <v-app>
     <topNavBar />
     <v-main>
-      <v-container>
         <nuxt />
-      </v-container>
+      <!-- <v-container fluid>
+      </v-container> -->
     </v-main>
 
     <v-footer
       :absolute="!fixed"
       app
       class="justify-center"
+      v-if="$store.state.auth != null ? false : true"
     >
       <span class="primary--text mr-2">{{ title }}</span> <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
@@ -33,8 +34,8 @@ export default {
 </script>
 <style lang="scss">
   .v-main__wrap, .container {
-    display: flex;
-    flex: 1;
+    // display: flex;
+    // flex: 1;
   }
   .flex-basis-0 {
     flex-basis: 0;
