@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container class="h-100 d-flex align-center">
         <v-row column justify-center align-center>
             <v-col cols="12" sm="5" class="d-flex align-center align-sm-start justify-center flex-column">
                 <div class="w-100 text-center text-sm-left">

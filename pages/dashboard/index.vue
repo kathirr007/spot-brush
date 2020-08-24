@@ -31,7 +31,7 @@
         <v-row>
             <v-col offset="3" offset-sm="0" cols="6" sm="4" md="3" lg="2">
                 <div class="dashboard-actions">
-                    <v-btn class="w-100 text-capitalize text-body-1 mb-5" outlined color="primary">+ Create</v-btn>
+                    <v-btn class="w-100 text-capitalize text-body-1 mb-5" outlined color="primary" @click="createBoard">+ Create</v-btn>
                     <v-btn class="w-100 text-capitalize text-body-1 mb-5" outlined color="primary">+ Folder</v-btn>
                     <v-btn class="w-100 text-capitalize text-body-1" outlined color="primary">Shared</v-btn>
                 </div>
@@ -45,7 +45,36 @@
 
 <script>
     export default {
-        middleware: ['refreshToken','authenticated'],
+        middleware: ['refreshToken', 'authenticated'],
+        methods: {
+            createBoard() {
+                // debugger
+                const { email } = this.$store.state.auth
+                const data = { email }
+                const accessToken = this.$store.state.auth.jwt
+                console.log('checking create...')
+                this.$axios('/auth/createboard', {
+                    method: 'post',
+                    headers: {
+                        Accept: 'application/json',
+                        Content: 'application/json',
+                        Authorization: `Bearer ${accessToken}`
+                    },
+                    data: data
+                }).then(res => {
+                    // debugger
+                    const authToken = res.data
+                    //   this.$store.commit('setAuth', auth)
+                    console.log(authToken)
+                    this.$toasted.show(
+                        `Hello..! Welcome to our SbotBrush. A Collabarative Whiteboard...`, { duration: 6000 }
+                    )
+                    this.$router.push('/dashboard')
+                }).catch((err) => {
+                    console.log(err.message)
+                })
+            }
+        }
     }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
-    <v-container>
-        <v-row column justify-center align-center>
+    <v-container class="h-100 d-flex align-center">
+        <v-row>
             <v-col cols="12" sm="5" class="d-flex align-center align-sm-start justify-center flex-column">
                 <div class="w-100 text-center text-sm-left">
                     <h1>Lorem Ipsum Dol Amet</h1>
@@ -23,7 +23,7 @@ export default {
     components: {},
     methods: {
         createBoard() {
-            debugger
+            // debugger
             const { email } = this.$store.state.auth
             const data = { email }
             const accessToken = this.$store.state.auth.jwt
@@ -37,9 +37,10 @@ export default {
                 },
                 data: data
             }).then(res => {
-                debugger
-                const auth = res.data
+                // debugger
+                const authToken = res.data
                 //   this.$store.commit('setAuth', auth)
+                console.log(authToken)
                 this.$toasted.show(
                     `Hello..! Welcome to our SbotBrush. A Collabarative Whiteboard...`, { duration: 6000 }
                 )

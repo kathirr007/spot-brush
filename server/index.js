@@ -103,7 +103,11 @@ async function start () {
 
   app.post('/auth/createboard', (req, res) => {
       debugger
-    console.log(req.headers.authorization)
+    // console.log(req.headers.authorization)
+    const token = req.headers.authorization.split(" ")[1]
+    res.json({
+      token: token
+    })
   })
 
   app.post('/auth/logout', (req, res) => {
