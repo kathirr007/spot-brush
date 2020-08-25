@@ -19,6 +19,7 @@
 
 <script>
 export default {
+    middleware: ['refreshToken','notAuthenticated'],
     head: {
         title: `SpotBrush | About`
     },

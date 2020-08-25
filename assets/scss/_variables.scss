@@ -5,7 +5,7 @@
 $primary: #ff6634;
 $secondary: #dea38e;
 $accent: #f2f2f5;
-$error: #f44336;
+$error: #bd0303;
 $warning: #fd8811;
 $info: #3d2e38;
 $success: #7f9949;
@@ -18,3 +18,22 @@ $menu: #8d8d8d;
   lg: 992px,
   xl: 1200px
 ); */
+
+// Bootstrap Variables
+// Utilities
+
+$displays: none, inline, inline-block, block, table, table-row, table-cell, flex, inline-flex !default;
+$overflows: auto, hidden !default;
+$positions: static, relative, absolute, fixed, sticky !default;
+$user-selects: all, auto, none !default;
+
+// scss-docs-start zindex-stack
+$zindex-dropdown:                   1000 !default;
+$zindex-sticky:                     1020 !default;
+$zindex-fixed:                      1030 !default;
+$zindex-modal-backdrop:             1040 !default;
+$zindex-modal:                      1050 !default;
+$zindex-popover:                    1060 !default;
+$zindex-tooltip:                    1070 !default;
+// scss-docs-end zindex-stack
+

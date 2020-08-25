@@ -21,6 +21,7 @@
 <script>
 import topNavBar from '~/components/shared/topNavBar'
 export default {
+  name: 'Default',
   data() {
     return {
       fixed: false,

@@ -21,6 +21,7 @@
 <script>
 export default {
     components: {},
+    middleware: ['refreshToken','notAuthenticated'],
     methods: {
         createBoard() {
             // debugger

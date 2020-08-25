@@ -128,7 +128,7 @@ module.exports = {
           primary: '#ff6634',
           secondary: '#dea38e',
           accent: '#f2f2f5',
-          error: '#f44336',
+          error: '#bd0303',
           warning: '#fd8811',
           info: '#3d2e38',
           success: '#7f9949'

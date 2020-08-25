@@ -52,6 +52,7 @@ import {
     CognitoAuth
 } from 'amazon-cognito-auth-js';
 export default {
+    middleware: ['refreshToken','notAuthenticated'],
     head: {
         // title: process.env.npm_package_name || "",
         title: `SpotBrush | Sign Up`,

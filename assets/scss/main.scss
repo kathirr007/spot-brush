@@ -2,8 +2,11 @@
 @import '~vuetify/src/styles/styles.sass';
 
 @import './variables';
-@import './sizing';
 @import './transitions';
+
+// utilities
+@import './helpers/sizing';
+@import './helpers/position';
 
 // You need to map-merge your new SASS variables
 /* $grid-breakpoints: (
