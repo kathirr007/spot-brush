@@ -391,8 +391,8 @@
                 </v-container>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="dialog = false">Cancel</v-btn>
-                    <v-btn color="blue darken-1" text :disabled="!valid" @click="createBoard">Create Board</v-btn>
+                    <v-btn @click="dialog = false">Cancel</v-btn>
+                    <v-btn color="primary darken-1" :disabled="!valid" @click="createBoard">Create Board</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -455,6 +455,8 @@
                     this.$toasted.show(
                         `Hello..! Welcome to our SbotBrush. A Collabarative Whiteboard...`, { duration: 6000 }
                     )
+                    // debugger
+                    window.open(`http://localhost:8080/?whiteboardid=myNewWhiteboard&accesstoken=${authToken.token}`, '_blank')
                     this.$router.push('/dashboard')
                 }).catch((err) => {
                     console.log(err.message)
