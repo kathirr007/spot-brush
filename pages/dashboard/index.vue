@@ -439,8 +439,7 @@
                 const data = { email, boradName: this.boardName }
                 const accessToken = this.$store.state.auth.jwt
                 // console.log('checking create...')
-                this.$axios('/auth/createboard', {
-                    method: 'post',
+                this.$axios.get('http://localhost:3000/loadwhiteboard', {
                     headers: {
                         Accept: 'application/json',
                         Content: 'application/json',
