@@ -436,10 +436,11 @@
                 // debugger
                 this.dialog = false
                 const { email } = this.$store.state.auth
-                const data = { email, boradName: this.boardName }
+                const data = { email, boardName: this.boardName }
                 const accessToken = this.$store.state.auth.jwt
                 // console.log('checking create...')
-                this.$axios.get('http://localhost:3000/loadwhiteboard', {
+                this.$axios('/auth/createboard', {
+                    method: 'post',
                     headers: {
                         Accept: 'application/json',
                         Content: 'application/json',
@@ -448,14 +449,14 @@
                     data: data
                 }).then(res => {
                     // debugger
-                    const authToken = res.data
+                    const data = res.data
                     //   this.$store.commit('setAuth', auth)
-                    console.log(authToken)
+                    // console.log(data.token)
                     this.$toasted.show(
                         `Hello..! Welcome to our SbotBrush. A Collabarative Whiteboard...`, { duration: 6000 }
                     )
                     // debugger
-                    window.open(`http://localhost:8080/?whiteboardid=myNewWhiteboard&accesstoken=${authToken.token}`, '_blank')
+                    window.open(`http://localhost:8080/?whiteboardid=${data.boardName}&accesstoken=${data.token}&username=${data.email}`, '_blank')
                     this.$router.push('/dashboard')
                 }).catch((err) => {
                     console.log(err.message)
