@@ -60,6 +60,7 @@ module.exports = {
   plugins: [
     { src: '~/plugins/vuelidate' },
     { src: '~/plugins/setTokenAxios' },
+    // { src: '~/plugins/keymage.client' },
   ],
   /*
   ** Auto import components
@@ -100,7 +101,13 @@ module.exports = {
   ** See https://axios.nuxtjs.org/options
   */
  axios: {
-    baseURL: process.env.BASE_URL || 'http://localhost:5600'
+    baseURL: process.env.BASE_URL || 'http://localhost:5600',
+    proxy: true
+  },
+  proxy: {
+    // 'http://localhost:3000': { target: 'http://localhost:3000' },
+    '/api/loadwhiteboard': 'http://localhost:3000',
+    // '/api2/': 'http://api.another-website.com'
   },
   env: {
     baseUrl: process.env.BASE_URL || 'http://localhost:5600',

@@ -5,6 +5,8 @@ const app = express()
 const cookiepars = require('cookieparser')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const cors = require('cors')
+const override = require('method-override')
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 
 global.fetch = require('node-fetch');
@@ -12,6 +14,8 @@ require('dotenv').config();
 
 const config = require('../nuxt.config.js')
 config.dev = process.env.NODE_ENV !== 'production'
+
+const authService = require("./middleware/auth");
 
 async function start () {
 
@@ -33,6 +37,7 @@ async function start () {
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
+  app.use(cors())
 
   app.post('/auth/register', (req, res, next) => {
 
@@ -111,6 +116,41 @@ async function start () {
       boardName: req.body.boardName
     })
   })
+
+  // app.get('http://localhost:3000/loadwhiteboard')
+  app.get("/api/loadwhiteboard", authService.Validate, function (req, res) {
+    const wid = req["query"]["wid"];
+    // const at = req["query"]["at"];
+    const at = req.headers['authorization'].split(' ')[1];
+
+    console.log(res);
+
+    /* if (accessToken === "" || accessToken == at) {
+      const widForData = ReadOnlyBackendService.isReadOnly(wid)
+        ? ReadOnlyBackendService.getIdFromReadOnlyId(wid)
+        : wid;
+      const ret = s_whiteboard.loadStoredData(widForData);
+      res.send(ret);
+      res.end();
+    } else {
+      res.status(401); //Unauthorized
+      res.end();
+    } */
+    if (!at) {
+      res.status(401);
+      res.end();
+    } else if (at && at != "") {
+      const widForData = ReadOnlyBackendService.isReadOnly(wid)
+        ? ReadOnlyBackendService.getIdFromReadOnlyId(wid)
+        : wid;
+      const ret = s_whiteboard.loadStoredData(widForData);
+      res.send(ret);
+      res.end();
+    } else {
+      res.status(401); //Unauthorized
+      res.end();
+    }
+  });
 
   app.post('/auth/logout', (req, res) => {
     res.cookie('token','', {
