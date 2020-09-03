@@ -88,7 +88,7 @@
                                 </template>
                                 <v-card>
                                     <v-card-text class="pa-0">
-                                        <v-color-picker v-model="color" flat />
+                                        <v-color-picker v-model="color" @input="updateDrawColor" flat />
                                     </v-card-text>
                                 </v-card>
                             </v-menu>
@@ -281,6 +281,10 @@
             },
         },
         methods: {
+            updateDrawColor() {
+                // debugger
+                whiteboard.setDrawColor(this.color);
+            },
             handleResize() {
                 this.window.width = window.innerWidth;
                 this.window.height = window.innerHeight;
