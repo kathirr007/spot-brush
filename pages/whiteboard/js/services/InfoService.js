@@ -85,10 +85,10 @@ class InfoService {
             nbConnectedUsers,
             smallestScreenResolution: ssr,
         } = this;
-        $("#messageReceivedCount")[0].innerText = String(nbMessagesReceived);
-        $("#messageSentCount")[0].innerText = String(nbMessagesSent);
-        $("#connectedUsersCount")[0].innerText = String(nbConnectedUsers);
-        $("#smallestScreenResolution")[0].innerText = ssr ? `(${ssr.w}, ${ssr.h})` : "Unknown";
+        $("#messageReceivedCount")[0] ? $("#messageReceivedCount")[0].innerText = String(nbMessagesReceived) : '';
+        $("#messageSentCount")[0] ? $("#messageSentCount")[0].innerText = String(nbMessagesSent) : '';
+        $("#connectedUsersCount")[0] ? $("#connectedUsersCount")[0].innerText = String(nbConnectedUsers) : '';
+        $("#smallestScreenResolution")[0] ? $("#smallestScreenResolution")[0].innerText = ssr ? `(${ssr.w}, ${ssr.h})` : "Unknown" : '';
     }
 
     /**

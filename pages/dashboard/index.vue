@@ -435,29 +435,47 @@
             createBoard() {
                 // debugger
                 this.dialog = false
-                const { email } = this.$store.state.auth
-                const data = { email, boardName: this.boardName }
+                const { email, given_name } = this.$store.state.auth
+                const data = { email, given_name, boardName: this.boardName }
+                if (process.client) {
+                    // const localStorage = localStorage.getItem('auth')
+                }
                 const accessToken = this.$store.state.auth.jwt
                 // console.log('checking create...')
-                this.$axios.$get('/api/loadwhiteboard', {
+                /* axios.post(url, {
+                    //...data
+                }, {
                     headers: {
-                        Accept: 'application/json',
-                        Content: 'application/json',
-                        Authorization: `Bearer ${accessToken}`
+                        'Authorization': `Basic ${token}`
+                    }
+                }) */
+                this.$axios.post('/auth/createboard', {
+                        data: data,
                     },
-                    data: data
-                }).then(res => {
+                    {
+                        headers: {
+                            Accept: 'application/json',
+                            Content: 'application/json',
+                            Authorization: `Bearer ${accessToken}`
+                        },
+                    },
+                ).then(res => {
                     // debugger
-                    const data = res.data
+                    // const data = {}
+
+                    const boardName = res.data.boardName
+                    const email = res.data.email
+                    // const userName = res.data.userName
                     //   this.$store.commit('setAuth', auth)
                     // console.log(data.token)
                     this.$toasted.show(
                         `Hello..! Welcome to our SbotBrush. A Collabarative Whiteboard...`, { duration: 6000 }
                     )
                     // debugger
-                    window.open(`http://localhost:8080/?whiteboardid=${data.boardName}&accesstoken=${data.token}&username=${data.email}`, '_blank')
-                    this.$router.push('/dashboard')
+                    // window.open(`http://localhost:8080/?whiteboardid=${data.boardName}&username=${data.email}`, '_blank')
+                    this.$router.push(`/whiteboard?whiteboardid=${boardName}&username=${data.given_name}`)
                 }).catch((err) => {
+                    debugger
                     console.log(err.message)
                 })
             }

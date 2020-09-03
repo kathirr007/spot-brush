@@ -60,6 +60,7 @@ module.exports = {
   plugins: [
     { src: '~/plugins/vuelidate' },
     { src: '~/plugins/setTokenAxios' },
+    { src: '~/plugins/localStorage.js', ssr: false }
     // { src: '~/plugins/keymage.client' },
   ],
   /*
@@ -105,9 +106,15 @@ module.exports = {
     proxy: true
   },
   proxy: {
-    // 'http://localhost:3000': { target: 'http://localhost:3000' },
-    '/api/loadwhiteboard': 'http://localhost:3000',
-    // '/api2/': 'http://api.another-website.com'
+      // 'http://localhost:3000': { target: 'http://localhost:3000' },
+      // '/api/loadwhiteboard': 'http://localhost:3000',
+      "/api": "http://localhost:3000",
+      "/uploads": "http://localhost:3000",
+      "/ws-api": {
+          target: "ws://localhost:3000",
+          ws: true,
+      },
+      // '/api2/': 'http://api.another-website.com'
   },
   env: {
     baseUrl: process.env.BASE_URL || 'http://localhost:5600',

@@ -1,3 +1,4 @@
+import Vue from 'vue'
 import keymage from "keymage";
 
-export default keymage;
+Vue.use(keymage)

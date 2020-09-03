@@ -1,4 +1,4 @@
-// import { dom } from "@fortawesome/fontawesome-svg-core";
+import { dom } from "@fortawesome/fontawesome-svg-core";
 import Point from "./classes/Point";
 import ReadOnlyService from "./services/ReadOnlyService";
 import InfoService from "./services/InfoService";

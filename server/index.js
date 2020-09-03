@@ -73,7 +73,7 @@ async function start () {
       });
       cognitoUser.authenticateUser(authenticationDetails, {
           onSuccess: function(result) {
-              // debugger
+              debugger
               // console.log(result.getIdToken().payload)
               const userName = `${result.getIdToken().payload.given_name}`
               const expirationTime = new Date(result.getAccessToken().payload.exp * 1000)
@@ -81,7 +81,7 @@ async function start () {
                   jwt: result.getAccessToken().getJwtToken(),
                   jwt_expired: expirationTime,
                   email: req.body.email,
-                  userName
+                  given_name: userName
               }
               res.cookie('token', result.getRefreshToken().getToken(), {
                   expires: new Date(result.getAccessToken().payload.auth_time * 1000 + 1000 * 60 * 60 * 24 * 30),
@@ -112,40 +112,24 @@ async function start () {
     const token = req.headers.authorization.split(" ")[1]
     res.json({
       token: token,
-      email: req.body.email,
-      boardName: req.body.boardName
+      email: req.body.data.email,
+      userName: req.body.data.given_name,
+      boardName: req.body.data.boardName
     })
   })
 
   // app.get('http://localhost:3000/loadwhiteboard')
-  app.get("/api/loadwhiteboard", authService.Validate, function (req, res) {
+  app.get("/loadwhiteboard", function (req, res, next) {
     const wid = req["query"]["wid"];
     // const at = req["query"]["at"];
     const at = req.headers['authorization'].split(' ')[1];
 
-    console.log(res);
-
-    /* if (accessToken === "" || accessToken == at) {
-      const widForData = ReadOnlyBackendService.isReadOnly(wid)
-        ? ReadOnlyBackendService.getIdFromReadOnlyId(wid)
-        : wid;
-      const ret = s_whiteboard.loadStoredData(widForData);
-      res.send(ret);
-      res.end();
-    } else {
-      res.status(401); //Unauthorized
-      res.end();
-    } */
+    // console.log(res);
     if (!at) {
       res.status(401);
       res.end();
     } else if (at && at != "") {
-      const widForData = ReadOnlyBackendService.isReadOnly(wid)
-        ? ReadOnlyBackendService.getIdFromReadOnlyId(wid)
-        : wid;
-      const ret = s_whiteboard.loadStoredData(widForData);
-      res.send(ret);
-      res.end();
+      next()
     } else {
       res.status(401); //Unauthorized
       res.end();

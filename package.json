@@ -2,6 +2,7 @@
   "name": "spot-brush",
   "version": "1.0.0",
   "private": true,
+  "toDebug": "To debug add this before the js file --inspect=7000 --inspect-brk. Here '7000' is the port number that node debugger runs",
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server --watch ./nuxt.config.js",
     "build": "nuxt build",
@@ -41,7 +42,8 @@
     "socket.io-client": "^2.3.0",
     "uuid": "^8.3.0",
     "vanilla-picker": "^2.10.1",
-    "vuelidate": "^0.7.5"
+    "vuelidate": "^0.7.5",
+    "vuex-persistedstate": "^3.1.0"
   },
   "devDependencies": {
     "@nuxtjs/vuetify": "^1.11.2",

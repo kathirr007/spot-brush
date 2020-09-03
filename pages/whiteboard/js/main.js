@@ -1,4 +1,4 @@
-import keymage from "~/plugins/keymage.client";
+// import keymage from "~/plugins/keymage.client";
 import io from "socket.io-client";
 // import Picker from "vanilla-picker";
 import { dom } from "@fortawesome/fontawesome-svg-core";
@@ -52,17 +52,20 @@ function main() {
         console.log("Websocket connected!");
 
         signaling_socket.on("whiteboardConfig", (serverResponse) => {
+            debugger
             ConfigService.initFromServer(serverResponse);
             // Inti whiteboard only when we have the config from the server
             initWhiteboard();
         });
 
         signaling_socket.on("whiteboardInfoUpdate", (info) => {
+            debugger
             InfoService.updateInfoFromServer(info);
             whiteboard.updateSmallestScreenResolution();
         });
 
         signaling_socket.on("drawToWhiteboard", function (content) {
+            debugger
             whiteboard.handleEventsAndData(content, true);
             InfoService.incrementNbMessagesReceived();
         });
