@@ -1,3 +1,5 @@
+const cookie = require('cookie')
+
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
 
 const userPool = new AmazonCognitoIdentity.CognitoUserPool({
@@ -30,23 +32,23 @@ exports.register = (req, res, next) => {
 
 exports.login = (req, res, next) => {
   const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
-      Username: req.body.email,
-      Password: req.body.password,
+      Username: req.body.data.email,
+      Password: req.body.data.password,
   });
   const cognitoUser = new AmazonCognitoIdentity.CognitoUser({
-      Username: req.body.email,
+      Username: req.body.data.email,
       Pool: userPool
   });
   cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: function(result) {
-          debugger
+          // debugger
           // console.log(result.getIdToken().payload)
           const userName = `${result.getIdToken().payload.given_name}`
           const expirationTime = new Date(result.getAccessToken().payload.exp * 1000)
           const auth = {
               jwt: result.getAccessToken().getJwtToken(),
               jwt_expired: expirationTime,
-              email: req.body.email,
+              email: req.body.data.email,
               given_name: userName
           }
           res.cookie('token', result.getRefreshToken().getToken(), {
@@ -89,7 +91,7 @@ exports.createboard = (req, res, next) => {
 
 exports.refreshToken = (req, res, next) => {
   if (req.headers.cookie) {
-    const parsed = cookiepars.parse(req.headers.cookie)
+    const parsed = cookie.parse(req.headers.cookie)
     const refreshToken = new AmazonCognitoIdentity.CognitoRefreshToken({RefreshToken: parsed.token});
     const cognitoUser = new AmazonCognitoIdentity.CognitoUser({
       Username : '',

@@ -192,22 +192,22 @@
           },
         });
       },
-      async loginUser() {
-          debugger
+      loginUser() {
+          // debugger
           const { email, password } = this
           const data = { email, password }
-          await this.$axios.$post('/auth/login', {
+          this.$axios.$post('/auth/login', {
               headers: {
                   Accept: 'application/json',
                   Content: 'application/json'
               },
               data: data
           }).then(res => {
-              const auth = res.data
-              debugger
+              // debugger
+              const auth = res
               this.$store.commit('setAuth', auth)
               this.$toasted.show(
-                `Hello <stron>${auth.email}</stron>! Welcome to our SbotBrush. A Collabarative Whiteboard...`,
+                `Hello <stron>${auth.given_name}</stron>! Welcome to our SbotBrush. A Collabarative Whiteboard...`,
                 {duration: 3000}
               )
               this.$router.push('/dashboard')
