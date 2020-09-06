@@ -192,12 +192,11 @@
           },
         });
       },
-      loginUser() {
-        //   debugger
+      async loginUser() {
+          debugger
           const { email, password } = this
           const data = { email, password }
-          this.$axios('/auth/login', {
-              method: 'post',
+          await this.$axios.$post('/auth/login', {
               headers: {
                   Accept: 'application/json',
                   Content: 'application/json'
@@ -205,7 +204,7 @@
               data: data
           }).then(res => {
               const auth = res.data
-            //   debugger
+              debugger
               this.$store.commit('setAuth', auth)
               this.$toasted.show(
                 `Hello <stron>${auth.email}</stron>! Welcome to our SbotBrush. A Collabarative Whiteboard...`,

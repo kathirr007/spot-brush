@@ -108,12 +108,12 @@ module.exports = {
   proxy: {
       // 'http://localhost:3000': { target: 'http://localhost:3000' },
       // '/api/loadwhiteboard': 'http://localhost:3000',
-      "/api": "http://localhost:3000",
+      /* "/api": "http://localhost:3000",
       "/uploads": "http://localhost:3000",
       "/ws-api": {
           target: "ws://localhost:3000",
           ws: true,
-      },
+      }, */
       // '/api2/': 'http://api.another-website.com'
   },
   env: {

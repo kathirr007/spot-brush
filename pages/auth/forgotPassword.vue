@@ -87,17 +87,14 @@ export default {
     methods: {
         resetPassword() {
             this.isLoading = true;
-            const {
-                email
-            } = this
-            const data = {
-                email
-            }
+            const { email } = this
+            const data = { email }
+            debugger
             this.$axios('/auth/forgotpassword', {
                 method: 'post',
                 data: data
             }).then(res => {
-                // debugger
+                debugger
                 this.isLoading = false
                 const data = res.data.message
                 if (data.code == 'LimitExceededException') {
