@@ -20,6 +20,32 @@ const authRouter = require('./routes/auth')
 
 const startBackendServer = require("./backend/server-backend");
 
+const { existsSync, readdirSync, rmdirSync, unlinkSync } = require('fs');
+const { join } = require('path');
+
+const isDir = path => {
+  try {
+    return statSync(path).isDirectory();
+  } catch (error) {
+    return false;
+  }
+};
+
+const getFiles = (path) =>
+  readdirSync(path)
+    .map(name => join(path, name));
+
+const getDirectories = path =>
+  readdirSync(path)
+    .map(name => join(path, name))
+    .filter(isDir);
+
+const rmDir = path => {
+  getDirectories(path).map(dir => rmDir(dir));
+  getFiles(path).map(file => unlinkSync(file));
+  rmdirSync(path);
+};
+
 async function start () {
   // Init Nuxt.js
   const nuxt = new Nuxt(config)
@@ -49,16 +75,37 @@ async function start () {
   app.use('/auth', authRouter)
 
   app.post('/upload', (req, res) => {
-    const { canvImage } = req.body;
-    base64Img.img(canvImage, './static/uploads', Date.now(), function(err, filepath) {
-      const pathArr = filepath.split('/')
-      const fileName = pathArr[pathArr.length - 1];
+    // debugger
+    // rmDir('./static/uploads')
+    const { imagedata } = req.body;
+    base64Img.img(imagedata, './static/uploads', Date.now(), function(err, filepath) {
+      const pathArr = filepath.split('\\')
+      const fileName = pathArr.pop();
 
       res.status(200).json({
         success: true,
         url: `${fileName}`
       })
     });
+  });
+
+  app.delete('/clearWhiteboard', (req, res, next) => {
+    // debugger
+    // rmDir('./static/uploads')
+    // const { dirUrl } = req.body.dirUrl;
+    if(existsSync('./static/uploads')) {
+      rmDir('./static/uploads')
+      res.json({
+        status: 'yes',
+        message: `Uploaded files are removed successfully from "./static/uploads".`
+      })
+    } else {
+      res.json({
+        status: 'no',
+        message: `There are no files to delete...`
+      })
+    }
+
   });
 
   /* app.post("/v1/upload", function (req, res) {
@@ -118,4 +165,4 @@ async function start () {
 }
 start()
 
-// startBackendServer(3000)
+startBackendServer(3000)

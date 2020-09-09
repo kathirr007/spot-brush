@@ -206,6 +206,11 @@ export default {
                     rel: "stylesheet",
                     type: 'text/css',
                     href: "http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css"
+                },
+                {
+                    rel: "stylesheet",
+                    type: 'text/css',
+                    href: "//cdn.jsdelivr.net/gh/godswearhats/jquery-ui-rotatable@1.1/jquery.ui.rotatable.css"
                 }
             ],
             script: [
@@ -220,6 +225,12 @@ export default {
                     src: "https://code.jquery.com/ui/1.12.1/jquery-ui.js",
                     defer: true, // Changed after script load
                     callback: ()=> { console.log('jqueryUI is loaded') }
+                },
+                {
+                    hid: 'jqueryUI Rotatable',
+                    src: "https://cdn.jsdelivr.net/gh/godswearhats/jquery-ui-rotatable@1.1/jquery.ui.rotatable.min.js",
+                    defer: true, // Changed after script load
+                    callback: ()=> { console.log('jqueryUI Rotatable is loaded') }
                 },
             ],
         }
@@ -604,7 +615,15 @@ export default {
                     $("#whiteboardTrashBtn").css({
                         visibility: "inherit"
                     });
+                    // debugger
                     whiteboard.clearWhiteboard();
+                    $self.$axios.$delete('/clearWhiteboard')
+                    .then(res => {
+                        console.log(`${res.message}`)
+                    })
+                    .catch(err => {
+                        console.log(err.message)
+                    })
                 });
 
             // undo button
@@ -941,7 +960,7 @@ export default {
 
             $("#whiteboardContainer").on("drop", function(e) {
                 //Handle drop
-                debugger
+                // debugger
                 if (ReadOnlyService.readOnlyActive) return;
 
                 if (e.originalEvent.dataTransfer) {
@@ -1147,14 +1166,14 @@ export default {
             );
 
             function uploadImgAndAddToWhiteboard(base64data) {
-                debugger
+                // debugger
                 // let $self = this
                 const date = +new Date();
                 // const url = document.URL.substr(0, document.URL.lastIndexOf("/")) + "/api/upload";
                 // const url = document.URL.substr(0, document.URL.lastIndexOf("/")) + "/v1/upload";
                 $.ajax({
                     type: "POST",
-                    url: 'http://localhost:3000/api/upload',
+                    url: '/upload',
                     data: {
                         imagedata: base64data,
                         whiteboardId: $self.whiteboardId,
@@ -1162,11 +1181,14 @@ export default {
                         at: jwt,
                     },
                     success: function(msg) {
+                        // debugger
                         const { correspondingReadOnlyWid } = ConfigService;
                         const filename = `${correspondingReadOnlyWid}_${date}.png`;
                         const rootUrl = document.URL.substr(0, document.URL.lastIndexOf("/"));
+                        // debugger
                         whiteboard.addImgToCanvasByUrl(
-                            `${rootUrl}/uploads/${correspondingReadOnlyWid}/${filename}`
+                            // `${rootUrl}/uploads/${correspondingReadOnlyWid}/${filename}`
+                            `/uploads/${msg.url}`
                         ); //Add image to canvas
                         console.log("Image uploaded!");
                     },
@@ -1326,6 +1348,9 @@ i.v-icon {
             background: #dfdfdf;
         }
     }
+}
+.ui-resizable-handle {
+    background: none;
 }
 </style>
 <style lang="scss">
