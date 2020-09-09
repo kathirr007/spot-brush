@@ -18,6 +18,8 @@ const authService = require("./middleware/auth");
 const testRouter = require('./routes/test')
 const authRouter = require('./routes/auth')
 
+const startBackendServer = require("./backend/server-backend");
+
 async function start () {
   // Init Nuxt.js
   const nuxt = new Nuxt(config)
@@ -57,3 +59,5 @@ async function start () {
   })
 }
 start()
+
+startBackendServer(3000)

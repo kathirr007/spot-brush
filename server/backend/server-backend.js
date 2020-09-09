@@ -35,11 +35,11 @@ function startBackendServer(port) {
 
   const authService = require("./auth-middleware");
 
-  app.get("/api/loadwhiteboard", authService.Validate, function (req, res) {
+  app.get("/api/loadwhiteboard", function (req, res) {
     const wid = req["query"]["wid"];
     const at = req["query"]["at"];
 
-    console.log(res);
+    // console.log(res);
 
     /* if (accessToken === "" || accessToken == at) {
       const widForData = ReadOnlyBackendService.isReadOnly(wid)
@@ -68,7 +68,7 @@ function startBackendServer(port) {
     }
   });
 
-  app.post("/api/upload", authService.Validate, function (req, res) {
+  app.post("/api/upload", function (req, res) {
     //File upload
     var form = new formidable.IncomingForm(); //Receive form
     var formData = {
@@ -206,7 +206,8 @@ function startBackendServer(port) {
     }
   }
 
-  io.use(function (socket, next) {
+  io
+  /* .use(function (socket, next) {
     function getCookie(name) {
       // Split cookie string and get all individual name=value pairs in an array
       // var cookieArr = socket.client.conn.request.headers.cookie.split(';')
@@ -216,8 +217,7 @@ function startBackendServer(port) {
       for (var i = 0; i < refererArr.length; i++) {
         var cookiePair = refererArr[i].split("=");
 
-        /* Removing whitespace at the beginning of the cookie name
-                  and compare it with the given string */
+        // Removing whitespace at the beginning of the cookie name and compare it with the given string
         if (name == cookiePair[0].trim()) {
           // Decode the cookie value and return
           return decodeURIComponent(cookiePair[1]);
@@ -239,7 +239,8 @@ function startBackendServer(port) {
         next();
       }
     });
-  }).on("connection", function (socket) {
+  }) */
+  .on("connection", function (socket) {
     // console.log(socket)
     let whiteboardId = null;
     socket.on("disconnect", function () {
