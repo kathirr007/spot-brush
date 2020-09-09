@@ -593,6 +593,7 @@ function initWhiteboard() {
         });
 
         $("#whiteboardContainer").on("drop", function (e) {
+            debugger
             //Handle drop
             if (ReadOnlyService.readOnlyActive) return;
 

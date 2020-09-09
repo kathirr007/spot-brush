@@ -110,6 +110,7 @@ module.exports = {
       // '/api/loadwhiteboard': 'http://localhost:3000',
       "/api": "http://localhost:3000",
       "/uploads": "http://localhost:3000",
+      // "/api/upload": "http://localhost:3000/api/upload",
       "/ws-api": {
           target: "ws://localhost:3000",
           ws: true,

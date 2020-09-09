@@ -16,6 +16,7 @@ export function getCurrentTimeMs() {
 }
 
 export function getSubDir() {
+    // debugger
     const url = document.URL.substr(0, document.URL.lastIndexOf("/"));
     const urlSplit = url.split("/");
     let subdir = "";

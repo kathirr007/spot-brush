@@ -7,6 +7,9 @@ const WhiteboardInfoBackendService = require("./services/WhiteboardInfoBackendSe
 function startBackendServer(port) {
   var fs = require("fs-extra");
   var express = require("express");
+  const bodyParser = require('body-parser')
+  const cookieParser = require('cookie-parser')
+  const cors = require('cors')
   var formidable = require("formidable"); //form upload processing
 
   const createDOMPurify = require("dompurify"); //Prevent xss
@@ -19,10 +22,16 @@ function startBackendServer(port) {
   var s_whiteboard = require("./s_whiteboard.js");
 
   var app = express();
-  app.use(express.static(path.join(__dirname, "..", "dist")));
+  app.use(cookieParser());
+  app.use(cors())
+  app.use(express.static('./static/uploads'))
+  // app.use(express.static(path.join(__dirname, "..", "assets")));
+  app.use(bodyParser.json({limit: '50mb'}));
+  app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
   app.use(
     "/uploads",
-    express.static(path.join(__dirname, "..", "public", "uploads"))
+    // express.static(path.join(__dirname, "..", "static", "uploads"))
+    express.static('./static/uploads')
   );
   var server = require("http").Server(app);
   server.listen(port);
@@ -36,9 +45,11 @@ function startBackendServer(port) {
   const authService = require("./auth-middleware");
 
   app.get("/api/loadwhiteboard", function (req, res) {
-    const wid = req["query"]["wid"];
-    const at = req["query"]["at"];
-
+    // const wid = req["query"]["wid"];
+    // const at = req["query"]["at"];
+    const wid = req.headers['wid'];
+    const at = req.headers['at'];
+    // debugger
     // console.log(res);
 
     /* if (accessToken === "" || accessToken == at) {
@@ -60,8 +71,13 @@ function startBackendServer(port) {
         ? ReadOnlyBackendService.getIdFromReadOnlyId(wid)
         : wid;
       const ret = s_whiteboard.loadStoredData(widForData);
-      res.send(ret);
-      res.end();
+      res.json({
+        ret: ret,
+        email: req.query.email,
+        boardName: req.query.wid,
+      });
+      // res.send(ret);
+      // res.end();
     } else {
       res.status(401); //Unauthorized
       res.end();
@@ -70,6 +86,7 @@ function startBackendServer(port) {
 
   app.post("/api/upload", function (req, res) {
     //File upload
+    debugger
     var form = new formidable.IncomingForm(); //Receive form
     var formData = {
       files: {},
@@ -110,6 +127,20 @@ function startBackendServer(port) {
     });
     form.parse(req);
   });
+
+/*   app.post('/api/upload', (req, res) => {
+    debugger
+    const { image } = req.body;
+    base64Img.img(image, './public', Date.now(), function(err, filepath) {
+      const pathArr = filepath.split('/')
+      const fileName = pathArr[pathArr.length - 1];
+
+      res.status(200).json({
+        success: true,
+        url: `http://127.0.0.1:${port}/${fileName}`
+      })
+    });
+  }); */
 
   function progressUploadFormData(formData, callback) {
     console.log("Progress new Form Data");
@@ -276,7 +307,7 @@ function startBackendServer(port) {
     socket.on("joinWhiteboard", function (content) {
       content = escapeAllContentStrings(content);
       if (accessToken === "" || accessToken == content["at"]) {
-        console.log("accessToken :: " + accessToken);
+        // console.log("accessToken :: " + accessToken);
         whiteboardId = content["wid"];
 
         socket.emit("whiteboardConfig", {

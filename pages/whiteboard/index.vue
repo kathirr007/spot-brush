@@ -202,7 +202,6 @@ export default {
             title: `SpotBrush | Whiteboard`,
             meta: [],
             link: [
-                // { rel: 'stylesheet', type: 'text/css', href: '../assets/css/whiteboard/main.css' }
                 {
                     rel: "stylesheet",
                     type: 'text/css',
@@ -210,24 +209,12 @@ export default {
                 }
             ],
             script: [
-                // {src: '~assets/js/amazon-cognito-auth.min.js', crossorigin :'anonymous'},
-                // { src: '../js/cognito_config.js', crossorigin: 'anonymous', body: true },
-                // { src: '/js/whiteboard/whiteboard.js', type:'module', crossorigin: 'anonymous', body: true },
-                // { src: '/js/whiteboard/keybind.js', type:'module', crossorigin: 'anonymous', body: true },
-                /* {
-                    src: "@/node_modules/jquery-ui/ui/core",
-                    type: "text/javascript"
-                }, */
                 {
                     hid: 'jquery',
                     src: 'https://code.jquery.com/jquery-3.5.1.min.js',
                     defer: true, // Changed after script load
                     callback: ()=> { console.log('jquery is loaded') }
                 },
-                /* {
-                    src: "https://code.jquery.com/jquery-3.5.1.min.js",
-                    type: "text/javascript"
-                }, */
                 {
                     hid: 'jqueryUI',
                     src: "https://code.jquery.com/ui/1.12.1/jquery-ui.js",
@@ -254,6 +241,8 @@ export default {
                 width: 0,
                 height: 0
             },
+            canvImage: '',
+            remoteCanvUrl: '',
         }
     },
     mounted() {
@@ -281,7 +270,7 @@ export default {
 
         this.myUsername = this.urlParams.get("username") || "Anonymus" + (Math.random() + "").substring(2, 6);
         this.accessToken = this.urlParams.get("accesstoken") || "";
-
+        // debugger
         this.subdir = getSubDir()
         this.main()
     },
@@ -316,19 +305,40 @@ export default {
             this.window.width = window.innerWidth;
             this.window.height = window.innerHeight;
         },
+        handleImage(e) {
+                const selectedImage = e.target.files[0]; // get first file
+                this.createBase64Image(selectedImage);
+            },
+        createBase64Image(fileObject) {
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                this.image = e.target.result;
+                this.uploadImage();
+            };
+            reader.readAsDataURL(fileObject);
+        },
+        uploadImage() {
+            debugger
+            const { canvImage } = this;
+            this.$axios.$post('/upload', { canvImage })
+                .then((response) => {
+                    debugger
+                    this.remoteCanvUrl = response.url;
+                })
+                .catch((err) => {
+                    debugger
+                    return new Error(err.message);
+                })
+        },
         main() {
             // debugger
             // this.accessToken = this.$store.state.auth.jwt
-            const {
-                email,
-                jwt
-            } = this.$store.state.auth
+            const { email, jwt } = this.$store.state.auth
             const whiteboardId = this.whiteboardId
-            const {
-                width,
-                height
-            } = this.window
+            const { width, height } = this.window
             let signaling_socket = this.signaling_socket
+            // debugger
             signaling_socket = io("", {
                 path: this.subdir + "/ws-api"
             }); // Connect even if we are in a subdir behind a reverse proxy
@@ -931,6 +941,7 @@ export default {
 
             $("#whiteboardContainer").on("drop", function(e) {
                 //Handle drop
+                debugger
                 if (ReadOnlyService.readOnlyActive) return;
 
                 if (e.originalEvent.dataTransfer) {
@@ -945,6 +956,8 @@ export default {
                             reader.readAsDataURL(blob);
                             reader.onloadend = function() {
                                 const base64data = reader.result;
+                                // $self.canvImage = base64data
+                                // $self.uploadImage(base64data);
                                 uploadImgAndAddToWhiteboard(base64data);
                             };
                         } else if (isPDFFileName(filename)) {
@@ -1134,13 +1147,14 @@ export default {
             );
 
             function uploadImgAndAddToWhiteboard(base64data) {
-                // debugger
+                debugger
                 // let $self = this
                 const date = +new Date();
-                const url = document.URL.substr(0, document.URL.lastIndexOf("/")) + "/api/upload";
+                // const url = document.URL.substr(0, document.URL.lastIndexOf("/")) + "/api/upload";
+                // const url = document.URL.substr(0, document.URL.lastIndexOf("/")) + "/v1/upload";
                 $.ajax({
                     type: "POST",
-                    url: document.URL.substr(0, document.URL.lastIndexOf("/")) + "/api/upload",
+                    url: 'http://localhost:3000/api/upload',
                     data: {
                         imagedata: base64data,
                         whiteboardId: $self.whiteboardId,
@@ -1160,7 +1174,7 @@ export default {
                         $self.showBasicAlert("Failed to upload frame: " + JSON.stringify(err));
                     },
                 });
-                /* $self.$axios.$post(url, {
+                /* $self.$axios.$post('http://localhost:3000/api/upload', {
                     data: {
                         imagedata: base64data,
                         whiteboardId: $self.whiteboardId,
