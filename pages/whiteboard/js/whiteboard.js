@@ -753,6 +753,7 @@ const whiteboard = {
         }
     },
     addImgToCanvasByUrl: function (url) {
+        // debugger
         var _this = this;
         var oldTool = _this.tool;
         _this.setTool("mouse"); //Set to mouse tool while dropping to prevent errors

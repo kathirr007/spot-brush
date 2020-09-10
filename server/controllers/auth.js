@@ -78,7 +78,7 @@ exports.login = (req, res, next) => {
 }
 
 exports.createboard = (req, res, next) => {
-    debugger
+    // debugger
     // console.log(req.body)
     const token = req.headers.authorization.split(" ")[1]
     res.json({
@@ -90,6 +90,7 @@ exports.createboard = (req, res, next) => {
 }
 
 exports.refreshToken = (req, res, next) => {
+  // debugger
   if (req.headers.cookie) {
     const parsed = cookie.parse(req.headers.cookie)
     const refreshToken = new AmazonCognitoIdentity.CognitoRefreshToken({RefreshToken: parsed.token});
@@ -102,13 +103,15 @@ exports.refreshToken = (req, res, next) => {
       if (err) {
         res.status(401).json({ message: 'The Access Token expired' })
       } else {
+        const userName = `${result.getIdToken().payload.given_name}`
         const expirationTime = new Date(result.getAccessToken().payload.exp*1000)
         const auth = {
             jwt: result.getIdToken().getJwtToken(),
             jwt_expired: expirationTime,
             email: result.getIdToken().payload.email,
             refresh_token: result.getRefreshToken().getToken(),
-            refresh_token_expired: new Date(result.getIdToken().payload.auth_time * 1000 + 1000*60*60*24*30)
+            refresh_token_expired: new Date(result.getIdToken().payload.auth_time * 1000 + 1000*60*60*24*30),
+            given_name: userName,
           }
         res.cookie('token', result.getRefreshToken().getToken(), {
           expires: new Date(result.getAccessToken().payload.auth_time * 1000 + 1000*60*60*24*30),

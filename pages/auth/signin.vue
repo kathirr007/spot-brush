@@ -206,6 +206,7 @@
               // debugger
               const auth = res
               this.$store.commit('setAuth', auth)
+              this.$store.commit('setWhiteboard', false)
               this.$toasted.show(
                 `Hello <stron>${auth.given_name}</stron>! Welcome to our SbotBrush. A Collabarative Whiteboard...`,
                 {duration: 3000}

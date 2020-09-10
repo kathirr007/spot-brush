@@ -77,7 +77,7 @@ async function start () {
   app.post('/upload', (req, res) => {
     // debugger
     // rmDir('./static/uploads')
-    const { imagedata } = req.body;
+    const { imagedata } = req.body.data;
     base64Img.img(imagedata, './static/uploads', Date.now(), function(err, filepath) {
       const pathArr = filepath.split('\\')
       const fileName = pathArr.pop();

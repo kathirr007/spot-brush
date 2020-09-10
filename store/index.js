@@ -2,7 +2,9 @@ const cookieparser = process.server ? require('cookieparser') : undefined
 
 export const state = () => {
   return {
-    auth: null
+    auth: null,
+    whiteboardKeybinds: false,
+    isWhiteboard: false,
   }
 }
 export const mutations = {
@@ -13,6 +15,12 @@ export const mutations = {
   clearAuth(state, redirect) {
     state.auth = null
     redirect('/auth/login')
+  },
+  removeKeyBinds(state, status) {
+    state.whiteboardKeybinds = status
+  },
+  setWhiteboard(state, status) {
+    state.isWhiteboard = status
   }
 }
 export const actions = {

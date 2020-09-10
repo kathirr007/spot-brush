@@ -141,6 +141,7 @@ export default {
                 }
             }).then(res => {
                 this.$store.commit('setAuth', null)
+                this.$store.commit('setWhiteboard', false)
                 this.drawer = false
                 this.$router.push('/')
             }).catch(err => {
