@@ -90,4 +90,4 @@ sw.*
 *.swp
 
 # uploaded images
-./static/uploads/
+static/uploads/
