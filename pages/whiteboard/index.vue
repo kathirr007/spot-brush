@@ -238,6 +238,7 @@ export default {
                     defer: true, // Changed after script load
                     callback: ()=> {
                         this.jQueryUILoaded = true
+                        this.onScriptLoaded();
                         console.log('jqueryUI is loaded')
                         // this.loadRotatable()
                     }
@@ -350,7 +351,7 @@ export default {
             // document.head.appendChild(script);
         } else {
         }
-        this.onScriptLoaded();
+
     },
     destroyed() {
         window.removeEventListener('resize', this.handleResize)
