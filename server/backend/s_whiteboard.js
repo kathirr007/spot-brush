@@ -74,6 +74,12 @@ module.exports = {
                 "setTextboxPosition",
                 "setTextboxFontSize",
                 "setTextboxFontColor",
+                "addStickyNote",
+                "setStickyNoteText",
+                "removeStickyNote",
+                "setStickyNotePosition",
+                "setStickyNoteFontSize",
+                "setStickyNoteFontColor",
             ].includes(tool)
         ) {
             //Save all this actions
@@ -82,6 +88,17 @@ module.exports = {
             }
             delete content["wid"]; //Delete id from content so we don't store it twice
             if (tool === "setTextboxText") {
+                for (var i = savedBoards[wid].length - 1; i >= 0; i--) {
+                    //Remove old textbox tex -> dont store it twice
+                    if (
+                        savedBoards[wid][i]["t"] === "setTextboxText" &&
+                        savedBoards[wid][i]["d"][0] === content["d"][0]
+                    ) {
+                        savedBoards[wid].splice(i, 1);
+                    }
+                }
+            }
+            if (tool === "setStickyNoteText") {
                 for (var i = savedBoards[wid].length - 1; i >= 0; i--) {
                     //Remove old textbox tex -> dont store it twice
                     if (

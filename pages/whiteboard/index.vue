@@ -74,6 +74,11 @@
                 </button>
             </div>
             <div class="btn-group whiteboard-edit-group" :class="disableTool ? 'group-disabled': ''">
+                <button tool="sticky" title="Add Sticky Note" type="button" class="whiteboard-tool" :disabled="disableTool">
+                    <v-icon>mdi-bookmark-plus</v-icon>
+                </button>
+            </div>
+            <div class="btn-group whiteboard-edit-group" :class="disableTool ? 'group-disabled': ''">
                 <button style="width: 190px; cursor: default;" :disabled="disableTool">
                     <div class="activeToolIcon" style="position: absolute; top: 2px; left: 2px; font-size: 0.6em;">
                         <i class="fa fa-pencil-alt"></i>
@@ -251,6 +256,7 @@ export default {
                     callback: ()=> { console.log('jqueryUI Rotatable is loaded') }
                 },
                 {
+                    skip: !this.jQueryUILoaded,
                     hid: 'keymageLibrary',
                     src: "https://cdnjs.cloudflare.com/ajax/libs/keymage/1.1.3/keymage.min.js",
                     defer: true, // Changed after script load

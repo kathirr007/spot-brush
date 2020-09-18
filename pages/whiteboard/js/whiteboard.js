@@ -45,6 +45,7 @@ const whiteboard = {
     drawId: 0, //Used for undo/redo functions
     imgDragActive: false,
     latestActiveTextBoxId: false, //The id of the latest clicked Textbox (for font and color change)
+    latestActiveStickyNoteId: false, //The id of the latest clicked StickyNote (for font and color change)
     pressedKeys: {},
     settings: {
         whiteboardId: "0",
@@ -93,6 +94,10 @@ const whiteboard = {
         _this.textContainer = $(
             '<div class="textcontainer" style="position: absolute; left:0px; top:0; height: 100%; width: 100%; cursor:text;"></div>'
         );
+        // container for sticky notes by users
+        _this.stickyContainer = $(
+            '<div class="stickycontainer" style="position: absolute; left:0px; top:0; height: 100%; width: 100%; cursor:text;"></div>'
+        );
         // mouse overlay for draw callbacks
         _this.mouseOverlay = $(
             '<div id="mouseOverlay" style="cursor:none; position: absolute; left:0px; top:0; height: 100%; width: 100%;"></div>'
@@ -106,6 +111,7 @@ const whiteboard = {
             .append(_this.dropIndicator)
             .append(_this.cursorContainer)
             .append(_this.textContainer)
+            .append(_this.stickyContainer)
             .append(_this.mouseOverlay);
 
         // render newly added icons
@@ -219,6 +225,39 @@ const whiteboard = {
                 });
             });
         });
+
+        _this.stickyContainer.on("mousemove touchmove", function (e) {
+            e.preventDefault();
+
+            if (_this.imgDragActive || !$(e.target).hasClass("stickycontainer")) {
+                return;
+            }
+            if (ReadOnlyService.readOnlyActive) return;
+
+            const currentPos = Point.fromEvent(e);
+            // _this.triggerMouseMove(e);
+
+            ThrottlingService.throttle(currentPos, () => {
+                _this.lastPointerPosition = currentPos;
+                _this.sendFunction({
+                    t: "cursor",
+                    event: "move",
+                    d: [currentPos.x, currentPos.y],
+                    username: _this.settings.username,
+                });
+            });
+        });
+
+        /* _this.stickyContainer.on("mouseout", function (e) {
+            if (ReadOnlyService.readOnlyActive) return;
+            _this.triggerMouseOut();
+        }); */
+
+        /* _this.stickyContainer.on("mouseover", function (e) {
+            e.stopImmediatePropagation()
+            if (ReadOnlyService.readOnlyActive) return;
+            _this.triggerMouseOver();
+        }); */
 
         _this.mouseOverlay.on("mousemove touchmove", function (e) {
             e.preventDefault();
@@ -428,6 +467,18 @@ const whiteboard = {
             });
             _this.addTextBox(_this.drawcolor, fontsize, currentPos.x, currentPos.y, txId, true);
         });
+
+        // On sticky container click (Add a new sticky note)
+        _this.stickyContainer.on("click", function (e) {
+            const currentPos = Point.fromEvent(e);
+            const fontsize = _this.thickness * 0.5;
+            const txId = "tx" + +new Date();
+            _this.sendFunction({
+                t: "addStickyNote",
+                d: [_this.drawcolor, fontsize, currentPos.x, currentPos.y, txId],
+            });
+            _this.addStickyNote(_this.drawcolor, fontsize, currentPos.x, currentPos.y, txId, true);
+        });
     },
     /**
      * For drawing lines at 0,45,90° ....
@@ -452,6 +503,7 @@ const whiteboard = {
         return new Point(outX, outY);
     },
     triggerMouseMove: function (e) {
+        // debugger
         const _this = this;
         if (_this.imgDragActive) {
             return;
@@ -486,7 +538,7 @@ const whiteboard = {
                 const left = currentPos.x - _this.thickness;
                 const top = currentPos.y - _this.thickness;
                 if (_this.ownCursor) _this.ownCursor.css({ top: top + "px", left: left + "px" });
-            } else if (_this.tool === "pen") {
+            } else if (_this.tool === "pen" || _this.tool == "sticky") {
                 const left = currentPos.x - _this.thickness / 2;
                 const top = currentPos.y - _this.thickness / 2;
                 if (_this.ownCursor) _this.ownCursor.css({ top: top + "px", left: left + "px" });
@@ -548,6 +600,7 @@ const whiteboard = {
         });
     },
     triggerMouseOver: function () {
+        // debugger
         var _this = this;
         if (_this.imgDragActive) {
             return;
@@ -560,6 +613,7 @@ const whiteboard = {
                 widthHeight = widthHeight * 2;
             }
             if (_this.tool === "eraser" || _this.tool === "pen") {
+                // debugger
                 _this.ownCursor = $(
                     '<div id="ownCursor" style="background:' +
                         color +
@@ -568,6 +622,15 @@ const whiteboard = {
                         "px; height:" +
                         widthHeight +
                         'px; border-radius:50%;"></div>'
+                );
+                _this.cursorContainer.append(_this.ownCursor);
+            }
+            if (_this.tool === "sticky") {
+                // debugger
+                _this.ownCursor = $(
+                    `
+                        <i id="ownCursor" style="position:absolute; transform: rotate(45deg); color: ${color}" class="v-icon notranslate mdi mdi-pin theme--light text-h5 text--darken-1"></i>
+                    `
                 );
                 _this.cursorContainer.append(_this.ownCursor);
             }
@@ -611,6 +674,10 @@ const whiteboard = {
             .find("#" + _this.latestActiveTextBoxId)
             .find(".removeIcon")
             .click();
+        /* _this.stickyContainer
+            .find("#" + _this.latestActiveTextBoxId)
+            .find(".removeIcon")
+            .click(); */
     },
     escKeyAction: function () {
         var _this = this;
@@ -735,6 +802,7 @@ const whiteboard = {
         _this.canvas.height = _this.canvas.height;
         _this.imgContainer.empty();
         _this.textContainer.empty();
+        _this.stickyContainer.empty();
         _this.sendFunction({ t: "clear" });
         _this.drawBuffer = [];
         _this.undoBuffer = [];
@@ -750,6 +818,13 @@ const whiteboard = {
                 d: [_this.latestActiveTextBoxId, thickness],
             });
             _this.setTextboxFontSize(_this.latestActiveTextBoxId, thickness);
+        }
+        if (_this.tool == "sticky" && _this.latestActiveStickyNoteId) {
+            _this.sendFunction({
+                t: "setStickyNoteFontSize",
+                d: [_this.latestActiveStickyNoteId, thickness],
+            });
+            _this.setStickyNoteFontSize(_this.latestActiveStickyNoteId, thickness);
         }
     },
     addImgToCanvasByUrl: function (url) {
@@ -876,21 +951,13 @@ const whiteboard = {
     addTextBox(textcolor, fontsize, left, top, txId, newLocalBox) {
         var _this = this;
         var textBox = $(
-            '<div id="' +
-                txId +
-                '" class="textBox" style="font-family: Monospace; position:absolute; top:' +
-                top +
-                "px; left:" +
-                left +
-                'px;">' +
-                '<div contentEditable="true" spellcheck="false" class="textContent" style="outline: none; font-size:' +
-                fontsize +
-                "em; color:" +
-                textcolor +
-                '; min-width:50px; min-height:50px;"></div>' +
-                '<div title="remove textbox" class="removeIcon" style="position:absolute; cursor:pointer; top:-4px; right:2px;">x</div>' +
-                '<div title="move textbox" class="moveIcon" style="position:absolute; cursor:move; top:1px; left:2px; font-size: 0.5em;"><i class="v-icon notranslate mdi mdi-arrow-expand-all theme--light text-body-2 grey--text text--darken-1"></i></div>' +
-                "</div>"
+            `
+                <div id="${txId}" class="textBox" style="font-family: Monospace; position: absolute; top: ${top}px; left: ${left}px;">
+                    <div contentEditable="true" spellcheck="false" class="textContent" style="outline: none; font-size: ${fontsize}em; color: ${textcolor}; min-width:50px; min-height:50px;"></div>
+                    <div title="remove textbox" class="removeIcon" style="position:absolute; cursor:pointer; top:-5px; right:-5px;"><i class="v-icon notranslate mdi mdi-close theme--light text-body-1 grey--text text--darken-1"></i></div>
+                    <div title="move textbox" class="moveIcon" style="position:absolute; cursor:move; top:1px; left:2px; font-size: 0.5em;"><i class="v-icon notranslate mdi mdi-arrow-expand-all theme--light text-body-2 grey--text text--darken-1"></i></div>
+                </div>
+            `
         );
         _this.latestActiveTextBoxId = txId;
         textBox.click(function (e) {
@@ -987,6 +1054,114 @@ const whiteboard = {
             .find(".textContent")
             .css({ color: color });
     },
+    addStickyNote(textcolor, fontsize, left, top, txId, newLocalBox) {
+        var _this = this;
+        var stickyNote = $(
+            `
+                <div id="${txId}" class="stickyNote" style="font-family: Monospace; position: absolute; top: ${top}px; left: ${left}px;">
+                    <div contentEditable="true" spellcheck="false" class="textContent" style="outline: none; font-size: ${fontsize}em; color: ${textcolor}; min-width:50px; min-height:50px;"></div>
+                    <div title="remove stickynote" class="removeIcon" style="position:absolute; cursor:pointer; top:-5px; right:-5px;"><i class="v-icon notranslate mdi mdi-close theme--light text-body-1 grey--text text--darken-1"></i></div>
+                    <div title="move stickynote" class="moveIcon" style="position:absolute; cursor:move; top:1px; left:2px; font-size: 0.5em;"><i class="v-icon notranslate mdi mdi-arrow-expand-all theme--light text-body-2 grey--text text--darken-1"></i></div>
+                </div>
+            `
+        );
+        _this.latestActiveStickyNoteId = txId;
+        stickyNote.click(function (e) {
+            e.preventDefault();
+            _this.latestActiveStickyNoteId = txId;
+            return false;
+        });
+        stickyNote.on("mousemove touchmove", function (e) {
+            e.preventDefault();
+            // e.stopImmediatePropagation()
+            // _this.stickyContainer.css({cursor: 'none'})
+            if (_this.imgDragActive) {
+                return;
+            }
+            var stickyNotePosition = stickyNote.position();
+            var currX = e.offsetX + stickyNotePosition.left;
+            var currY = e.offsetY + stickyNotePosition.top;
+            if ($(e.target).hasClass("removeIcon")) {
+                currX += stickyNote.width() - 4;
+            }
+
+            const newPointerPosition = new Point(currX, currY);
+
+            ThrottlingService.throttle(newPointerPosition, () => {
+                _this.lastPointerPosition = newPointerPosition;
+                _this.sendFunction({
+                    t: "cursor",
+                    event: "move",
+                    d: [newPointerPosition.x, newPointerPosition.y],
+                    username: _this.settings.username,
+                });
+            });
+        });
+        this.stickyContainer.append(stickyNote);
+        stickyNote.draggable({
+            handle: ".moveIcon",
+            stop: function () {
+                var stickyNotePosition = stickyNote.position();
+                _this.sendFunction({
+                    t: "setStickyNotePosition",
+                    d: [txId, stickyNotePosition.top, stickyNotePosition.left],
+                });
+            },
+            drag: function () {
+                var stickyNotePosition = stickyNote.position();
+                _this.sendFunction({
+                    t: "setStickyNotePosition",
+                    d: [txId, stickyNotePosition.top, stickyNotePosition.left],
+                });
+            },
+        });
+        stickyNote.find(".textContent").on("input", function () {
+            var text = btoa(unescape(encodeURIComponent($(this).html()))); //Get html and make encode base64 also take care of the charset
+            _this.sendFunction({ t: "setStickyNoteText", d: [txId, text] });
+        });
+        stickyNote
+            .find(".removeIcon")
+            .off("click")
+            .click(function (e) {
+                $("#" + txId).remove();
+                _this.sendFunction({ t: "removeStickyNote", d: [txId] });
+                e.preventDefault();
+                return false;
+            });
+        if (newLocalBox) {
+            //per https://stackoverflow.com/questions/2388164/set-focus-on-div-contenteditable-element
+            setTimeout(() => {
+                stickyNote.find(".textContent").focus();
+            }, 0);
+        }
+        if (this.tool === "sticky") {
+            stickyNote.addClass("active");
+        }
+
+        // render newly added icons
+        dom.i2svg();
+    },
+    setStickyNoteText(txId, text) {
+        $("#" + txId)
+            .find(".textContent")
+            .html(decodeURIComponent(escape(atob(text)))); //Set decoded base64 as html
+    },
+    removeStickyNote(txId) {
+        $("#" + txId).remove();
+    },
+    setStickyNotePosition(txId, top, left) {
+        $("#" + txId).css({ top: top + "px", left: left + "px" });
+    },
+    setStickyNoteFontSize(txId, fontSize) {
+        $("#" + txId)
+            .find(".textContent")
+            .css({ "font-size": fontSize + "em" });
+    },
+    setStickyNoteFontColor(txId, color) {
+        $("#" + txId)
+            .find(".textContent")
+            .css({ color: color });
+    },
     drawImgToCanvas(url, width, height, left, top, rotationAngle, doneCallback) {
         var _this = this;
         var img = document.createElement("img");
@@ -1079,13 +1254,17 @@ const whiteboard = {
         if (this.tool === "text") {
             $(".textBox").addClass("active");
             this.textContainer.appendTo($(whiteboardContainer)); //Bring textContainer to the front
+        } else if (this.tool === "sticky") {
+            $(".stickyNote").addClass("active");
+            this.stickyContainer.appendTo($(whiteboardContainer)); //Bring textContainer to the front
         } else {
-            $(".textBox").removeClass("active");
+            $(".textBox, .stickyNote").removeClass("active");
             this.mouseOverlay.appendTo($(whiteboardContainer));
         }
         this.refreshCursorAppearance();
         this.mouseOverlay.find(".xCanvasBtn").click();
         this.latestActiveTextBoxId = null;
+        this.latestActiveStickyNoteId = null;
     },
     setDrawColor(color) {
         var _this = this;
@@ -1097,6 +1276,13 @@ const whiteboard = {
                 d: [_this.latestActiveTextBoxId, color],
             });
             _this.setTextboxFontColor(_this.latestActiveTextBoxId, color);
+        }
+        if (_this.tool == "sticky" && _this.latestActiveStickyNoteId) {
+            _this.sendFunction({
+                t: "setStickyNoteFontColor",
+                d: [_this.latestActiveStickyNoteId, color],
+            });
+            _this.setStickyNoteFontColor(_this.latestActiveStickyNoteId, color);
         }
     },
     updateSmallestScreenResolution() {
@@ -1179,10 +1365,23 @@ const whiteboard = {
                 _this.setTextboxFontSize(data[0], data[1]);
             } else if (tool === "setTextboxFontColor") {
                 _this.setTextboxFontColor(data[0], data[1]);
+            } else if (tool === "addStickyNote") {
+                _this.addStickyNote(data[0], data[1], data[2], data[3], data[4]);
+            } else if (tool === "setStickyNoteText") {
+                _this.setStickyNoteText(data[0], data[1]);
+            } else if (tool === "removeStickyNote") {
+                _this.removeStickyNote(data[0]);
+            } else if (tool === "setStickyNotePosition") {
+                _this.setStickyNotePosition(data[0], data[1], data[2]);
+            } else if (tool === "setStickyNoteFontSize") {
+                _this.setStickyNoteFontSize(data[0], data[1]);
+            } else if (tool === "setStickyNoteFontColor") {
+                _this.setStickyNoteFontColor(data[0], data[1]);
             } else if (tool === "clear") {
                 _this.canvas.height = _this.canvas.height;
                 _this.imgContainer.empty();
                 _this.textContainer.empty();
+                _this.stickyContainer.empty();
                 _this.drawBuffer = [];
                 _this.undoBuffer = [];
                 _this.drawId = 0;
@@ -1233,6 +1432,12 @@ const whiteboard = {
                 "setTextboxPosition",
                 "setTextboxFontSize",
                 "setTextboxFontColor",
+                "addStickyNote",
+                "setStickyNoteText",
+                "removeStickyNote",
+                "setStickyNotePosition",
+                "setStickyNoteFontSize",
+                "setStickyNoteFontColor",
             ].includes(tool)
         ) {
             content["drawId"] = content["drawId"] ? content["drawId"] : _this.drawId;
@@ -1246,6 +1451,7 @@ const whiteboard = {
         this.cursorContainer.find("." + username).remove();
     },
     refreshUserBadges() {
+        // debugger
         this.cursorContainer.find(".userbadge").remove();
     },
     getImageDataBase64(options, callback) {
@@ -1403,6 +1609,12 @@ const whiteboard = {
                 "setTextboxPosition",
                 "setTextboxFontSize",
                 "setTextboxFontColor",
+                "addStickyNote",
+                "setStickyNoteText",
+                "removeStickyNote",
+                "setStickyNotePosition",
+                "setStickyNoteFontSize",
+                "setStickyNoteFontColor",
             ].includes(tool)
         ) {
             _this.drawBuffer.push(content);
@@ -1410,8 +1622,9 @@ const whiteboard = {
     },
     refreshCursorAppearance() {
         //Set cursor depending on current active tool
+        // debugger
         var _this = this;
-        if (_this.tool === "pen" || _this.tool === "eraser") {
+        if (_this.tool === "pen" || _this.tool === "eraser" || _this.tool == "sticky") {
             _this.mouseOverlay.css({ cursor: "none" });
         } else if (_this.tool === "mouse") {
             this.mouseOverlay.css({ cursor: "default" });
