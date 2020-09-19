@@ -1603,5 +1603,10 @@ i.v-icon {
         }
     }
 }
+</style>
 
+<style lang="scss">
+.stickycontainer {
+    cursor: url('../../assets/images/thumb-tack.svg'), auto;
+}
 </style>

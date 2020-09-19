@@ -96,7 +96,7 @@ const whiteboard = {
         );
         // container for sticky notes by users
         _this.stickyContainer = $(
-            '<div class="stickycontainer" style="position: absolute; left:0px; top:0; height: 100%; width: 100%; cursor:text;"></div>'
+            '<div class="stickycontainer" style="position: absolute; left:0px; top:0; height: 100%; width: 100%;"></div>'
         );
         // mouse overlay for draw callbacks
         _this.mouseOverlay = $(
