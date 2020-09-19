@@ -1607,6 +1607,73 @@ i.v-icon {
 
 <style lang="scss">
 .stickycontainer {
-    cursor: url('../../assets/images/thumb-tack.svg'), auto;
+  cursor: url('../../assets/images/thumb-tack.svg'), auto;
+
+  .note {
+    float: left;
+    display: block;
+    position: relative;
+    padding: 1em;
+    width: 250px;
+    min-height: 250px;
+    margin: 0 30px 30px 0;
+    background: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0.05)), to(rgba(0, 0, 0, 0.25)));
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.25));
+    background-color: #fffd75;
+    box-shadow: 5px 5px 10px -2px rgba(33, 33, 33, 0.3);
+    -webkit-transform: rotate(2deg);
+    transform: rotate(2deg);
+    -webkit-transform: skew(-1deg, 1deg);
+    transform: skew(-1deg, 1deg);
+    -webkit-transition: -webkit-transform 0.15s;
+    transition: -webkit-transform 0.15s;
+    transition: transform 0.15s;
+    transition: transform 0.15s, -webkit-transform 0.15s;
+    z-index: 1;
+  }
+
+  .note:hover {
+    cursor: move;
+  }
+
+  .note.ui-draggable-dragging:nth-child(n) {
+    box-shadow: 5px 5px 15px 0 rgba(0, 0, 0, 0.3);
+    -webkit-transform: scale(1.125) !important;
+    transform: scale(1.125) !important;
+    z-index: 100;
+    cursor: move;
+    -webkit-transition: -webkit-transform 0.15s;
+    transition: -webkit-transform 0.15s;
+    transition: transform 0.15s;
+    transition: transform 0.15s, -webkit-transform 0.15s;
+  }
+
+  .note textarea {
+    background-color: transparent;
+    border: none;
+    resize: vertical;
+    width: 100%;
+    padding: 5px;
+    font-size: 16px;
+  }
+
+  .note textarea:focus {
+    outline: none;
+    border: none;
+    box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.2) inset;
+  }
+
+  .note textarea.title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #000000;
+    height: 64px;
+    margin-top: 20px;
+  }
+
+  .note textarea.cnt {
+    min-height: 200px;
+  }
 }
+
 </style>

@@ -1060,8 +1060,10 @@ const whiteboard = {
             `
                 <div id="${txId}" class="stickyNote" style="font-family: Monospace; position: absolute; top: ${top}px; left: ${left}px; cursor: text">
                     <div contentEditable="true" spellcheck="false" class="textContent" style="outline: none; font-size: ${fontsize}em; color: ${textcolor}; min-width:50px; min-height:50px;"></div>
+                    <div class="note moveNote">
+                        <div class="note_cnt"><textarea class="title" placeholder="Enter note title"></textarea><textarea class="cnt" placeholder="Enter note description here"></textarea></div>
+                    </div>
                     <div title="remove stickynote" class="removeIcon" style="position:absolute; cursor:pointer; top:-5px; right:-5px;"><i class="v-icon notranslate mdi mdi-close theme--light text-body-1 grey--text text--darken-1"></i></div>
-                    <div title="move stickynote" class="moveIcon" style="position:absolute; cursor:move; top:1px; left:2px; font-size: 0.5em;"><i class="v-icon notranslate mdi mdi-arrow-expand-all theme--light text-body-2 grey--text text--darken-1"></i></div>
                 </div>
             `
         );
@@ -1099,7 +1101,7 @@ const whiteboard = {
         });
         this.stickyContainer.append(stickyNote);
         stickyNote.draggable({
-            handle: ".moveIcon",
+            handle: ".moveNote",
             stop: function () {
                 var stickyNotePosition = stickyNote.position();
                 _this.sendFunction({
