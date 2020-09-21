@@ -747,7 +747,7 @@ export default {
             var tempLineTool = false;
             var strgPressed = false;
             //Handle key actions
-            if (this.$store.state.whiteboardKeybinds && this.$store.state.isWhiteboard) {
+            if (this.keyBindings && this.$store.state.whiteboardKeybinds && this.$store.state.isWhiteboard) {
                 $(document).on("keydown", function(e) {
                     if (e.which == 16) {
                         if (whiteboard.tool == "pen" && !strgPressed) {
@@ -1629,7 +1629,7 @@ i.v-icon {
     transition: -webkit-transform 0.15s;
     transition: transform 0.15s;
     transition: transform 0.15s, -webkit-transform 0.15s;
-    z-index: 1;
+    // z-index: 1;
   }
 
   .note:hover {
