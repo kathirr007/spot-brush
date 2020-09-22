@@ -1072,11 +1072,11 @@ const whiteboard = {
                 <div id="${txId}" class="stickyNote" style="font-family: Monospace; position: absolute; top: ${top}px; left: ${left}px; cursor: text">
                     <div class="note moveNote" style="background-color: ${textcolor}">
                         <div class="note_cnt">
-                            <textarea class="sticky-note-title" spellcheck="false" placeholder="Enter note title" style="outline: none; font-size: ${fontsize*1.5}em; line-height:normal;"></textarea>
+                            <textarea class="sticky-note-title" spellcheck="false" placeholder="Enter note title" style="outline: none; font-size: ${fontsize*1.5}em; line-height:normal; margin-top: 20px;"></textarea>
                             <textarea class="cnt" spellcheck="false" placeholder="Enter note description here" style="outline: none; font-size: ${fontsize}em; line-height:normal;"></textarea>
                         </div>
                     </div>
-                    <div title="remove stickynote" class="removeIcon" style="position:absolute; cursor:pointer; top:-17px; right:-17px;"><i class="v-icon notranslate mdi mdi-close-circle theme--light text-h5 blue-grey--text text--darken-3"></i></div>
+                    <div title="remove stickynote" class="removeIcon" style="position:absolute; cursor:pointer; top:5px; right:5px;"><i class="v-icon notranslate mdi mdi-close-circle theme--light text-h5 blue-grey--text text--darken-3"></i></div>
                 </div>
             `
         );
