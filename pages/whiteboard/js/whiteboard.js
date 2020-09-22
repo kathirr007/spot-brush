@@ -1072,11 +1072,17 @@ const whiteboard = {
                 <div id="${txId}" class="stickyNote" style="font-family: Monospace; position: absolute; top: ${top}px; left: ${left}px; cursor: text">
                     <div class="note moveNote" style="background-color: ${textcolor}">
                         <div class="note_cnt">
-                            <textarea class="sticky-note-title" spellcheck="false" placeholder="Enter note title" style="outline: none; font-size: ${fontsize*1.5}em; line-height:normal; margin-top: 20px;"></textarea>
-                            <textarea class="cnt" spellcheck="false" placeholder="Enter note description here" style="outline: none; font-size: ${fontsize}em; line-height:normal;"></textarea>
+                            <textarea class="sticky-note-title" spellcheck="false" placeholder="Enter note title" style="outline: none; font-size: ${fontsize*1.5}em; line-height:normal; color: #fff;"></textarea>
+                            <textarea class="cnt" spellcheck="false" placeholder="Enter note description here" style="outline: none; font-size: ${fontsize}em; line-height:normal; color: #fff;"></textarea>
                         </div>
                     </div>
-                    <div title="remove stickynote" class="removeIcon" style="position:absolute; cursor:pointer; top:5px; right:5px;"><i class="v-icon notranslate mdi mdi-close-circle theme--light text-h5 blue-grey--text text--darken-3"></i></div>
+                    <div title="remove stickynote" class="removeIcon" style="position:absolute; cursor:pointer; top:-10px; right:-10px;">
+                        <button type="button" class="v-btn v-btn--flat v-btn--icon v-btn--round theme--light v-size--small pink--text" style="background-color: ${textcolor};">
+                            <span class="v-btn__content">
+                                <i aria-hidden="true" class="v-icon mdi mdi-close theme--light" style="color: #fff;"></i>
+                            </span>
+                        </button>
+                    </div>
                 </div>
             `
         );
@@ -1203,11 +1209,11 @@ const whiteboard = {
     },
     setStickyNoteFontColor(txId, color) {
         $(`#${txId}`)
-            .find('.note')
+            .find('.note, .removeIcon .v-btn')
             .css({backgroundColor: color})
-        $("#" + txId)
-            .find(".sticky-note-title, .cnt")
-            .css({ color: color });
+        /* $("#" + txId)
+            .find(".removeIcon .v-icon")
+            .css({ color: color }); */
     },
     drawImgToCanvas(url, width, height, left, top, rotationAngle, doneCallback) {
         var _this = this;
@@ -1331,13 +1337,13 @@ const whiteboard = {
             });
             _this.setTextboxFontColor(_this.latestActiveTextBoxId, color);
         }
-        /* if (_this.tool == "sticky" && _this.latestActiveStickyNoteId) {
+        if (_this.tool == "sticky" && _this.latestActiveStickyNoteId) {
             _this.sendFunction({
                 t: "setStickyNoteFontColor",
                 d: [_this.latestActiveStickyNoteId, color],
             });
             _this.setStickyNoteFontColor(_this.latestActiveStickyNoteId, color);
-        } */
+        }
     },
     updateSmallestScreenResolution() {
         const { smallestScreenResolution } = InfoService;
@@ -1437,8 +1443,8 @@ const whiteboard = {
                 _this.setStickyNotePosition(data[0], data[1], data[2]);
             } else if (tool === "setStickyNoteFontSize") {
                 _this.setStickyNoteFontSize(data[0], data[1]);
-            // } else if (tool === "setStickyNoteFontColor") {
-            //     _this.setStickyNoteFontColor(data[0], data[1]);
+            } else if (tool === "setStickyNoteFontColor") {
+                _this.setStickyNoteFontColor(data[0], data[1]);
             } else if (tool === "clear") {
                 _this.canvas.height = _this.canvas.height;
                 _this.imgContainer.empty();
@@ -1500,7 +1506,7 @@ const whiteboard = {
                 "removeStickyNote",
                 "setStickyNotePosition",
                 "setStickyNoteFontSize",
-                // "setStickyNoteFontColor",
+                "setStickyNoteFontColor",
             ].includes(tool)
         ) {
             content["drawId"] = content["drawId"] ? content["drawId"] : _this.drawId;
@@ -1583,8 +1589,31 @@ const whiteboard = {
                 });
             });
 
+            var stickyNoteCnt = 0;
+            $.each($(".stickyNote"), function () {
+                //Draw the text on top
+                stickyNoteCnt++;
+
+                var stickyContainer = $(this);
+                var p = stickyContainer.position();
+
+                var left = Math.round(p.left * 100) / 100;
+                var top = Math.round(p.top * 100) / 100;
+
+                html2canvas(this, {
+                    backgroundColor: "rgba(0, 0, 0, 0)",
+                    removeContainer: true,
+                }).then(function (canvas) {
+                    console.log("canvas", canvas);
+
+                    destCtx.drawImage(canvas, left, top);
+                    stickyNoteCnt--;
+                    checkForReturn();
+                });
+            });
+
             function checkForReturn() {
-                if (textBoxCnt == 0) {
+                if (textBoxCnt == 0 && stickyNoteCnt == 0) {
                     var url = copyCanvas.toDataURL("image/" + imageFormat);
                     callback(url);
                 }
@@ -1678,7 +1707,7 @@ const whiteboard = {
                 "removeStickyNote",
                 "setStickyNotePosition",
                 "setStickyNoteFontSize",
-                // "setStickyNoteFontColor",
+                "setStickyNoteFontColor",
             ].includes(tool)
         ) {
             _this.drawBuffer.push(content);
