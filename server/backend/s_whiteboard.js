@@ -80,7 +80,7 @@ module.exports = {
                 "removeStickyNote",
                 "setStickyNotePosition",
                 "setStickyNoteFontSize",
-                "setStickyNoteFontColor",
+                // "setStickyNoteFontColor",
             ].includes(tool)
         ) {
             //Save all this actions

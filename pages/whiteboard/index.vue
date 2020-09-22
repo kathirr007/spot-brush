@@ -491,7 +491,7 @@ export default {
                     }
                 }
 
-                if (!imgItemFound && whiteboard.tool != "text") {
+                if (!imgItemFound && whiteboard.tool != "text" && whiteboard.tool != "sticky") {
                     this.showBasicAlert(
                         "Please Drag&Drop the image or pdf into the Whiteboard. (Browsers don't allow copy+past from the filesystem directly)"
                     );
@@ -574,15 +574,15 @@ export default {
                 }
             }
             var alertHtml = $(
-                '<div class="basicalert" style="position:absolute; left:0px; width:100%; top:70px; font-family: monospace;">' +
+                '<div class="basicalert v-application" style="position:absolute; left:0px; width:100%; top:70px; font-family: monospace;">' +
                 '<div style="width: 30%; margin: auto; background: #aaaaaa; border-radius: 5px; font-size: 1.2em; border: 1px solid gray;">' +
-                '<div style="border-bottom: 1px solid #676767; background: ' +
+                '<div class="pa-2" style="border-bottom: 1px solid #676767; background: ' +
                 options["headercolor"] +
                 '; padding-left: 5px; font-size: 0.8em;">' +
                 options["header"] +
-                '<div style="float: right; margin-right: 4px; color: #373737; cursor: pointer;" class="closeAlert">x</div></div>' +
+                '<div style="float: right; margin-right: 4px; color: #373737; cursor: pointer;" class="closeAlert"><i class="v-icon notranslate mdi mdi-close-circle theme--light text-h5 blue-grey--text text--darken-3"></i></div></div>' +
                 '<div style="padding: 10px;" class="htmlcontent"></div>' +
-                '<div style="height: 20px; padding: 10px;"><button class="modalBtn okbtn" style="float: right;">' +
+                '<div class="px-3 pb-3 text-right"><button class="modalBtn okbtn" style="float: right;">' +
                 options["okBtnText"] +
                 "</button></div>" +
                 "</div>" +
@@ -1661,6 +1661,7 @@ i.v-icon {
     outline: none;
     border: none;
     box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.2) inset;
+    // mix-blend-mode: unset !important;
   }
 
   .note textarea.sticky-note-title {
@@ -1673,6 +1674,30 @@ i.v-icon {
 
   .note textarea.cnt {
     min-height: 200px;
+  }
+  .stickyNote>.removeIcon,
+  .stickyNote>.moveIcon {
+    display: none;
+  }
+
+  .stickyNote.active>.removeIcon {
+    display: block;
+  }
+}
+.textcontainer {
+
+  .textBox.active {
+    border: 1px dashed gray;
+  }
+
+  .textBox>.removeIcon,
+  .textBox>.moveIcon {
+    display: none;
+  }
+
+  .textBox.active>.removeIcon,
+  .textBox.active>.moveIcon {
+    display: block;
   }
 }
 

@@ -478,7 +478,7 @@ const whiteboard = {
             e.preventDefault()
             e.stopImmediatePropagation()
             const currentPos = Point.fromEvent(e);
-            const fontsize = _this.thickness * 0.5;
+            const fontsize = _this.thickness * 0.25;
             const txId = "tx" + +new Date();
             _this.sendFunction({
                 t: "addStickyNote",
@@ -996,7 +996,9 @@ const whiteboard = {
                 });
             });
         });
-        this.textContainer.append(textBox);
+        if(_this.textContainer.find(`#${txId}`).length == 0) {
+            this.textContainer.append(textBox);
+        }
         textBox.draggable({
             handle: ".moveIcon",
             stop: function () {
@@ -1070,15 +1072,15 @@ const whiteboard = {
                 <div id="${txId}" class="stickyNote" style="font-family: Monospace; position: absolute; top: ${top}px; left: ${left}px; cursor: text">
                     <div class="note moveNote" style="background-color: ${textcolor}">
                         <div class="note_cnt">
-                            <textarea class="sticky-note-title" spellcheck="false" placeholder="Enter note title" style="outline: none; font-size: ${fontsize*.8}em; color: ${textcolor}; mix-blend-mode: difference;"></textarea>
-                            <textarea class="cnt" spellcheck="false" placeholder="Enter note description here" style="outline: none; font-size: ${fontsize*.5}em; color: ${textcolor}; mix-blend-mode: difference;"></textarea>
+                            <textarea class="sticky-note-title" spellcheck="false" placeholder="Enter note title" style="outline: none; font-size: ${fontsize*1.5}em; line-height:normal;"></textarea>
+                            <textarea class="cnt" spellcheck="false" placeholder="Enter note description here" style="outline: none; font-size: ${fontsize}em; line-height:normal;"></textarea>
                         </div>
                     </div>
                     <div title="remove stickynote" class="removeIcon" style="position:absolute; cursor:pointer; top:-17px; right:-17px;"><i class="v-icon notranslate mdi mdi-close-circle theme--light text-h5 blue-grey--text text--darken-3"></i></div>
                 </div>
             `
         );
-        if(_this.tool !== 'sticky') return false
+        // if(_this.tool !== 'sticky') return false
         _this.latestActiveStickyNoteId = txId;
         stickyNote.click(function (e) {
             // debugger
@@ -1112,8 +1114,9 @@ const whiteboard = {
                 });
             });
         });
-
-        this.stickyContainer.append(stickyNote).find('.sticky-note-title').focus();
+        if(_this.stickyContainer.find(`#${txId}`).length == 0) {
+            this.stickyContainer.append(stickyNote).find('.sticky-note-title');
+        }
         stickyNote.draggable({
             handle: ".moveNote",
             stop: function () {
@@ -1124,9 +1127,7 @@ const whiteboard = {
                 });
             },
             drag: function () {
-                var stickyNotePosition = stickyNote.position(),
-                    thiszIndex = ++noteZindex;
-                // console.log(thiszIndex)
+                var stickyNotePosition = stickyNote.position();
                 _this.sendFunction({
                     t: "setStickyNotePosition",
                     d: [txId, stickyNotePosition.top, stickyNotePosition.left],
@@ -1134,9 +1135,10 @@ const whiteboard = {
             },
         }).on('dragstart',
             function(){
+                _this.latestActiveStickyNoteId = txId;
                 $('.stickyNote').css({zIndex: 'unset'})
                 $(this).css({zIndex: ++noteZindex});
-                // $(this).find('.sticky-note-title').focus();
+                $(this).find('.sticky-note-title').focus();
         });
         stickyNote.find(".sticky-note-title").on("input", function () {
             // debugger
@@ -1194,10 +1196,10 @@ const whiteboard = {
         // debugger
         $("#" + txId)
             .find(".sticky-note-title")
-            .css({ "font-size": fontSize*.8 + "em" });
+            .css({ "font-size": fontSize + "em" });
         $("#" + txId)
             .find(".cnt")
-            .css({ "font-size": fontSize*.5 + "em" });
+            .css({ "font-size": fontSize + "em" });
     },
     setStickyNoteFontColor(txId, color) {
         $(`#${txId}`)
@@ -1297,18 +1299,25 @@ const whiteboard = {
     setTool: function (tool) {
         this.tool = tool;
         if (this.tool === "text") {
+            $(".stickyNote").removeClass("active");
             $(".textBox").addClass("active");
             this.textContainer.appendTo($(whiteboardContainer)); //Bring textContainer to the front
         } else if (this.tool === "sticky") {
+            // debugger
+            $(".textBox").removeClass("active");
             $(".stickyNote").addClass("active");
             this.stickyContainer.appendTo($(whiteboardContainer)); //Bring textContainer to the front
+            if(this.latestActiveStickyNoteId) {
+                $(`#${this.latestActiveStickyNoteId}`).find('.sticky-note-title').focus()
+            }
         } else {
+            // debugger
             $(".textBox, .stickyNote").removeClass("active");
             this.mouseOverlay.appendTo($(whiteboardContainer));
         }
         this.refreshCursorAppearance();
-        this.latestActiveTextBoxId = null;
-        this.latestActiveStickyNoteId = null;
+        // this.latestActiveTextBoxId = null;
+        // this.latestActiveStickyNoteId = null;
         this.mouseOverlay.find(".xCanvasBtn").click(function(e) {e.stopImmediatePropagation()});
     },
     setDrawColor(color) {
@@ -1322,13 +1331,13 @@ const whiteboard = {
             });
             _this.setTextboxFontColor(_this.latestActiveTextBoxId, color);
         }
-        if (_this.tool == "sticky" && _this.latestActiveStickyNoteId) {
+        /* if (_this.tool == "sticky" && _this.latestActiveStickyNoteId) {
             _this.sendFunction({
                 t: "setStickyNoteFontColor",
                 d: [_this.latestActiveStickyNoteId, color],
             });
             _this.setStickyNoteFontColor(_this.latestActiveStickyNoteId, color);
-        }
+        } */
     },
     updateSmallestScreenResolution() {
         const { smallestScreenResolution } = InfoService;
@@ -1400,7 +1409,8 @@ const whiteboard = {
                     );
                 }
             } else if (tool === "addTextBox") {
-                if (_this.textContainer.find(`#${data[4]}`).length >= 1) return false;
+                // if (_this.textContainer.find(`#${data[4]}`).length >= 1) return;
+                _this.stickyContainer.css({zIndex: 0})
                 _this.addTextBox(data[0], data[1], data[2], data[3], data[4]);
             } else if (tool === "setTextboxText") {
                 _this.setTextboxText(data[0], data[1]);
@@ -1414,7 +1424,7 @@ const whiteboard = {
                 _this.setTextboxFontColor(data[0], data[1]);
             } else if (tool === "addStickyNote") {
                 // debugger
-                if (_this.stickyContainer.find(`#${data[4]}`).length >= 1) return false;
+                // if (_this.stickyContainer.find(`#${data[4]}`).length >= 1) return;
                 _this.addStickyNote(data[0], data[1], data[2], data[3], data[4]);
             } else if (tool === "setStickyNoteTitleText") {
                 // debugger
@@ -1427,8 +1437,8 @@ const whiteboard = {
                 _this.setStickyNotePosition(data[0], data[1], data[2]);
             } else if (tool === "setStickyNoteFontSize") {
                 _this.setStickyNoteFontSize(data[0], data[1]);
-            } else if (tool === "setStickyNoteFontColor") {
-                _this.setStickyNoteFontColor(data[0], data[1]);
+            // } else if (tool === "setStickyNoteFontColor") {
+            //     _this.setStickyNoteFontColor(data[0], data[1]);
             } else if (tool === "clear") {
                 _this.canvas.height = _this.canvas.height;
                 _this.imgContainer.empty();
@@ -1490,7 +1500,7 @@ const whiteboard = {
                 "removeStickyNote",
                 "setStickyNotePosition",
                 "setStickyNoteFontSize",
-                "setStickyNoteFontColor",
+                // "setStickyNoteFontColor",
             ].includes(tool)
         ) {
             content["drawId"] = content["drawId"] ? content["drawId"] : _this.drawId;
@@ -1668,7 +1678,7 @@ const whiteboard = {
                 "removeStickyNote",
                 "setStickyNotePosition",
                 "setStickyNoteFontSize",
-                "setStickyNoteFontColor",
+                // "setStickyNoteFontColor",
             ].includes(tool)
         ) {
             _this.drawBuffer.push(content);
