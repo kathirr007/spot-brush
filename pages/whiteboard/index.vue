@@ -1616,7 +1616,7 @@ i.v-icon {
     padding: 1em;
     width: 250px;
     min-height: 250px;
-    margin: 0 30px 30px 0;
+    // margin: 0 10px 10px 0;
     background: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0.05)), to(rgba(0, 0, 0, 0.25)));
     background: linear-gradient(to right, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.25));
     background-color: #fffd75;
@@ -1663,12 +1663,12 @@ i.v-icon {
     box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.2) inset;
   }
 
-  .note textarea.title {
+  .note textarea.sticky-note-title {
     font-size: 16px;
     font-weight: 700;
     color: #000000;
-    height: 64px;
-    margin-top: 20px;
+    // height: 64px;
+    // margin-top: 20px;
   }
 
   .note textarea.cnt {

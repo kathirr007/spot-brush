@@ -474,6 +474,7 @@ const whiteboard = {
 
         // On sticky container click (Add a new sticky note)
         _this.stickyContainer.on("click", function (e) {
+            // debugger
             e.preventDefault()
             e.stopImmediatePropagation()
             const currentPos = Point.fromEvent(e);
@@ -1061,23 +1062,26 @@ const whiteboard = {
             .css({ color: color });
     },
     addStickyNote(textcolor, fontsize, left, top, txId, newLocalBox) {
+        // debugger
         var _this = this;
         var noteZindex = 1;
         var stickyNote = $(
             `
                 <div id="${txId}" class="stickyNote" style="font-family: Monospace; position: absolute; top: ${top}px; left: ${left}px; cursor: text">
-                    <div class="note moveNote">
+                    <div class="note moveNote" style="background-color: ${textcolor}">
                         <div class="note_cnt">
-                            <textarea class="title" spellcheck="false" placeholder="Enter note title" style="outline: none; font-size: ${fontsize*.8}em; color: ${textcolor};"></textarea>
-                            <textarea class="cnt" spellcheck="false" placeholder="Enter note description here" style="outline: none; font-size: ${fontsize*.5}em; color: ${textcolor};"></textarea>
+                            <textarea class="sticky-note-title" spellcheck="false" placeholder="Enter note title" style="outline: none; font-size: ${fontsize*.8}em; color: ${textcolor}; mix-blend-mode: difference;"></textarea>
+                            <textarea class="cnt" spellcheck="false" placeholder="Enter note description here" style="outline: none; font-size: ${fontsize*.5}em; color: ${textcolor}; mix-blend-mode: difference;"></textarea>
                         </div>
                     </div>
-                    <div title="remove stickynote" class="removeIcon" style="position:absolute; cursor:pointer; top:-5px; right:-5px;"><i class="v-icon notranslate mdi mdi-close theme--light text-body-1 grey--text text--darken-1"></i></div>
+                    <div title="remove stickynote" class="removeIcon" style="position:absolute; cursor:pointer; top:-17px; right:-17px;"><i class="v-icon notranslate mdi mdi-close-circle theme--light text-h5 blue-grey--text text--darken-3"></i></div>
                 </div>
             `
         );
+        if(_this.tool !== 'sticky') return false
         _this.latestActiveStickyNoteId = txId;
         stickyNote.click(function (e) {
+            // debugger
             e.preventDefault();
             _this.latestActiveStickyNoteId = txId;
             return false;
@@ -1108,7 +1112,8 @@ const whiteboard = {
                 });
             });
         });
-        this.stickyContainer.append(stickyNote);
+
+        this.stickyContainer.append(stickyNote).find('.sticky-note-title').focus();
         stickyNote.draggable({
             handle: ".moveNote",
             stop: function () {
@@ -1131,8 +1136,9 @@ const whiteboard = {
             function(){
                 $('.stickyNote').css({zIndex: 'unset'})
                 $(this).css({zIndex: ++noteZindex});
+                // $(this).find('.sticky-note-title').focus();
         });
-        stickyNote.find(".title").on("input", function () {
+        stickyNote.find(".sticky-note-title").on("input", function () {
             // debugger
             var titleText = btoa(unescape(encodeURIComponent($(this).val()))); //Get html and make encode base64 also take care of the charset
             _this.sendFunction({ t: "setStickyNoteTitleText", d: [txId, titleText] });
@@ -1157,7 +1163,7 @@ const whiteboard = {
         if (newLocalBox) {
             //per https://stackoverflow.com/questions/2388164/set-focus-on-div-contenteditable-element
             setTimeout(() => {
-                stickyNote.find(".textContent").focus();
+                stickyNote.find(".sticky-note-title").focus();
             }, 0);
         }
         if (this.tool === "sticky") {
@@ -1169,7 +1175,7 @@ const whiteboard = {
     },
     setStickyNoteTitleText(txId, titleText) {
         $("#" + txId)
-            .find(".title")
+            .find(".sticky-note-title")
             .html(decodeURIComponent(escape(atob(titleText)))); //Set decoded base64 as html
     },
     setStickyNoteDesc(txId, noteDesc) {
@@ -1185,13 +1191,20 @@ const whiteboard = {
         $("#" + txId).css({ top: top + "px", left: left + "px" });
     },
     setStickyNoteFontSize(txId, fontSize) {
+        // debugger
         $("#" + txId)
-            .find(".textContent")
-            .css({ "font-size": fontSize + "em" });
+            .find(".sticky-note-title")
+            .css({ "font-size": fontSize*.8 + "em" });
+        $("#" + txId)
+            .find(".cnt")
+            .css({ "font-size": fontSize*.5 + "em" });
     },
     setStickyNoteFontColor(txId, color) {
+        $(`#${txId}`)
+            .find('.note')
+            .css({backgroundColor: color})
         $("#" + txId)
-            .find(".textContent")
+            .find(".sticky-note-title, .cnt")
             .css({ color: color });
     },
     drawImgToCanvas(url, width, height, left, top, rotationAngle, doneCallback) {
@@ -1294,9 +1307,9 @@ const whiteboard = {
             this.mouseOverlay.appendTo($(whiteboardContainer));
         }
         this.refreshCursorAppearance();
-        this.mouseOverlay.find(".xCanvasBtn").click();
         this.latestActiveTextBoxId = null;
         this.latestActiveStickyNoteId = null;
+        this.mouseOverlay.find(".xCanvasBtn").click(function(e) {e.stopImmediatePropagation()});
     },
     setDrawColor(color) {
         var _this = this;
@@ -1340,6 +1353,7 @@ const whiteboard = {
         }
     },
     handleEventsAndData: function (content, isNewData, doneCallback) {
+        // debugger
         var _this = this;
         var tool = content["t"];
         var data = content["d"];
@@ -1386,6 +1400,7 @@ const whiteboard = {
                     );
                 }
             } else if (tool === "addTextBox") {
+                if (_this.textContainer.find(`#${data[4]}`).length >= 1) return false;
                 _this.addTextBox(data[0], data[1], data[2], data[3], data[4]);
             } else if (tool === "setTextboxText") {
                 _this.setTextboxText(data[0], data[1]);
@@ -1398,6 +1413,8 @@ const whiteboard = {
             } else if (tool === "setTextboxFontColor") {
                 _this.setTextboxFontColor(data[0], data[1]);
             } else if (tool === "addStickyNote") {
+                // debugger
+                if (_this.stickyContainer.find(`#${data[4]}`).length >= 1) return false;
                 _this.addStickyNote(data[0], data[1], data[2], data[3], data[4]);
             } else if (tool === "setStickyNoteTitleText") {
                 // debugger
