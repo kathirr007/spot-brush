@@ -173,8 +173,8 @@ export default {
             font-family: 'Josefin Sans', sans-serif;
             font-weight: 600;
             font-size: 16px;
-            &--active {
-                font-weight: 700;
+            &:hover, &--active {
+                // font-weight: 700;
                 color: $primary !important;
                 &:before {
                     background-color: inherit;
