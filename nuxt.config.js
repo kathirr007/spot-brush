@@ -119,13 +119,10 @@ module.exports = {
       }, */
       // '/api2/': 'http://api.another-website.com'
   },
-  env: {
-    baseUrl: process.env.BASE_URL || 'http://localhost:5600',
-  },
   /* server Middleware */
-    serverMiddleware: [
+    /* serverMiddleware: [
       '~/server/routes/index'
-  ],
+  ], */
   /* server Middleware end */
   /*
   ** vuetify module configuration
