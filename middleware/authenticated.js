@@ -9,14 +9,21 @@
   }
 } */
 export default function({ $toast, store, redirect }) {
-    if (store.state.auth) {
+/*     if (store.state.auth) {
+        console.log('User authenticated...')
         if (new Date(store.state.auth.te) < new Date(Date.now())) {
+            console.log('redirecting...')
             store.dispatch("clearAuth", redirect);
         }
-    } else {
-        // $toast.show(
-        //     `Hello..! <br>You've not logged in. Please login to access your dashboard.`, { duration: 6000 }
-        // )
-        return redirect('/auth/signin')
+    }
+    if(!store.state.auth) {
+      debugger
+      console.log('User not authenticated, redirecting...')
+      return redirect('/auth/signin')
+    } */
+    const isAuth = store.getters['isAuthenticated']
+
+    if(!isAuth) {
+      return redirect('/auth/signin')
     }
 }

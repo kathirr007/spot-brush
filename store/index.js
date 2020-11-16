@@ -7,6 +7,16 @@ export const state = () => {
     isWhiteboard: false,
   }
 }
+
+export const getters = {
+  isAuth(state) {
+    return state.auth || null
+  },
+  isAuthenticated(state) {
+    return !!state.auth
+  }
+}
+
 export const mutations = {
   setAuth (state, auth, error) {
     state.auth = auth

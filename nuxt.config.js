@@ -61,6 +61,7 @@ module.exports = {
   plugins: [
     { src: '~/plugins/vuelidate' },
     { src: '~/plugins/setTokenAxios' },
+    // { src: '~/plugins/persist-state.js', ssr: false },
     { src: '~/plugins/localStorage.js', ssr: false }
     // { src: '~/plugins/keymage.client' },
   ],
@@ -109,18 +110,23 @@ module.exports = {
   proxy: {
       // 'http://localhost:3000': { target: 'http://localhost:3000' },
       // '/api/loadwhiteboard': 'http://localhost:3000',
-      "/api": process.env.BASE_URL || "http://localhost:3000",
-      "/uploads": process.env.BASE_URL || "http://localhost:3000",
+      /* "/api": process.env.BASE_URL || "http://localhost:3000",
+      "/uploads": process.env.BASE_URL || "http://localhost:3000", */
       // "/api/upload": "http://localhost:3000/api/upload",
-      "/ws-api": {
+      /* "/ws-api": {
           target: process.env.NODE_ENV !== 'production' ? "ws://localhost:3000" : 'ws://spot-brush-whiteboard.herokuapp.com',
           ws: true,
-      },
+      }, */
       // '/api2/': 'http://api.another-website.com'
   },
   env: {
     baseUrl: process.env.BASE_URL || 'http://localhost:5600',
   },
+  /* server Middleware */
+    serverMiddleware: [
+      '~/server/routes/index'
+  ],
+  /* server Middleware end */
   /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module
