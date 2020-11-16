@@ -29,7 +29,8 @@ module.exports = {
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      // { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'icon', type: 'image/png', href: '/sb-logo.png' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap' }
     ]
   },
@@ -112,7 +113,7 @@ module.exports = {
       "/uploads": process.env.BASE_URL || "http://localhost:3000",
       // "/api/upload": "http://localhost:3000/api/upload",
       "/ws-api": {
-          target: process.env.BASE_URL.replace(/^http/, 'ws') || "ws://localhost:3000",
+          target: process.env.BASE_URL.replace(/^https?/, 'ws') || "ws://localhost:3000",
           ws: true,
       },
       // '/api2/': 'http://api.another-website.com'
