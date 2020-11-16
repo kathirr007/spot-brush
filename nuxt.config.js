@@ -113,7 +113,7 @@ module.exports = {
       "/uploads": process.env.BASE_URL || "http://localhost:3000",
       // "/api/upload": "http://localhost:3000/api/upload",
       "/ws-api": {
-          target: process.env.NODE_ENV !== 'production' ? "ws://localhost:3000" : '',
+          target: process.env.NODE_ENV !== 'production' ? "ws://localhost:3000" : 'ws://spot-brush-whiteboard.herokuapp.com',
           ws: true,
       },
       // '/api2/': 'http://api.another-website.com'
