@@ -164,5 +164,8 @@ async function start () {
   })
 }
 start()
-
-startBackendServer(3000)
+if(config.dev) {
+  startBackendServer(3000)
+} else {
+  startBackendServer(process.env.PORT)
+}
