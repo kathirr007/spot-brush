@@ -54,7 +54,6 @@ const rmDir = path => {
 async function start () {
 
   var fs = require("fs-extra");
-  var express = require("express");
   const cookieParser = require('cookie-parser')
   var formidable = require("formidable"); //form upload processing
 
@@ -78,9 +77,9 @@ async function start () {
     // express.static(path.join(__dirname, "..", "static", "uploads"))
     express.static('./static/uploads')
   );
-  var server = require("http").createServer(app);
+  var server = require("http").Server(app);
   // server.listen(port);
-  var io = require("socket.io")(server, { path: "/ws-api" });
+  var io = require("socket.io")(server);
   WhiteboardInfoBackendService.start(io);
 
   // console.log("Webserver & socketserver running on port:" + port);

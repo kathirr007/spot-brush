@@ -510,9 +510,7 @@ export default {
             const { width, height } = this.window
             let signaling_socket = this.signaling_socket
             // debugger
-            signaling_socket = io("", {
-                path: this.subdir + "/ws-api"
-            }); // Connect even if we are in a subdir behind a reverse proxy
+            signaling_socket = io(); // Connect even if we are in a subdir behind a reverse proxy
             let $self = this
 
             signaling_socket.on("connect", function() {
