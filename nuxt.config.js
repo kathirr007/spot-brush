@@ -105,7 +105,7 @@ module.exports = {
   */
  axios: {
     baseURL: process.env.BASE_URL || 'http://localhost:5600',
-    proxy: true
+    // proxy: true
   },
   proxy: {
       // 'http://localhost:3000': { target: 'http://localhost:3000' },
