@@ -79,7 +79,10 @@ async function start () {
   );
   var server = require("http").Server(app);
   // server.listen(port);
-  var io = require("socket.io")(server);
+  var io = require("socket.io")(server, {
+    serveClient: (config.env === 'production') ? false : true,
+    path: '/socket.io'
+  });
   WhiteboardInfoBackendService.start(io);
 
   // console.log("Webserver & socketserver running on port:" + port);
