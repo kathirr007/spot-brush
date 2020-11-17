@@ -29,7 +29,7 @@ app.use('/auth', authRoutes);
 }) */
 
 module.exports = {
-  path: '/api',
+  path: '/',
   handler: app
 }
 

@@ -120,9 +120,9 @@ module.exports = {
       // '/api2/': 'http://api.another-website.com'
   },
   /* server Middleware */
-    /* serverMiddleware: [
-      '~/server/routes/index'
-  ], */
+  serverMiddleware: [
+    '~/server/routes/index'
+  ],
   /* server Middleware end */
   /*
   ** vuetify module configuration
