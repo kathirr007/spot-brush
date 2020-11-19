@@ -73,14 +73,14 @@ async function start () {
   // app.use(helmet());
   app.use(cookieParser());
   app.use(cors())
-  app.use(express.static('./static/uploads'))
-  // app.use(express.static(path.join(__dirname, "..", "assets")));
+  // app.use(express.static('./static/uploads'))
+  app.use(express.static(path.join(__dirname, "..", "assets")));
   app.use(bodyParser.json({limit: '50mb'}));
   app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
   app.use(
     "/uploads",
-    // express.static(path.join(__dirname, "..", "static", "uploads"))
-    express.static('./static/uploads')
+    express.static(path.join(__dirname, "..", "static", "uploads"))
+    // express.static('./static/uploads')
   );
   var server = require("http").createServer(app);
   // server.listen(port);
