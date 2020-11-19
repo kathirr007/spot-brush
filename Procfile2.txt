@@ -1,2 +1,2 @@
-web: nuxt start
-web: ./node_modules/.bin/forever -m 5 server/index.js
+web: nuxt start // This works for apps without socket.io
+web: ./node_modules/.bin/forever -m 5 server/index.js // This works for socket.io apps
