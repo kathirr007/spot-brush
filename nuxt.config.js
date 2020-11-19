@@ -160,5 +160,13 @@ module.exports = {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+    terser: {
+      // https://github.com/terser/terser#compress-options
+      terserOptions: {
+        compress: {
+          drop_console: true
+        }
+      }
+    }
   }
 }

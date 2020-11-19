@@ -120,7 +120,7 @@ class ConfigService {
         this.#correspondingReadOnlyWid = correspondingReadOnlyWid;
         this.#isReadOnly = isReadOnly;
 
-        console.log("Whiteboard config from server:", configFromServer, "parsed:", this);
+        if(process.env.NODE_ENV !== 'production') console.log("Whiteboard config from server:", configFromServer, "parsed:", this);
     }
 
     /**
