@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-navigation-drawer v-model="drawer" color="white" :permanent="userIsAuthenticated" :expand-on-hover="expandOnHover" :mini-variant="miniVariant" mini-variant-width="70" :right="right" :src="bg" app disable-resize-watcher dark>
+        <v-navigation-drawer v-if="userIsAuthenticated" v-model="drawer" color="white" :permanent="userIsAuthenticated" :expand-on-hover="expandOnHover" :mini-variant="miniVariant" mini-variant-width="70" :right="right" :src="bg" app disable-resize-watcher dark>
             <v-list class="py-0">
                 <v-list-item two-line :class="miniVariant && ''">
                     <v-list-item-avatar>
@@ -11,8 +11,8 @@
                     </v-list-item-avatar> -->
 
                     <v-list-item-content>
-                        <v-list-item-title class="primary--text">User Name</v-list-item-title>
-                        <v-list-item-subtitle class="grey--text text-lighten-1">Subtitle</v-list-item-subtitle>
+                        <v-list-item-title class="primary--text">{{$store.state.auth.given_name ? $store.state.auth.given_name : 'User name'}}</v-list-item-title>
+                        <v-list-item-subtitle class="grey--text text-lighten-1">{{$store.state.auth.nickname ? $store.state.auth.nickname : ''}}</v-list-item-subtitle>
                     </v-list-item-content>
                 </v-list-item>
 
@@ -45,7 +45,7 @@
             </v-footer>
 
         </v-navigation-drawer>
-        <v-app-bar v-if="!userIsAuthenticated" :clipped-left="clipped" fixed app class="white">
+        <v-app-bar v-else :clipped-left="clipped" fixed app class="white">
             <v-app-bar-nav-icon class="d-flex d-sm-none grey--text text-lighten-1" @click.stop="drawer = !drawer" />
             <!-- <v-btn
             icon

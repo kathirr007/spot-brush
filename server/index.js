@@ -64,8 +64,13 @@ async function start () {
 
   const { createClient } = require("webdav");
 
+  const compression = require('compression');
+  // const helmet = require('helmet');
+
   var s_whiteboard = require("./backend/s_whiteboard.js");
 
+  app.use(compression());
+  // app.use(helmet());
   app.use(cookieParser());
   app.use(cors())
   app.use(express.static('./static/uploads'))
@@ -77,7 +82,7 @@ async function start () {
     // express.static(path.join(__dirname, "..", "static", "uploads"))
     express.static('./static/uploads')
   );
-  var server = require("http").Server(app);
+  var server = require("http").createServer(app);
   // server.listen(port);
   var io = require("socket.io")(server, {
     serveClient: (process.env.NODE_ENV === 'production') ? false : true,

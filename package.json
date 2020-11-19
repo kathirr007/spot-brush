@@ -3,10 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "toDebug": "To debug add this before the js file --inspect=7000 --inspect-brk. Here '7000' is the port number that node debugger runs",
+  "engine": {
+    "node": ">=10.0.0",
+    "npm": "6.14.3"
+  },
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server --watch ./nuxt.config.js",
     "build": "nuxt build",
-    "start": "cross-env NODE_ENV=production node server/index.js",
+    "start": "node server/index.js",
+    "startOrg": "cross-env NODE_ENV=production node server/index.js",
     "generate": "nuxt generate",
     "heroku-postbuild": "npm run build"
   },
@@ -25,6 +30,7 @@
     "aws-sdk": "^2.734.0",
     "base64-img": "^1.0.4",
     "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.5",
     "cookieparser": "^0.1.0",
