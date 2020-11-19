@@ -217,7 +217,7 @@ export default {
                     skip: !this.isJqueryLoaded,
                     rel: "stylesheet",
                     type: 'text/css',
-                    href: "http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css"
+                    href: "https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css"
                 },
                 {
                     skip: !this.isJqueryLoaded,

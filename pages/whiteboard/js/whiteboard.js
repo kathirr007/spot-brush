@@ -61,7 +61,7 @@ const whiteboard = {
      */
     lastPointerPosition: new Point(0, 0),
     loadWhiteboard: function (whiteboardContainer, newSettings) {
-        const svgns = "http://www.w3.org/2000/svg";
+        const svgns = "https://www.w3.org/2000/svg";
         const _this = this;
         for (const i in newSettings) {
             this.settings[i] = newSettings[i];

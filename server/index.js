@@ -79,8 +79,9 @@ async function start () {
   app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
   app.use(
     "/uploads",
-    express.static(path.join(__dirname, "..", "static", "uploads"))
+    // express.static(path.join(__dirname, "..", "static", "uploads"))
     // express.static('./static/uploads')
+    express.static(path.join(__dirname, "."))
   );
   var server = require("http").createServer(app);
   // server.listen(port);
@@ -383,11 +384,13 @@ async function start () {
     // rmDir('./static/uploads')
     const { imagedata } = req.body.data;
     base64Img.img(imagedata, './static/uploads', Date.now(), function(err, filepath) {
-      const pathArr = filepath.split('\\')
+      // console.log(filepath)
+      const pathArr = filepath.indexOf('\\') != -1 ? filepath.split('\\') : filepath.split('/')
       const fileName = pathArr.pop();
 
       res.status(200).json({
         success: true,
+        filepath: filepath,
         url: `${fileName}`
       })
     });
