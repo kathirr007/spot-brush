@@ -48,11 +48,11 @@ export default {
     head: {
         script: [
             // {src: '~assets/js/amazon-cognito-auth.min.js', crossorigin :'anonymous'},
-            {
-                src: '../js/cognito_config.js',
-                crossorigin: 'anonymous',
-                body: true
-            },
+            // {
+            //     src: '../js/cognito_config.js',
+            //     crossorigin: 'anonymous',
+            //     body: true
+            // },
             // {src: 'https://unpkg.com/bulma-modal-fx/dist/js/modal-fx.min.js', crossorigin :'anonymous'}
         ],
     },
