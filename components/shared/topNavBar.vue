@@ -192,8 +192,8 @@ export default {
         }
     }
     .v-navigation-drawer {
-        .v-list-item:not(:first-child) {
-            &--active {
+        .v-list-item {
+            &--active:not(:first-child){
                 &:after {
                     width: 5px;
                     background-color: $primary;
