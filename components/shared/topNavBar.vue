@@ -1,8 +1,8 @@
 <template>
     <div>
-        <v-navigation-drawer v-if="userIsAuthenticated" v-model="drawer" color="white" :permanent="userIsAuthenticated" :expand-on-hover="expandOnHover" :mini-variant="miniVariant" mini-variant-width="70" :right="right" :src="bg" app disable-resize-watcher dark>
+        <v-navigation-drawer v-model="drawer" color="white" :permanent="userIsAuthenticated" :expand-on-hover="expandOnHover" :mini-variant="miniVariant" mini-variant-width="70" :right="right" :src="bg" app disable-resize-watcher dark>
             <v-list class="py-0">
-                <v-list-item two-line :class="miniVariant && ''">
+                <v-list-item v-if="userIsAuthenticated" two-line :class="miniVariant && ''">
                     <v-list-item-avatar>
                         <img src="https://randomuser.me/api/portraits/men/81.jpg">
                     </v-list-item-avatar>
@@ -14,6 +14,15 @@
                         <v-list-item-title class="primary--text">{{$store.state.auth.given_name ? $store.state.auth.given_name : 'User name'}}</v-list-item-title>
                         <v-list-item-subtitle class="grey--text text-lighten-1">{{$store.state.auth.nickname ? $store.state.auth.nickname : ''}}</v-list-item-subtitle>
                     </v-list-item-content>
+                </v-list-item>
+                
+                <v-list-item v-else class="text-center" :class="miniVariant && ''">
+                    <v-list-item-avatar>
+                        <img src="~assets/images/sb-logo.svg">
+                    </v-list-item-avatar>
+                    <!-- <v-list-item-avatar size="40" color="primary">
+                      <span class="white--text headline text-h6">LK</span>
+                    </v-list-item-avatar> -->
                 </v-list-item>
 
                 <v-divider></v-divider>
@@ -45,7 +54,7 @@
             </v-footer>
 
         </v-navigation-drawer>
-        <v-app-bar v-else :clipped-left="clipped" fixed app class="white">
+        <v-app-bar v-if="!userIsAuthenticated" :clipped-left="clipped" fixed app class="white">
             <v-app-bar-nav-icon class="d-flex d-sm-none grey--text text-lighten-1" @click.stop="drawer = !drawer" />
             <!-- <v-btn
             icon
