@@ -192,7 +192,7 @@ export default {
         }
     }
     .v-navigation-drawer {
-        .v-list-item {
+        .v-list-item:not(:first-child) {
             &--active {
                 &:after {
                     width: 5px;
