@@ -16,7 +16,7 @@
                     </v-list-item-content>
                 </v-list-item>
                 
-                <v-list-item v-else class="text-center" :class="miniVariant && ''">
+                <v-list-item v-else class="justify-center" to="/" :class="miniVariant && ''">
                     <v-list-item-avatar>
                         <img src="~assets/images/sb-logo.svg" >
                     </v-list-item-avatar>
