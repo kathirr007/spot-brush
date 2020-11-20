@@ -18,7 +18,7 @@
                 
                 <v-list-item v-else class="text-center" :class="miniVariant && ''">
                     <v-list-item-avatar>
-                        <img src="~assets/images/sb-logo.svg">
+                        <img src="~assets/images/sb-logo.svg" >
                     </v-list-item-avatar>
                     <!-- <v-list-item-avatar size="40" color="primary">
                       <span class="white--text headline text-h6">LK</span>
