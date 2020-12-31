@@ -3,8 +3,8 @@
         <v-row>
             <v-col cols="12" sm="5" class="d-flex align-center align-sm-start justify-center flex-column">
                 <div class="w-100 text-center text-sm-left">
-                    <h1>Lorem Ipsum Dol Amet</h1>
-                    <p>Lorem ipsum sit dolor amet nuev done</p>
+                    <h1>Welcome to SpotBrush</h1>
+                    <p>A Collaborative Whiteboard / Sketchboard</p>
                     <v-col cols="8" sm="9" class="px-0 text-center text-sm-left ma-auto ma-sm-0">
                         <v-btn v-if="$store.state.auth" x-large class="w-100" @click="createBoard" color="primary px-16">Create Board</v-btn>
                         <v-btn v-else x-large class="w-100" color="primary px-16" to="/auth/signin">Get started</v-btn>
