@@ -76,6 +76,7 @@ module.exports = {
   buildModules: [
     // '@nuxtjs/style-resources',
     '@nuxtjs/vuetify',
+    // ['@edgio/nuxt/module', { edgioSourceMaps: true }]
   ],
   /*
   ** Nuxt.js modules
