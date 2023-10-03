@@ -4,8 +4,10 @@ const jwt = require("jsonwebtoken");
 const cognitoConfig = require("../cognito-config.json");
 
 var poolData = {
-  UserPoolId: cognitoConfig.cognito.USER_POOL_ID,
-  ClientId: cognitoConfig.cognito.APP_CLIENT_ID,
+  // UserPoolId: cognitoConfig.cognito.USER_POOL_ID,
+  // ClientId: cognitoConfig.cognito.APP_CLIENT_ID,
+  UserPoolId: process.env.UserPoolId,
+  ClientId: process.env.ClientId,
 };
 
 const pool_region = "us-east-1";

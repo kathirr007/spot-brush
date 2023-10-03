@@ -83,7 +83,7 @@
                     <div class="activeToolIcon" style="position: absolute; top: 2px; left: 2px; font-size: 0.6em;">
                         <i class="fa fa-pencil-alt"></i>
                     </div>
-                    <img style="position: absolute;left: 11px;top: 16px;height: 14px;width: 130px;" src="~assets/images/slider-background.svg" />
+                    <img alt="" style="position: absolute;left: 11px;top: 16px;height: 14px;width: 130px;" src="~assets/images/slider-background.svg" />
                     <input title="Thickness" id="whiteboardThicknessSlider" style="position: absolute; left: 9px; width: 130px; top: 15px;" type="range" min="1" max="50" value="3" />
                     <v-text-field hide-mode-switch v-model="color" width="40" hide-details class="ma-0 pa-0 select-brush-color" solo id="whiteboardColorpicker" style="position: absolute;left: 155px;top: 10px;width: 25px;height: 25px;border-radius: 4px;border: 1px solid darkgrey;">
                         <template v-slot:append>
@@ -510,7 +510,7 @@ export default {
             const { width, height } = this.window
             let signaling_socket = this.signaling_socket
             // debugger
-            let socketEndPoint = process.env.BASE_URL || 'http://localhost:5600'
+            let socketEndPoint = process.env.BASE_URL || 'http://localhost:5600'
             signaling_socket = io().connect(socketEndPoint, {transports:['websocket']}); // Connect even if we are in a subdir behind a reverse proxy
             let $self = this
 

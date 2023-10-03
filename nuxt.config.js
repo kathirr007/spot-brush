@@ -104,7 +104,7 @@ module.exports = {
   ** See https://axios.nuxtjs.org/options
   */
  axios: {
-    baseURL: process.env.BASE_URL || 'http://localhost:5600',
+    baseURL: process.env.BASE_URL || 'http://localhost:5600',
     // proxy: true
   },
   proxy: {
@@ -160,6 +160,21 @@ module.exports = {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+    babel: {
+      presets(env, [ preset, options ]) {
+        return [
+          [ "@babel/preset-env", {
+              "useBuiltIns": "usage", // "usage" | "entry" | false, defaults to false.
+              "corejs": "3.0.0",
+              "targets": {
+                  "esmodules": true,
+                  "ie": "11"
+              }
+            }
+          ]
+        ]
+      }
+    },
     terser: {
       // https://github.com/terser/terser#compress-options
       terserOptions: {
