@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "installCommand": "pnpm --shamefully-hoist",
+  "installCommand": "pnpm install --shamefully-hoist",
   "builds": [
     {
       "src": "package.json",
