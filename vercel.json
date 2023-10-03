@@ -8,7 +8,7 @@
     },
     {
       "src": "nuxt.config.js",
-      "use": "@nuxtjs/vercel-builder@0.22.1",
+      "use": "@nuxtjs/vercel-builder",
       "config": {
         "internalServer": true,
         "serverFiles": ["server/routes/index", "server/**"]
