@@ -4,7 +4,7 @@
   "private": true,
   "toDebug": "To debug add this before the js file --inspect=7000 --inspect-brk. Here '7000' is the port number that node debugger runs",
   "engines": {
-    "node": "18.16.1",
+    "node": "18.x",
     "npm": "9.8.0"
   },
   "scripts": {
