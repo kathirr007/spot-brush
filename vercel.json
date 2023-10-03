@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "installCommand": "pnpm install --shamefully-hoist --no-frozen-lockfile",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "nuxt.config.js",
+      "use": "@nuxtjs/vercel-builder@0.22.1",
+      "config": {
+        "internalServer": true,
+        "serverFiles": ["server/routes/index", "server/**"]
+      }
+    }
+  ]
+}
