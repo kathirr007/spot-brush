@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "toDebug": "To debug add this before the js file --inspect=7000 --inspect-brk. Here '7000' is the port number that node debugger runs",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server --watch ./nuxt.config.js",
     "build": "nuxt2 build",
