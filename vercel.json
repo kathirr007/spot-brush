@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "installCommand": "pnpm install",
   "builds": [
     {
+      "installCommand": "pnpm install --shamefully-hoist",
       "src": "package.json",
       "use": "@vercel/node"
     },
