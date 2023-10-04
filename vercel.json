@@ -1,11 +1,7 @@
 {
   "version": 2,
+  "installCommand": "pnpm install --shamefully-hoist",
   "builds": [
-    {
-      "installCommand": "pnpm install --shamefully-hoist",
-      "src": "package.json",
-      "use": "@vercel/node"
-    },
     {
       "src": "nuxt.config.js",
       "use": "@nuxtjs/vercel-builder",
