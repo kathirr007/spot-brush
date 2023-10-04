@@ -2,10 +2,13 @@
   "version": 2,
   "builds": [
     {
+      "src": "package.json",
+      "use": "@vercel/node"
+    },
+    {
       "src": "nuxt.config.js",
-      "use": "@nuxtjs/vercel-builder",
+      "use": "@nuxtjs/vercel-builder@0.21.3",
       "config": {
-        "internalServer": true,
         "serverFiles": ["server/routes/index", "server/**"]
       }
     }
