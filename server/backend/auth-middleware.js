@@ -12,7 +12,7 @@ var poolData = {
 
 const pool_region = "us-east-1";
 
-exports.Validate = function (req, res, next) {
+export const Validate = function (req, res, next) {
   // var token = req.headers['authorization'];
   const wid = req["query"]["wid"];
   const token = req["query"]["at"];
@@ -68,7 +68,7 @@ exports.Validate = function (req, res, next) {
   );
 };
 
-exports.Validate2 = function (token, callback) {
+export const Validate2 = function (token, callback) {
   //}, callback){
   var isValid = false;
   // token = "eyJraWQiOiIzWks5T2tXY1wvTGQxUlN6ZkU1Q21TSk1lQ1IzbG5VOGdLa1BDSnI2Mkx5Yz0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJkNDA4YWJjZC1kNjEyLTRmNmQtOTUwYS03Zjc1ZTIyMjE2NDciLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLnVzLWVhc3QtMS5hbWF6b25hd3MuY29tXC91cy1lYXN0LTFfSGF5eUdicDBPIiwiY29nbml0bzp1c2VybmFtZSI6ImQ0MDhhYmNkLWQ2MTItNGY2ZC05NTBhLTdmNzVlMjIyMTY0NyIsImdpdmVuX25hbWUiOiJLYXRoaXJyMDA3IiwiYXVkIjoiN2pjdHRpaXJub3Q0Y21kYXM3MHQ4cTJrc3QiLCJldmVudF9pZCI6IjMzMDA3MzMxLWQ3YTctNGZkNC1hYzNhLTQwNDEyZmZlMDZhOSIsInRva2VuX3VzZSI6ImlkIiwiYXV0aF90aW1lIjoxNTk4OTAyNTA2LCJleHAiOjE1OTg5MzAwODAsImlhdCI6MTU5ODkyNjQ4MCwiZmFtaWx5X25hbWUiOiJLIiwiZW1haWwiOiJrYXRoaXJyMDA3QGdtYWlsLmNvbSJ9.IlGGQqP7D7qsXnD9vZOARiCUQJYoLToJ9fSB_o9TJlcIBYdtwCnpe90oI-KOiDGsUHTEPkGdupgzg6u7nF771DHvaqrVa4PVtBRjAwn6hmJOUhCpyuniCrNZG_o2pnVfjML-oC1-191hqBVvdH9xpytv1pmz7AUM8ubN-FcK2VrhOEHte8a6slfUUtNnyO0xV5vINTQTk45CHICFkQ-h2AqE6fXRa-H7-CL746wP9zIYdxW0mtIU4GlHS0he03UIJNCQYfNK70FJjR0OBvQcnFJCh1LJBOGqZZSdDz5Shfil3XYEg2YQhRdbYUL20a-QrmHUWPXXqYZpMhKj2d2rGQ"
