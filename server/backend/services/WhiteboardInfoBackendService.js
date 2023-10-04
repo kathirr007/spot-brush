@@ -1,5 +1,5 @@
-const config = require("../config/config");
-const ReadOnlyBackendService = require("./ReadOnlyBackendService");
+import config  from "../config/config.js";
+import ReadOnlyBackendService  from "./ReadOnlyBackendService.js";
 
 /**
  * Class to hold information related to a whiteboard
@@ -240,4 +240,4 @@ class WhiteboardInfoBackendService {
     }
 }
 
-module.exports = new WhiteboardInfoBackendService();
+export default new WhiteboardInfoBackendService();

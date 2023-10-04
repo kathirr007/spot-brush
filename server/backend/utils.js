@@ -17,4 +17,4 @@ function getArgs() {
     return args;
 }
 
-module.exports.getArgs = getArgs;
+export { getArgs };

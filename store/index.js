@@ -1,4 +1,5 @@
-const cookieparser = process.server ? require('cookieparser') : undefined
+import  cookieParser from 'cookieparser'
+const cookieparser = process.server ? cookieParser : undefined
 
 export const state = () => {
   return {

@@ -1,3 +1,7 @@
+import  webpack from "webpack";
+import  WebpackDevServer from "webpack-dev-server";
+import  config from "../config/webpack.dev.js";
+
 const devServerConfig = {
     hot: true,
     inline: true,
@@ -18,9 +22,7 @@ const devServerConfig = {
 
 function startFrontendDevServer(port) {
     // require here to prevent prod dependency to webpack
-    const webpack = require("webpack");
-    const WebpackDevServer = require("webpack-dev-server");
-    const config = require("../config/webpack.dev");
+
 
     new WebpackDevServer(webpack(config), devServerConfig).listen(port, (err) => {
         if (err) {
@@ -31,4 +33,4 @@ function startFrontendDevServer(port) {
     });
 }
 
-module.exports = startFrontendDevServer;
+export default startFrontendDevServer;

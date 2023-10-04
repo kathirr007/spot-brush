@@ -1,5 +1,5 @@
-const ReadOnlyBackendService = require("./ReadOnlyBackendService");
-const WhiteboardInfoBackendService = require("./WhiteboardInfoBackendService");
+import ReadOnlyBackendService from "./ReadOnlyBackendService.js";
+import WhiteboardInfoBackendService from "./WhiteboardInfoBackendService.js";
 
 test("Clients lifetime same wid", () => {
     const wid = "1";

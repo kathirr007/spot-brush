@@ -1,27 +1,29 @@
-const path = require("path");
+import path from "path";
 
-const config = require("./config/config");
-const ReadOnlyBackendService = require("./services/ReadOnlyBackendService");
-const WhiteboardInfoBackendService = require("./services/WhiteboardInfoBackendService");
+import config from "./config/config.js";
+import ReadOnlyBackendService from "./services/ReadOnlyBackendService.js";
+import WhiteboardInfoBackendService from "./services/WhiteboardInfoBackendService.js";
+import fs from "fs-extra"
+import express from "express"
+import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
+import cors from 'cors'
+import formidable from "formidable" //form upload processing
+import createDOMPurify from "dompurify" //Prevent xss
+import { JSDOM } from "jsdom"
+import { createClient } from "webdav";
+
+import * as httpserver from "http"
+import * as IO from "socket.io"
+import * as s_whiteboard  from "./s_whiteboard.js";
+import * as authService from "./auth-middleware"
 
 function startBackendServer(port) {
-  var fs = require("fs-extra");
-  var express = require("express");
-  const bodyParser = require('body-parser')
-  const cookieParser = require('cookie-parser')
-  const cors = require('cors')
-  var formidable = require("formidable"); //form upload processing
 
-  const createDOMPurify = require("dompurify"); //Prevent xss
-  const { JSDOM } = require("jsdom");
   const window = new JSDOM("").window;
   const DOMPurify = createDOMPurify(window);
 
-  const { createClient } = require("webdav");
-
-  var s_whiteboard = require("./s_whiteboard.js");
-
-  var app = express();
+  const app = express();
   app.use(cookieParser());
   app.use(cors())
   app.use(express.static('./static/uploads'))
@@ -33,16 +35,16 @@ function startBackendServer(port) {
     // express.static(path.join(__dirname, "..", "static", "uploads"))
     express.static('./static/uploads')
   );
-  var server = require("http").Server(app);
+  const server = httpserver.Server(app);
   server.listen(port);
-  var io = require("socket.io")(server, { path: "/ws-api" });
+  const io = IO(server, { path: "/ws-api" });
   WhiteboardInfoBackendService.start(io);
 
   console.log("Webserver & socketserver running on port:" + port);
 
   const { accessToken, enableWebdav } = config.backend;
 
-  const authService = require("./auth-middleware");
+
 
   app.get("/api/loadwhiteboard", function (req, res) {
     // const wid = req["query"]["wid"];
@@ -369,4 +371,4 @@ function startBackendServer(port) {
   });
 }
 
-module.exports = startBackendServer;
+export default startBackendServer;

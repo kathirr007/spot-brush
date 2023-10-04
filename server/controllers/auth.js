@@ -1,6 +1,6 @@
-const cookie = require('cookie')
+import cookie from 'cookie'
 
-const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+import * as AmazonCognitoIdentity from 'amazon-cognito-identity-js';
 // const cognitoConfig = require("../../cognito-config.json");
 
 const userPool = new AmazonCognitoIdentity.CognitoUserPool({
@@ -10,7 +10,7 @@ const userPool = new AmazonCognitoIdentity.CognitoUserPool({
   ClientId: process.env.ClientId,
 });
 
-exports.register = (req, res, next) => {
+export const register = (req, res, next) => {
 
   const attributeList = [
     new AmazonCognitoIdentity.CognitoUserAttribute({Name: "given_name", Value: req.body.firstName}),
@@ -33,7 +33,7 @@ exports.register = (req, res, next) => {
   });
 }
 
-exports.login = (req, res, next) => {
+export const login = (req, res, next) => {
   const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
       Username: req.body.data.email,
       Password: req.body.data.password,
@@ -80,7 +80,7 @@ exports.login = (req, res, next) => {
   }) */
 }
 
-exports.createboard = (req, res, next) => {
+export const createboard = (req, res, next) => {
     // debugger
     // console.log(req.body)
     const token = req.headers.authorization.split(" ")[1]
@@ -92,7 +92,7 @@ exports.createboard = (req, res, next) => {
     })
 }
 
-exports.refreshToken = (req, res, next) => {
+export const refreshToken = (req, res, next) => {
   // debugger
   if (req.headers.cookie) {
     const parsed = cookie.parse(req.headers.cookie)
@@ -126,7 +126,7 @@ exports.refreshToken = (req, res, next) => {
   }
 }
 
-exports.confirm = (req, res, next) => {
+export const confirm = (req, res, next) => {
 
   const cognitoUser = new AmazonCognitoIdentity.CognitoUser({
     Username : req.body.email,
@@ -143,7 +143,7 @@ exports.confirm = (req, res, next) => {
   })
 }
 
-exports.resendConfirmEmail = (req, res, next) => {
+export const resendConfirmEmail = (req, res, next) => {
   const cognitoUser = new AmazonCognitoIdentity.CognitoUser({
       Username : req.body.email,
       Pool : userPool
@@ -163,7 +163,7 @@ exports.resendConfirmEmail = (req, res, next) => {
   });
 }
 
-exports.confirmPasswordChange = (req, res, next) => {
+export const confirmPasswordChange = (req, res, next) => {
   console.log(req.body)
   const confirmationDetails = {
       verificationCode: req.body.verificationCode,
@@ -195,7 +195,7 @@ exports.confirmPasswordChange = (req, res, next) => {
   });
 }
 
-exports.forgotPassword = (req, res, next) => {
+export const forgotPassword = (req, res, next) => {
 
   const cognitoUser = new AmazonCognitoIdentity.CognitoUser({
     Username : req.body.email,
@@ -217,7 +217,7 @@ exports.forgotPassword = (req, res, next) => {
   });
 }
 
-exports.logout = (req, res, next) => {
+export const logout = (req, res, next) => {
   res.cookie('token','', {
     expires: new Date(Date.now()),
     httpOnly: true

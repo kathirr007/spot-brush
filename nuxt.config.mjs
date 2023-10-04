@@ -1,6 +1,8 @@
 // import colors from 'vuetify/es5/util/colors'
+import { defineNuxtConfig } from '@nuxt/bridge'
 
-module.exports = {
+export default defineNuxtConfig({
+  bridge: false,
   server: {
     // port: 3100, // default 3000
     port: process.env.PORT || 5600,
@@ -104,7 +106,7 @@ module.exports = {
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
   */
- axios: {
+  axios: {
     baseURL: process.env.BASE_URL || 'http://localhost:5600',
     // proxy: true
   },
@@ -122,7 +124,7 @@ module.exports = {
   },
   /* server Middleware */
   serverMiddleware: [
-    '~/server/routes/index'
+    '~/server/routes/index.js'
   ],
   /* server Middleware end */
   /*
@@ -183,6 +185,27 @@ module.exports = {
           drop_console: true
         }
       }
-    }
+    },
+    /* optimization: {
+      minimize: true,
+      splitChunks: {
+        chunks: 'all',
+        automaticNameDelimiter: '.',
+        name: true,
+        maxSize: 244000,
+        cacheGroups: {
+          vendor: {
+            name: 'node_vendors',
+            test: /[\\/]node_modules[\\/]/,
+            chunks: 'all',
+            maxSize: 244000
+          }
+        }
+      }
+    } */
   }
-}
+
+})
+
+// module.exports = {
+// }

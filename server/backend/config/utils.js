@@ -1,11 +1,16 @@
-const path = require("path");
-const fs = require("fs");
-const yaml = require("js-yaml");
+import { fileURLToPath } from 'url';
+import path, { dirname } from 'path';
+import fs from "fs"
+import yaml from "js-yaml"
+import Ajv from "ajv"
 
-const Ajv = require("ajv");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const ajv = new Ajv({ allErrors: true });
 
-const configSchema = require("./config-schema.json");
+import configSchema from './config-schema.json' assert {type: 'json'};
+// const configSchema = "./config-schema.json"
 
 /**
  * Load a yaml config file from a given path.
@@ -86,7 +91,14 @@ function deepMergeConfigs(baseConfig, overrideConfig) {
     return out;
 }
 
-module.exports.getConfig = getConfig;
-module.exports.getDefaultConfig = getDefaultConfig;
-module.exports.deepMergeConfigs = deepMergeConfigs;
-module.exports.isConfigValid = isConfigValid;
+export {
+    getConfig,
+    getDefaultConfig,
+    deepMergeConfigs,
+    isConfigValid,
+}
+
+// module.exports.getConfig = getConfig;
+// module.exports.getDefaultConfig = getDefaultConfig;
+// module.exports.deepMergeConfigs = deepMergeConfigs;
+// module.exports.isConfigValid = isConfigValid;

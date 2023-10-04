@@ -2,7 +2,7 @@
 
 var savedBoards = {};
 var savedUndos = {};
-module.exports = {
+export default {
     handleEventsAndData: function (content) {
         var tool = content["t"]; //Tool witch is used
         var wid = content["wid"]; //whiteboard ID

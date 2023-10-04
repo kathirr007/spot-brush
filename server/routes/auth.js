@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
+import * as AuthCtrl from '../controllers/auth.js';
 const router = express.Router();
 
-const AuthCtrl = require('../controllers/auth');
 
 router.post('/register', AuthCtrl.register)
 router.post('/login', AuthCtrl.login)
@@ -19,4 +19,4 @@ router.post('/forgotpassword', AuthCtrl.forgotPassword)
            ProductCtrl.getInstructorProducts);
 router.get('/:id', ProductCtrl.getProductById); */
 
-module.exports = router;
+export {router as authRoutes};

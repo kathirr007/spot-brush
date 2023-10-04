@@ -1,6 +1,6 @@
-const request = require("request");
-const jwkToPem = require("jwk-to-pem");
-const jwt = require("jsonwebtoken");
+import request from "request"
+import jwkToPem from "jwk-to-pem"
+import jwt from "jsonwebtoken"
 // const cognitoConfig = require("../../cognito-config.json");
 
 var poolData = {

@@ -1,10 +1,10 @@
-const express = require('express')
+import express from 'express'
 const app = express()
-// const cookiepars = require('cookieparser')
-const bodyParser = require('body-parser')
-const cookieParser = require('cookie-parser')
-const cors = require('cors')
-// const override = require('method-override')
+import cookiepars from 'cookieparser'
+import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
+import cors from 'cors'
+import override from 'method-override'
 
 
 app.use(cookieParser());
@@ -12,8 +12,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
 
-const testRoutes = require('./test');
-const authRoutes = require('./auth');
+import { testRoutes } from './test.js';
+import { authRoutes } from './auth.js';
 
 // var csrf = require('csurf');
 // consider using this
@@ -28,7 +28,7 @@ app.use('/auth', authRoutes);
   })
 }) */
 
-module.exports = {
+export default {
   path: '/',
   handler: app
 }

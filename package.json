@@ -3,15 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "toDebug": "To debug add this before the js file --inspect=7000 --inspect-brk. Here '7000' is the port number that node debugger runs",
+  "type": "module",
   "engines": {
     "node": "18.x"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server --watch ./nuxt.config.js",
-    "build": "nuxt build",
+    "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server --watch ./nuxt.config.mjs",
+    "build": "nuxt2 build",
     "start": "cross-env NODE_ENV=production node server/index.js",
     "startOrg": "cross-env NODE_ENV=production node server/index.js",
-    "generate": "nuxt generate",
+    "generate": "nuxt2 generate",
     "heroku-postbuild": "pnpm run build"
   },
   "dependencies": {
@@ -73,6 +74,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.20",
+    "@nuxt/bridge": "npm:@nuxt/bridge-edge",
     "webpack-hot-middleware": "^2.25.4"
   }
 }

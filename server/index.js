@@ -1,32 +1,52 @@
-const express = require('express')
-const consola = require('consola')
-const { Nuxt, Builder } = require('nuxt')
+import express from 'express'
+import consola from 'consola'
+import { Nuxt, Builder } from 'nuxt'
 const app = express()
 // const cookiepars = require('cookieparser')
-const base64Img = require('base64-img');
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const path = require("path");
+import base64Img from 'base64-img'
+import bodyParser from 'body-parser'
+import cors from 'cors'
+import { fileURLToPath } from 'url';
+import path, { dirname } from 'path';
 
-const config = require("./backend/config/config");
-const ReadOnlyBackendService = require("./backend/services/ReadOnlyBackendService");
-const WhiteboardInfoBackendService = require("./backend/services/WhiteboardInfoBackendService");
+import config from "./backend/config/config.js"
+import ReadOnlyBackendService from "./backend/services/ReadOnlyBackendService.js"
+import WhiteboardInfoBackendService from "./backend/services/WhiteboardInfoBackendService.js"
 
-global.fetch = require('node-fetch');
-require('dotenv').config();
+import fetch from 'node-fetch'
+global.fetch = fetch;
+import 'dotenv/config'
+// dotenv.config();
 
-const nuxtConfig = require('../nuxt.config.js')
-nuxtConfig.dev = process.env.NODE_ENV !== 'production'
+import nuxtConfig from '../nuxt.config.mjs'
+nuxtConfig['dev'] = process.env.NODE_ENV !== 'production'
 
-const authService = require("./middleware/auth");
+// import * as authService from "./middleware/auth"
+import { testRoutes } from './routes/test.js'
+import { authRoutes } from './routes/auth.js'
 
-const testRouter = require('./routes/test')
-const authRouter = require('./routes/auth')
+// import startBackendServer from "./backend/server-backend"
 
-const startBackendServer = require("./backend/server-backend");
+import { existsSync, readdirSync, rmdirSync, unlinkSync }  from 'fs'
+import { join } from 'path'
+import fs from "fs-extra"
+import cookieParser from 'cookie-parser'
+import formidable from "formidable" //form upload processing
 
-const { existsSync, readdirSync, rmdirSync, unlinkSync } = require('fs');
-const { join } = require('path');
+import createDOMPurify from "dompurify" //Prevent xss
+import { JSDOM } from "jsdom"
+import { createClient } from "webdav"
+
+import  compression from 'compression'
+// const helmet = require('helmet');
+import s_whiteboard from "./backend/s_whiteboard.js"
+import * as httpserver from "http"
+import IO from "socket.io"
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const server = httpserver.createServer(app)
 
 const isDir = path => {
   try {
@@ -52,22 +72,8 @@ const rmDir = path => {
 };
 
 async function start () {
-
-  var fs = require("fs-extra");
-  const cookieParser = require('cookie-parser')
-  var formidable = require("formidable"); //form upload processing
-
-  const createDOMPurify = require("dompurify"); //Prevent xss
-  const { JSDOM } = require("jsdom");
   const window = new JSDOM("").window;
   const DOMPurify = createDOMPurify(window);
-
-  const { createClient } = require("webdav");
-
-  const compression = require('compression');
-  // const helmet = require('helmet');
-
-  var s_whiteboard = require("./backend/s_whiteboard.js");
 
   app.use(compression());
   // app.use(helmet());
@@ -83,9 +89,9 @@ async function start () {
     // express.static('./static/uploads')
     express.static(path.join(__dirname, "."))
   );
-  var server = require("http").createServer(app);
+
   // server.listen(port);
-  var io = require("socket.io")(server, {
+  const io = IO(server, {
     serveClient: (process.env.NODE_ENV === 'production') ? false : true,
     path: '/socket.io'
   });
@@ -376,8 +382,8 @@ async function start () {
     })
   }) */
 
-  app.use('/test', testRouter)
-  app.use('/auth', authRouter)
+  app.use('/test', testRoutes)
+  app.use('/auth', authRoutes)
 
   app.post('/upload', (req, res) => {
     // debugger

@@ -1,3 +1,3 @@
-const startBackendServer = require("./server-backend");
+import startBackendServer from "./server-backend.js";
 
 startBackendServer(3000)
