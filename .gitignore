@@ -91,3 +91,4 @@ sw.*
 
 # uploaded images
 static/uploads/
+.vercel
