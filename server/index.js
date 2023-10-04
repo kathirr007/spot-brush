@@ -18,7 +18,7 @@ global.fetch = fetch;
 import 'dotenv/config'
 // dotenv.config();
 
-import nuxtConfig from '../nuxt.config.mjs'
+import nuxtConfig from '../nuxt.config.js'
 nuxtConfig['dev'] = process.env.NODE_ENV !== 'production'
 
 // import * as authService from "./middleware/auth"
