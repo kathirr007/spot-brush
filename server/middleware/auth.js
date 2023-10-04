@@ -1,7 +1,7 @@
 const request = require("request");
 const jwkToPem = require("jwk-to-pem");
 const jwt = require("jsonwebtoken");
-const cognitoConfig = require("../../cognito-config.json");
+// const cognitoConfig = require("../../cognito-config.json");
 
 var poolData = {
   // UserPoolId: cognitoConfig.cognito.USER_POOL_ID,

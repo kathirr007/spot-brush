@@ -1,7 +1,7 @@
 const cookie = require('cookie')
 
 const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
-const cognitoConfig = require("../../cognito-config.json");
+// const cognitoConfig = require("../../cognito-config.json");
 
 const userPool = new AmazonCognitoIdentity.CognitoUserPool({
   // UserPoolId: cognitoConfig.cognito.USER_POOL_ID,  // Pool Id
