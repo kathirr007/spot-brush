@@ -97,8 +97,3 @@ export {
     deepMergeConfigs,
     isConfigValid,
 }
-
-// module.exports.getConfig = getConfig;
-// module.exports.getDefaultConfig = getDefaultConfig;
-// module.exports.deepMergeConfigs = deepMergeConfigs;
-// module.exports.isConfigValid = isConfigValid;

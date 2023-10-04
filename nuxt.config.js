@@ -207,5 +207,3 @@ export default defineNuxtConfig({
 
 })
 
-// module.exports = {
-// }
