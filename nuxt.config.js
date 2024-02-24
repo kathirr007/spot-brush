@@ -64,7 +64,8 @@ export default defineNuxtConfig({
     { src: '~/plugins/vuelidate' },
     { src: '~/plugins/setTokenAxios' },
     // { src: '~/plugins/persist-state.js', ssr: false },
-    { src: '~/plugins/localStorage.js', ssr: false }
+    // { src: '~/plugins/localStorage.js', ssr: false },
+    { src: '~/plugins/vuex-persister.js', ssr: false }
     // { src: '~/plugins/keymage.client' },
   ],
   /*
@@ -107,7 +108,7 @@ export default defineNuxtConfig({
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: process.env.BASE_URL || 'http://localhost:5600',
+    baseURL: process.env.BASE_URL || 'http://localhost:5500',
     // proxy: true
   },
   proxy: {
@@ -123,9 +124,14 @@ export default defineNuxtConfig({
       // '/api2/': 'http://api.another-website.com'
   },
   /* server Middleware */
-  serverMiddleware: [
-    '~/server/routes/index.js'
-  ],
+  // serverMiddleware: [
+  //   '~/server/routes/index.js'
+  // ],
+  /* server Middleware end */
+  /* server Middleware */
+  router: {
+    middleware: ['refreshToken','notAuthenticated', "authenticated"]
+  },
   /* server Middleware end */
   /*
   ** vuetify module configuration

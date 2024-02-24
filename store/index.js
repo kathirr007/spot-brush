@@ -1,4 +1,4 @@
-import  cookieParser from 'cookieparser'
+import  cookieParser from 'cookie-parser'
 const cookieparser = process.server ? cookieParser : undefined
 
 export const state = () => {
@@ -37,7 +37,7 @@ export const mutations = {
 export const actions = {
   nuxtServerInit ({ commit, dispatch }, { req, res }) {
     if (req.headers.cookie) {
-      const parsed = cookieparser.parse(req.headers.cookie)
+      const parsed = cookieparser.JSONCookie(req.headers.cookie)
       try {
         if(parsed.token) {
           return this.$axios.$post('/auth/refresh-token').then(result => {

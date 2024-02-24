@@ -41,9 +41,7 @@
 </template>
 <script>
 import * as AmazonCognitoIdentity from "amazon-cognito-identity-js";
-import {
-    CognitoAuth
-} from 'amazon-cognito-auth-js';
+
 export default {
     head: {
         script: [

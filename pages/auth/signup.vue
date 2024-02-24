@@ -48,9 +48,7 @@
 <script>
 // import { AmazonCognitoIdentity } from 'amazon-cognito-identity-js';
 import * as AmazonCognitoIdentity from "amazon-cognito-identity-js";
-import {
-    CognitoAuth
-} from 'amazon-cognito-auth-js';
+
 export default {
     middleware: ['refreshToken','notAuthenticated'],
     head: {
