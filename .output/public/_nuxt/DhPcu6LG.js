@@ -1,1 +1,0 @@
-function n(i,o){let t=i[0],e=o-t.fromUserCount;e<0&&(e=Number.MAX_VALUE);for(const r of i){const m=o-r.fromUserCount;r.fromUserCount<=o&&m<=e&&(t=r,e=m)}return{minDistDelta:t.minDistDelta,minTimeDelta:1e3*(1/t.maxFreq)}}export{n as getThrottling};

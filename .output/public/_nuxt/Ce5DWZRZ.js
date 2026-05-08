@@ -1,1 +1,0 @@
-function u(e,t){return Math.sqrt(Math.pow(e.x-t.x,2)+Math.pow(e.y-t.y,2))}function o(){return new Date().getTime()}function i(){const t=document.URL.substr(0,document.URL.lastIndexOf("/")).split("/");let n="";for(let r=3;r<t.length;r++)n=n+"/"+t[r];return n}export{u as computeDist,o as getCurrentTimeMs,i as getSubDir};
