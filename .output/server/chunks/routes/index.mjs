@@ -1,0 +1,72 @@
+import { e as express, r as router$1 } from '../_/nitro.mjs';
+import bodyParser__default from 'body-parser';
+import cookieParser from 'cookie-parser';
+import cors__default from 'cors';
+import { testRoutes as router } from './test.mjs';
+import 'node:http';
+import 'node:https';
+import 'node:events';
+import 'node:buffer';
+import 'node:fs';
+import 'node:path';
+import 'node:crypto';
+import 'events';
+import 'merge-descriptors';
+import 'finalhandler';
+import 'array-flatten';
+import 'path-to-regexp';
+import 'methods';
+import 'utils-merge';
+import 'depd';
+import 'parseurl';
+import 'setprototypeof';
+import 'qs';
+import 'path';
+import 'fs';
+import 'http';
+import 'safe-buffer';
+import 'content-disposition';
+import 'content-type';
+import 'send';
+import 'etag';
+import 'proxy-addr';
+import 'querystring';
+import 'accepts';
+import 'net';
+import 'type-is';
+import 'fresh';
+import 'range-parser';
+import 'http-errors';
+import 'encodeurl';
+import 'escape-html';
+import 'on-finished';
+import 'statuses';
+import 'cookie-signature';
+import 'cookie';
+import 'vary';
+import 'serve-static';
+import 'zlib';
+import 'stream';
+import 'engine.io';
+import '@socket.io/component-emitter';
+import 'base64id';
+import 'ws';
+import 'crypto';
+import 'compression';
+import 'amazon-cognito-identity-js';
+import 'node:url';
+
+const app = express();
+app.use(cookieParser());
+app.use(bodyParser__default.urlencoded({ extended: false }));
+app.use(bodyParser__default.json());
+app.use(cors__default());
+app.use("/test", router);
+app.use("/auth", router$1);
+const index = {
+  path: "/",
+  handler: app
+};
+
+export { index as default };
+//# sourceMappingURL=index.mjs.map

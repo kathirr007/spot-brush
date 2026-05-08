@@ -1,73 +1,26 @@
-// src/sass/main.scss
-@import '~vuetify/src/styles/styles.sass';
-
 @import './variables';
 @import './transitions';
-
-// utilities
 @import './helpers/sizing';
 @import './helpers/position';
 
-// You need to map-merge your new SASS variables
-/* $grid-breakpoints: (
-  xs: 0,
-  sm: 576px,
-  md: 768px,
-  lg: 992px,
-  xl: 1200px
-);
- */
-
- $grid-breakpoints: map-merge($grid-breakpoints, (
-  xs: 0,
-  sm: 576px,
-  md: 768px,
-  lg: 992px,
-  xl: 1200px
-));
-
 body {
-    font-family: "Roboto", sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 .break-word {
   word-break: break-word !important;
 }
 
-.v-messages {
-    &__message {
-        line-height: normal !important;
+.v-card {
+  &.rounded-xl {
+    .v-progress-linear {
+      height: 4px;
+      position: absolute;
+      left: 50%;
+      top: 0;
+      overflow: hidden;
+      width: calc(100% - 32px);
+      transform: translateX(-50%);
     }
-}
-
-.toasted-container {
-    .toasted {
-        justify-content: center !important;
-        &.toasted-primary {
-            display: block;
-            text-align: center;
-            line-height: normal;
-            background-color: $primary;
-            &.info {
-                background-color: $info;
-            }
-            &.error {
-                background-color: $error;
-            }
-        }
-    }
-}
-
-.v-card{
-    &.rounded-xl {
-        .v-progress-linear {
-            height: 4px;
-            position: absolute;
-            left: 50%;
-            top: 0px;
-            overflow: hidden;
-            width: calc(100% - 32px);
-            transform: translateX(-50%);
-        }
-    }
+  }
 }

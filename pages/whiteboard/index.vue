@@ -182,1363 +182,211 @@
         </div>
     </div>
 </template>
-<script>
-import { mapState } from 'vuex'
-
-import keybinds from "./js/keybinds";
-// import keymage from "keymage";
-
-import io from "socket.io-client";
-import whiteboard from "./js/whiteboard";
-import { dom } from "@fortawesome/fontawesome-svg-core";
-import pdfjsLib from "pdfjs-dist";
-import shortcutFunctions from "./js/shortcutFunctions";
-import ReadOnlyService from "./js/services/ReadOnlyService";
-import InfoService from "./js/services/InfoService";
-import { getSubDir } from "./js/utils";
-import ConfigService from "./js/services/ConfigService";
-import { v4 as uuidv4 } from "uuid";
-// import "jquery";
-// import "jquery-ui/ui/core";
-// import "jquery-ui/ui/widgets/draggable";
-// import "jquery-ui/ui/widgets/resizable";
-// import "jquery-ui-rotatable/jquery.ui.rotatable";
-
-export default {
-    middleware: ['refreshToken', 'authenticated'],
-
-    head() {
-        return {
-            // title: process.env.npm_package_name || "",
-            title: `SpotBrush | Whiteboard`,
-            meta: [],
-            link: [
-                {
-                    skip: !this.isJqueryLoaded,
-                    rel: "stylesheet",
-                    type: 'text/css',
-                    href: "https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css"
-                },
-                {
-                    skip: !this.isJqueryLoaded,
-                    rel: "stylesheet",
-                    type: 'text/css',
-                    href: "//cdn.jsdelivr.net/gh/godswearhats/jquery-ui-rotatable@1.1/jquery.ui.rotatable.css"
-                }
-            ],
-            script: [
-                {
-                    hid: 'jquery',
-                    src: 'https://code.jquery.com/jquery-3.5.1.min.js',
-                    defer: true, // Changed after script load
-                    callback: ()=> {
-                        // debugger
-                        this.isJqueryLoaded = true
-                    }
-                },
-                {
-                    skip: !this.isJqueryLoaded,
-                    hid: 'jqueryUI',
-                    src: "https://code.jquery.com/ui/1.12.1/jquery-ui.min.js",
-                    defer: true, // Changed after script load
-                    callback: ()=> {
-                        this.jQueryUILoaded = true
-                        this.onScriptLoaded();
-                        console.log('jqueryUI is loaded')
-                        // this.loadRotatable()
-                    }
-                },
-                {
-                    skip: !this.jQueryUILoaded,
-                    hid: 'jqueryUIRotatable',
-                    src: "https://cdn.jsdelivr.net/gh/godswearhats/jquery-ui-rotatable@1.1/jquery.ui.rotatable.min.js",
-                    defer: true, // Changed after script load
-                    callback: ()=> { console.log('jqueryUI Rotatable is loaded') }
-                },
-                {
-                    skip: !this.jQueryUILoaded,
-                    hid: 'keymageLibrary',
-                    src: "https://cdnjs.cloudflare.com/ajax/libs/keymage/1.1.3/keymage.min.js",
-                    defer: true, // Changed after script load
-                    crossorigin: "anonymous",
-                    callback: ()=> {
-                        this.keyBindings = true
-                        this.$store.commit('removeKeyBinds', true)
-                    }
-                },
-                /* {
-                    hid: 'extscript',
-                    src: '/test-script.js',
-                    callback: () => {
-                        this.externalLoaded = true
-                    }
-                },
-                {
-                    skip: !this.externalLoaded,
-                    src: '/test-script2.js',
-                }, */
-            ],
-        }
-    },
-    data() {
-        return {
-            // urlParams : '',
-            whiteboardId: '',
-            randomid: '',
-            // myUsername: '',
-            // accessToken: '',
-            signaling_socket: null,
-            subdir: null,
-            color: '#ff6634ff',
-            // mask: '!#XXXXXXXX',
-            menu: false,
-            isWebDav: false,
-            window: {
-                width: 0,
-                height: 0
-            },
-            canvImage: '',
-            remoteCanvUrl: '',
-            keyBindings: false,
-            readOnlyActive: true,
-            previousToolHtmlElem: null,
-            disableTool: false,
-            externalLoaded: false,
-            isJqueryLoaded: false,
-            jQueryUILoaded: false,
-        }
-    },
-    watch: {
-        // whenever question changes, this function will run
-    },
-    mounted() {
-        window.addEventListener('resize', this.handleResize);
-        // handle pasting from clipboard
-        window.addEventListener("paste", this.pasteHandler);
-        this.handleResize();
-        // this.urlParams = new URLSearchParams(window.location.search)
-        this.whiteboardId = this.urlParams.get('whiteboardid')
-        this.randomid = this.urlParams.get('randomid')
-        if (this.randomid) {
-            this.whiteboardId = uuidv4();
-            this.urlParams.delete("randomid");
-            window.location.search = this.urlParams;
-        }
-
-        if (!this.whiteboardId) {
-            this.whiteboardId = "myNewWhiteboard";
-        }
-
-        this.whiteboardId = unescape(encodeURIComponent(this.whiteboardId)).replace(/[^a-zA-Z0-9\-]/g, "");
-
-        if (this.urlParams.get("whiteboardid") !== this.whiteboardId) {
-            this.urlParams.set("whiteboardid", this.whiteboardId);
-            window.location.search = this.urlParams;
-        }
-
-        this.myUsername = this.urlParams.get("username") || "Anonymus" + (Math.random() + "").substring(2, 6);
-        this.accessToken = this.urlParams.get("accesstoken") || "";
-        // debugger
-        this.subdir = getSubDir()
-        this.$store.commit('setWhiteboard', true)
-        /* setTimeout(() => {
-            console.log('timeout running..')
-        }, 5000); */
-        if(this.jqueryLoaded) {
-            console.log('jquery is loaded...')
-            // this.main()
-        }
-        // debugger
-        if (!window.jQuery) {
-            // const script = document.createElement("script");
-            // script.onload = this.onScriptLoaded;
-            // script.type = "text/javascript";
-            // script.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js";
-            // document.head.appendChild(script);
-        } else {
-        }
-
-    },
-    destroyed() {
-        window.removeEventListener('resize', this.handleResize)
-        this.keyBindings = false
-        this.$store.commit('removeKeyBinds', false)
-        this.$store.commit('setWhiteboard', false)
-        Object.entries(keybinds).forEach(([key, functionName]) => {
-            const associatedShortcutFunction = shortcutFunctions[functionName];
-            if (associatedShortcutFunction) {
-                keymage.unbind(key, associatedShortcutFunction);
-            } else {
-                console.error(
-                    "Function you want to keybind on key:",
-                    key,
-                    "named:",
-                    functionName,
-                    "is not available!"
-                );
-            }
-        });
-        window.removeEventListener("paste", this.pasteHandler);
-        /* if(process.client) {
-            console.log('removeing listener...')
-        } */
-    },
-    computed: {
-        swatchStyle() {
-            const {
-                color,
-                menu
-            } = this
-            return {
-                backgroundColor: color,
-                cursor: 'pointer',
-                height: '30px',
-                width: '30px',
-                borderRadius: menu ? '50%' : '4px',
-                transition: 'border-radius 200ms ease-in-out'
-            }
-        },
-        urlParams() {
-            return new URLSearchParams(window.location.search)
-        },
-        testLoad: function() {
-            // debugger
-            if(window.jQuery) {
-                return true;
-            }
-        },
-        jqueryLoaded: {
-            get: function() {
-                if(this.isJqueryLoaded || window.jQuery) {
-                    return true
-                }
-            },
-            set: function(v) {
-                this.isJqueryLoaded = v
-            }
-        }
-    },
-    methods: {
-        onScriptLoaded(event = null) {
-            if (event) {
-                console.log("Was added");
-                this.main()
-            } else {
-                console.log("Already existed");
-                this.main()
-            }
-            // console.log(window.jQuery);
-            // window.jQuery("h1").append(` <span>(CDN script has loaded)</span>`);
-
-        },
-        updateDrawColor() {
-            // debugger
-            whiteboard.setDrawColor(this.color);
-        },
-        handleResize() {
-            this.window.width = window.innerWidth;
-            this.window.height = window.innerHeight;
-        },
-        handleImage(e) {
-                const selectedImage = e.target.files[0]; // get first file
-                this.createBase64Image(selectedImage);
-            },
-        createBase64Image(fileObject) {
-            const reader = new FileReader();
-
-            reader.onload = (e) => {
-                this.image = e.target.result;
-                this.uploadImage();
-            };
-            reader.readAsDataURL(fileObject);
-        },
-        uploadImage() {
-            debugger
-            const { canvImage } = this;
-            this.$axios.$post('/upload', { canvImage })
-                .then((response) => {
-                    debugger
-                    this.remoteCanvUrl = response.url;
-                })
-                .catch((err) => {
-                    debugger
-                    return new Error(err.message);
-                })
-        },
-        pasteHandler(e) {
-            if ($(".basicalert").length > 0) {
-                return;
-            }
-            if (e.clipboardData) {
-                var items = e.clipboardData.items;
-                var imgItemFound = false;
-                if (items) {
-                    // Loop through all items, looking for any kind of image
-                    for (var i = 0; i < items.length; i++) {
-                        if (items[i].type.indexOf("image") !== -1) {
-                            imgItemFound = true;
-                            // We need to represent the image as a file,
-                            var blob = items[i].getAsFile();
-
-                            var reader = new window.FileReader();
-                            reader.readAsDataURL(blob);
-                            reader.onloadend = function() {
-                                console.log("Uploading image!");
-                                let base64data = reader.result;
-                                uploadImgAndAddToWhiteboard(base64data);
-                            };
-                        }
-                    }
-                }
-
-                if (!imgItemFound && whiteboard.tool != "text" && whiteboard.tool != "sticky") {
-                    this.showBasicAlert(
-                        "Please Drag&Drop the image or pdf into the Whiteboard. (Browsers don't allow copy+past from the filesystem directly)"
-                    );
-                }
-            }
-        },
-        main() {
-            console.log('running main function...')
-            // debugger
-            // this.accessToken = this.$store.state.auth.jwt
-            if(!this.isJqueryLoaded && !this.$store.state.isWhiteboard) {
-                return
-            }
-            const { email, jwt } = this.$store.state.auth
-            const whiteboardId = this.whiteboardId
-            const { width, height } = this.window
-            let signaling_socket = this.signaling_socket
-            // debugger
-            let socketEndPoint = process.env.BASE_URL || 'http://localhost:5600'
-            signaling_socket = io().connect(socketEndPoint, {transports:['websocket']}); // Connect even if we are in a subdir behind a reverse proxy
-            let $self = this
-
-            signaling_socket.on("connect", function() {
-                console.log("Websocket connected!");
-
-                signaling_socket.on("whiteboardConfig", (serverResponse) => {
-                    ConfigService.initFromServer(serverResponse);
-                    // Inti whiteboard only when we have the config from the server
-                    $self.initWhiteboard(signaling_socket);
-                });
-
-                signaling_socket.on("whiteboardInfoUpdate", (info) => {
-                    // debugger
-                    InfoService.updateInfoFromServer(info);
-                    whiteboard.updateSmallestScreenResolution();
-                });
-
-                signaling_socket.on("drawToWhiteboard", function(content) {
-                    // debugger
-                    whiteboard.handleEventsAndData(content, true);
-                    InfoService.incrementNbMessagesReceived();
-                });
-
-                signaling_socket.on("refreshUserBadges", function() {
-                    whiteboard.refreshUserBadges();
-                });
-
-                let accessDenied = false;
-                signaling_socket.on("wrongAccessToken", function() {
-                    if (!accessDenied) {
-                        accessDenied = true;
-                        $self.showBasicAlert("Access denied! Wrong accessToken!");
-                    }
-                });
-
-                // debugger
-                signaling_socket.emit("joinWhiteboard", {
-                    wid: whiteboardId,
-                    at: jwt,
-                    windowWidthHeight: {
-                        w: width,
-                        h: height
-                    },
-                });
-            });
-        },
-
-        showBasicAlert(html, newOptions) {
-            var options = {
-                header: "INFO MESSAGE",
-                okBtnText: "Ok",
-                headercolor: "#d25d5d",
-                hideAfter: false,
-                onOkClick: false,
-            };
-            if (newOptions) {
-                for (var i in newOptions) {
-                    options[i] = newOptions[i];
-                }
-            }
-            var alertHtml = $(
-                '<div class="basicalert v-application" style="position:absolute; left:0px; width:100%; top:70px; font-family: monospace;">' +
-                '<div style="width: 30%; margin: auto; background: #aaaaaa; border-radius: 5px; font-size: 1.2em; border: 1px solid gray;">' +
-                '<div class="pa-2" style="border-bottom: 1px solid #676767; background: ' +
-                options["headercolor"] +
-                '; padding-left: 5px; font-size: 0.8em;">' +
-                options["header"] +
-                '<div style="float: right; margin-right: 4px; color: #373737; cursor: pointer;" class="closeAlert"><i class="v-icon notranslate mdi mdi-close-circle theme--light text-h5 blue-grey--text text--darken-3"></i></div></div>' +
-                '<div style="padding: 10px;" class="htmlcontent"></div>' +
-                '<div class="px-3 pb-3 text-right"><button class="modalBtn okbtn" style="float: right;">' +
-                options["okBtnText"] +
-                "</button></div>" +
-                "</div>" +
-                "</div>"
-            );
-            alertHtml.find(".htmlcontent").append(html);
-            $("body").append(alertHtml);
-            alertHtml
-                .find(".okbtn")
-                .off("click")
-                .click(function() {
-                    if (options.onOkClick) {
-                        options.onOkClick();
-                    }
-                    alertHtml.remove();
-                });
-            alertHtml
-                .find(".closeAlert")
-                .off("click")
-                .click(function() {
-                    alertHtml.remove();
-                });
-
-            if (options.hideAfter) {
-                setTimeout(function() {
-                    alertHtml.find(".okbtn").click();
-                }, 1000 * options.hideAfter);
-            }
-        },
-
-        /* readOnlyActive() {
-            return this.readOnlyActive;
-        },
-        previousToolHtmlElem() {
-            return this.previousToolHtmlElem;
-        }, */
-        activateReadOnlyMode(e) {
-            // debugger
-            if(e) {
-                e.stopImmediatePropagation()
-            }
-            console.log('activateReadonly...')
-            this.readOnlyActive = true;
-
-            this.previousToolHtmlElem = document.querySelector(".whiteboard-tool.active");
-
-            // switch to mouse tool to prevent the use of the
-            // other tools
-            // document.querySelector(".whiteboard-tool[tool=mouse]").click();
-            this.disableTool = true
-            /* $(".whiteboard-tool").prop("disabled", true);
-            $(".whiteboard-edit-group > button").prop("disabled", true);
-            $(".whiteboard-edit-group").addClass("group-disabled");
-            $("#whiteboardUnlockBtn").hide();
-            $("#whiteboardLockBtn").show(); */
-        },
-        deactivateReadOnlyMode(e) {
-            // debugger
-            if(e) {
-                e.stopImmediatePropagation()
-            }
-            console.log('deactivateReadonly...')
-            if (ConfigService.isReadOnly) return;
-
-            this.readOnlyActive = false;
-            this.disableTool = false
-
-            /* $(".whiteboard-tool").prop("disabled", false);
-            $(".whiteboard-edit-group > button").prop("disabled", false);
-            $(".whiteboard-edit-group").removeClass("group-disabled");
-            $("#whiteboardUnlockBtn").show();
-            $("#whiteboardLockBtn").hide(); */
-
-            // restore previously selected tool
-            // const { previousToolHtmlElem } = this;
-            this.previousToolHtmlElem && this.previousToolHtmlElem.click();
-        },
-
-        initWhiteboard(socketIO) {
-            // by default set in readOnly mode
-            // import keymage from 'keymage'
-            if(!this.$store.state.auth) return
-            const {
-                email,
-                jwt
-            } = this.$store.state.auth
-            const {
-                width,
-                height
-            } = this.window
-            let $self = this
-            // ReadOnlyService.activateReadOnlyMode();
-            ReadOnlyService.activateReadOnlyMode(this);
-            // let signaling_socket = io("", { path: this.subdir + "/ws-api" });
-
-            if (this.urlParams.get("webdav") === "true") {
-                // $("#uploadWebDavBtn").show();
-                this.isWebDav = true
-            }
-
-            whiteboard.loadWhiteboard("#whiteboardContainer", {
-                //Load the whiteboard
-                whiteboardId: this.whiteboardId,
-                username: btoa(this.myUsername),
-                backgroundGridUrl: "./images/" + ConfigService.backgroundGridImage,
-                sendFunction: function(content) {
-                    if ($self.readOnlyActive || !$self.$store.state.auth) return;
-                    //ADD IN LATER THROUGH CONFIG
-                    // if (content.t === 'cursor') {
-                    //     if (whiteboard.drawFlag) return;
-                    // }
-                    content["at"] = $self.$store.state.auth.jwt;
-                    socketIO.emit("drawToWhiteboard", content);
-                    InfoService.incrementNbMessagesSent();
-                },
-            });
-
-            // request whiteboard from server
-            /* $.get(this.subdir + "/api/loadwhiteboard", { wid: this.whiteboardId, at: jwt }).done(
-                function(data) {
-                    whiteboard.loadData(data);
-                }
-            ); */
-            // debugger
-            this.$axios.$get(this.subdir + "/api/loadwhiteboard", {
-                params: {
-                    email: email,
-                    wid: this.whiteboardId,
-                    at: jwt,
-                },
-                headers: {
-                    Accept: 'application/json',
-                    Content: 'application/json',
-                    Authorization: `Bearer ${jwt}`,
-                    email: email,
-                    wid: this.whiteboardId,
-                    at: jwt
-                },
-            }).then(res => {
-                const data = res
-                // debugger
-                whiteboard.loadData(data.ret);
-            }).catch((err) => {
-                // debugger
-                console.log(err.message)
-            })
-
-            $(window).resize(function() {
-                socketIO.emit("updateScreenResolution", {
-                    at: jwt,
-                    windowWidthHeight: {
-                        w: width,
-                        h: height
-                    },
-                });
-            });
-
-            /*----------------/
-            Whiteboard actions
-            /----------------*/
-
-            var tempLineTool = false;
-            var strgPressed = false;
-            //Handle key actions
-            if (this.keyBindings && this.$store.state.whiteboardKeybinds && this.$store.state.isWhiteboard) {
-                $(document).on("keydown", function(e) {
-                    if (e.which == 16) {
-                        if (whiteboard.tool == "pen" && !strgPressed) {
-                            tempLineTool = true;
-                            whiteboard.ownCursor.hide();
-                            if (whiteboard.drawFlag) {
-                                whiteboard.mouseup({
-                                    offsetX: whiteboard.prevPos.x,
-                                    offsetY: whiteboard.prevPos.y,
-                                });
-                                shortcutFunctions.setTool_line();
-                                whiteboard.mousedown({
-                                    offsetX: whiteboard.prevPos.x,
-                                    offsetY: whiteboard.prevPos.y,
-                                });
-                            } else {
-                                shortcutFunctions.setTool_line();
-                            }
-                        }
-                        whiteboard.pressedKeys["shift"] = true; //Used for straight lines...
-                    } else if (e.which == 17) {
-                        strgPressed = true;
-                    }
-                    //console.log(e.which);
-                });
-                $(document).on("keyup", function(e) {
-                    if (e.which == 16) {
-                        if (tempLineTool) {
-                            tempLineTool = false;
-                            shortcutFunctions.setTool_pen();
-                            whiteboard.ownCursor.show();
-                        }
-                        whiteboard.pressedKeys["shift"] = false;
-                    } else if (e.which == 17) {
-                        strgPressed = false;
-                    }
-                });
-
-                //Load keybindings from keybinds.js to given functions
-                Object.entries(keybinds).forEach(([key, functionName]) => {
-                    const associatedShortcutFunction = shortcutFunctions[functionName];
-                    if (associatedShortcutFunction) {
-                        keymage(key, associatedShortcutFunction, { preventDefault: true });
-                    } else {
-                        console.error(
-                            "Function you want to keybind on key:",
-                            key,
-                            "named:",
-                            functionName,
-                            "is not available!"
-                        );
-                    }
-                });
-            }
-
-            // whiteboard clear button
-            $("#whiteboardTrashBtn")
-                .off("click")
-                .click(function() {
-                    $("#whiteboardTrashBtnConfirm").show().focus();
-                    $(this).css({
-                        visibility: "hidden"
-                    });
-                });
-
-            $("#whiteboardTrashBtnConfirm").mouseout(function() {
-                $(this).hide();
-                $("#whiteboardTrashBtn").css({
-                    visibility: "inherit"
-                });
-            });
-
-            $("#whiteboardTrashBtnConfirm")
-                .off("click")
-                .click(function() {
-                    $(this).hide();
-                    $("#whiteboardTrashBtn").css({
-                        visibility: "inherit"
-                    });
-                    // debugger
-                    whiteboard.clearWhiteboard();
-                    $self.$axios.$delete('/clearWhiteboard')
-                    .then(res => {
-                        console.log(`${res.message}`)
-                    })
-                    .catch(err => {
-                        console.log(err.message)
-                    })
-                });
-
-            // undo button
-            $("#whiteboardUndoBtn")
-                .off("click")
-                .click(function() {
-                    whiteboard.undoWhiteboardClick();
-                });
-
-            // redo button
-            $("#whiteboardRedoBtn")
-                .off("click")
-                .click(function() {
-                    whiteboard.redoWhiteboardClick();
-                });
-
-            // view only
-            /* $("#whiteboardLockBtn")
-                .off("click")
-                .click(() => {
-                    ReadOnlyService.deactivateReadOnlyMode($self);
-                }); */
-            $("#whiteboardUnlockBtn")
-                .off("click")
-                .click(() => {
-                    ReadOnlyService.activateReadOnlyMode($self);
-                });
-            // $("#whiteboardUnlockBtn").hide();
-            // $("#whiteboardLockBtn").show();
-
-            // switch tool
-            $(".whiteboard-tool")
-                .off("click")
-                .click(function() {
-                    $(".whiteboard-tool").removeClass("active");
-                    $(this).addClass("active");
-                    var activeTool = $(this).attr("tool");
-                    whiteboard.setTool(activeTool);
-                    if (activeTool == "mouse" || activeTool == "recSelect") {
-                        $(".activeToolIcon").empty();
-                    } else {
-                        $(".activeToolIcon").html($(this).html()); //Set Active icon the same as the button icon
-                    }
-                });
-
-            // upload image button
-            $("#addImgToCanvasBtn")
-                .off("click")
-                .click(function() {
-                    if ($self.readOnlyActive) return;
-                    $self.showBasicAlert("Please drag the image into the browser.");
-                });
-
-            // save image as imgae
-            $("#saveAsImageBtn")
-                .off("click")
-                .click(function() {
-                    whiteboard.getImageDataBase64({
-                            imageFormat: ConfigService.imageDownloadFormat,
-                            drawBackgroundGrid: ConfigService.drawBackgroundGrid,
-                        },
-                        function(imgData) {
-                            var w = window.open("about:blank"); //Firefox will not allow downloads without extra window
-                            setTimeout(function() {
-                                //FireFox seems to require a setTimeout for this to work.
-                                var a = document.createElement("a");
-                                a.href = imgData;
-                                a.download = "whiteboard." + ConfigService.imageDownloadFormat;
-                                w.document.body.appendChild(a);
-                                a.click();
-                                w.document.body.removeChild(a);
-                                setTimeout(function() {
-                                    w.close();
-                                }, 100);
-                            }, 0);
-                        }
-                    );
-                });
-
-            // save image to json containing steps
-            $("#saveAsJSONBtn")
-                .off("click")
-                .click(function() {
-                    var imgData = whiteboard.getImageDataJson();
-
-                    var w = window.open("about:blank"); //Firefox will not allow downloads without extra window
-                    setTimeout(function() {
-                        //FireFox seems to require a setTimeout for this to work.
-                        var a = document.createElement("a");
-                        a.href = window.URL.createObjectURL(new Blob([imgData], {
-                            type: "text/json"
-                        }));
-                        a.download = "whiteboard.json";
-                        w.document.body.appendChild(a);
-                        a.click();
-                        w.document.body.removeChild(a);
-                        setTimeout(function() {
-                            w.close();
-                        }, 100);
-                    }, 0);
-                });
-
-            $("#uploadWebDavBtn")
-                .off("click")
-                .click(function() {
-                    if ($(".webdavUploadBtn").length > 0) {
-                        return;
-                    }
-
-                    var webdavserver = localStorage.getItem("webdavserver") || "";
-                    var webdavpath = localStorage.getItem("webdavpath") || "/";
-                    var webdavusername = localStorage.getItem("webdavusername") || "";
-                    var webdavpassword = localStorage.getItem("webdavpassword") || "";
-                    var webDavHtml = $(
-                        "<div>" +
-                        "<table>" +
-                        "<tr>" +
-                        "<td>Server URL:</td>" +
-                        '<td><input class="webdavserver" type="text" value="' +
-                        webdavserver +
-                        '" placeholder="https://yourserver.com/remote.php/webdav/"></td>' +
-                        "<td></td>" +
-                        "</tr>" +
-                        "<tr>" +
-                        "<td>Path:</td>" +
-                        '<td><input class="webdavpath" type="text" placeholder="folder" value="' +
-                        webdavpath +
-                        '"></td>' +
-                        '<td style="font-size: 0.7em;"><i>path always have to start & end with "/"</i></td>' +
-                        "</tr>" +
-                        "<tr>" +
-                        "<td>Username:</td>" +
-                        '<td><input class="webdavusername" type="text" value="' +
-                        webdavusername +
-                        '" placeholder="username"></td>' +
-                        '<td style="font-size: 0.7em;"></td>' +
-                        "</tr>" +
-                        "<tr>" +
-                        "<td>Password:</td>" +
-                        '<td><input class="webdavpassword" type="password" value="' +
-                        webdavpassword +
-                        '" placeholder="password"></td>' +
-                        '<td style="font-size: 0.7em;"></td>' +
-                        "</tr>" +
-                        "<tr>" +
-                        '<td style="font-size: 0.7em;" colspan="3">Note: You have to generate and use app credentials if you have 2 Factor Auth activated on your dav/nextcloud server!</td>' +
-                        "</tr>" +
-                        "<tr>" +
-                        "<td></td>" +
-                        '<td colspan="2"><span class="loadingWebdavText" style="display:none;">Saving to webdav, please wait...</span><button class="modalBtn webdavUploadBtn"><i class="fas fa-upload"></i> Start Upload</button></td>' +
-                        "</tr>" +
-                        "</table>" +
-                        "</div>"
-                    );
-                    webDavHtml
-                        .find(".webdavUploadBtn")
-                        .off("click")
-                        .click(function() {
-                            var webdavserver = webDavHtml.find(".webdavserver").val();
-                            localStorage.setItem("webdavserver", webdavserver);
-                            var webdavpath = webDavHtml.find(".webdavpath").val();
-                            localStorage.setItem("webdavpath", webdavpath);
-                            var webdavusername = webDavHtml.find(".webdavusername").val();
-                            localStorage.setItem("webdavusername", webdavusername);
-                            var webdavpassword = webDavHtml.find(".webdavpassword").val();
-                            localStorage.setItem("webdavpassword", webdavpassword);
-                            whiteboard.getImageDataBase64({
-                                    imageFormat: ConfigService.imageDownloadFormat,
-                                    drawBackgroundGrid: ConfigService.drawBackgroundGrid,
-                                },
-                                function(base64data) {
-                                    var webdavaccess = {
-                                        webdavserver: webdavserver,
-                                        webdavpath: webdavpath,
-                                        webdavusername: webdavusername,
-                                        webdavpassword: webdavpassword,
-                                    };
-                                    webDavHtml.find(".loadingWebdavText").show();
-                                    webDavHtml.find(".webdavUploadBtn").hide();
-                                    saveWhiteboardToWebdav(base64data, webdavaccess, function(err) {
-                                        if (err) {
-                                            webDavHtml.find(".loadingWebdavText").hide();
-                                            webDavHtml.find(".webdavUploadBtn").show();
-                                        } else {
-                                            webDavHtml.parents(".basicalert").remove();
-                                        }
-                                    });
-                                }
-                            );
-                        });
-                    $self.showBasicAlert(webDavHtml, {
-                        header: "Save to Webdav",
-                        okBtnText: "cancel",
-                        headercolor: "#0082c9",
-                    });
-                    // render newly added icons
-                    dom.i2svg();
-                });
-
-            // upload json containing steps
-            $("#uploadJsonBtn")
-                .off("click")
-                .click(function() {
-                    $("#myFile").click();
-                });
-
-            $("#shareWhiteboardBtn")
-                .off("click")
-                .click(() => {
-                    function urlToClipboard(whiteboardId = null) {
-                        const {
-                            protocol,
-                            host,
-                            pathname,
-                            search
-                        } = window.location;
-                        const basePath = `${protocol}//${host}${pathname}`;
-                        const getParams = new URLSearchParams(search);
-
-                        // Clear ursername from get parameters
-                        getParams.delete("username");
-
-                        if (whiteboardId) {
-                            // override whiteboardId value in URL
-                            getParams.set("whiteboardid", whiteboardId);
-                        }
-
-                        const url = `${basePath}?${getParams.toString()}`;
-                        $("<textarea/>")
-                            .appendTo("body")
-                            .val(url)
-                            .select()
-                            .each(() => {
-                                document.execCommand("copy");
-                            })
-                            .remove();
-                    }
-
-                    // UI related
-                    // clear message
-                    $("#shareWhiteboardDialogMessage").toggleClass("displayNone", true);
-
-                    $("#shareWhiteboardDialog").toggleClass("displayNone", false);
-                    $("#shareWhiteboardDialogGoBack")
-                        .off("click")
-                        .click(() => {
-                            $("#shareWhiteboardDialog").toggleClass("displayNone", true);
-                        });
-
-                    $("#shareWhiteboardDialogCopyReadOnlyLink")
-                        .off("click")
-                        .click(() => {
-                            urlToClipboard(ConfigService.correspondingReadOnlyWid);
-
-                            $("#shareWhiteboardDialogMessage")
-                                .toggleClass("displayNone", false)
-                                .text("Read-only link copied to clipboard ✓");
-                        });
-
-                    $("#shareWhiteboardDialogCopyReadWriteLink")
-                        .toggleClass("displayNone", ConfigService.isReadOnly)
-                        .click(() => {
-                            $("#shareWhiteboardDialogMessage")
-                                .toggleClass("displayNone", false)
-                                .text("Read/write link copied to clipboard ✓");
-                            urlToClipboard();
-                        });
-                });
-
-            $("#displayWhiteboardInfoBtn")
-                .off("click")
-                .click(() => {
-                    InfoService.toggleDisplayInfo();
-                });
-
-            var btnsMini = false;
-            $("#minMaxBtn")
-                .off("click")
-                .click(function() {
-                    if (!btnsMini) {
-                        $("#toolbar").find(".btn-group:not(.minGroup)").hide();
-                        $(this).find("#minBtn").hide();
-                        $(this).find("#maxBtn").show();
-                    } else {
-                        $("#toolbar").find(".btn-group").show();
-                        $(this).find("#minBtn").show();
-                        $(this).find("#maxBtn").hide();
-                    }
-                    btnsMini = !btnsMini;
-                });
-
-            // load json to whiteboard
-            $("#myFile").on("change", function() {
-                var file = document.getElementById("myFile").files[0];
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        var j = JSON.parse(e.target.result);
-                        whiteboard.loadJsonData(j);
-                    } catch (e) {
-                        $self.showBasicAlert("File was not a valid JSON!");
-                    }
-                };
-                reader.readAsText(file);
-                $(this).val("");
-            });
-
-            // On thickness slider change
-            $("#whiteboardThicknessSlider").on("input", function() {
-                if ($self.readOnlyActive) return;
-                whiteboard.setStrokeThickness($(this).val());
-            });
-
-            // handle drag&drop
-            var dragCounter = 0;
-            $("#whiteboardContainer").on("dragenter", function(e) {
-                if ($self.readOnlyActive) return;
-                e.preventDefault();
-                e.stopPropagation();
-                dragCounter++;
-                whiteboard.dropIndicator.show();
-            });
-
-            $("#whiteboardContainer").on("dragleave", function(e) {
-                if ($self.readOnlyActive) return;
-
-                e.preventDefault();
-                e.stopPropagation();
-                dragCounter--;
-                if (dragCounter === 0) {
-                    whiteboard.dropIndicator.hide();
-                }
-            });
-
-            $("#whiteboardContainer").on("drop", function(e) {
-                //Handle drop
-                // debugger
-                if ($self.readOnlyActive) return;
-
-                if (e.originalEvent.dataTransfer) {
-                    if (e.originalEvent.dataTransfer.files.length) {
-                        //File from harddisc
-                        e.preventDefault();
-                        e.stopPropagation();
-                        var filename = e.originalEvent.dataTransfer.files[0]["name"];
-                        if (isImageFileName(filename)) {
-                            var blob = e.originalEvent.dataTransfer.files[0];
-                            var reader = new window.FileReader();
-                            reader.readAsDataURL(blob);
-                            reader.onloadend = function() {
-                                const base64data = reader.result;
-                                // $self.canvImage = base64data
-                                // $self.uploadImage(base64data);
-                                uploadImgAndAddToWhiteboard(base64data);
-                            };
-                        } else if (isPDFFileName(filename)) {
-                            //Handle PDF Files
-                            var blob = e.originalEvent.dataTransfer.files[0];
-
-                            var reader = new window.FileReader();
-                            reader.onloadend = function() {
-                                var pdfData = new Uint8Array(this.result);
-
-                                var loadingTask = pdfjsLib.getDocument({
-                                    data: pdfData
-                                });
-                                loadingTask.promise.then(
-                                    function(pdf) {
-                                        console.log("PDF loaded");
-
-                                        var currentDataUrl = null;
-                                        var modalDiv = $(
-                                            "<div>" +
-                                            "Page: <select></select> " +
-                                            '<button style="margin-bottom: 3px;" class="modalBtn"><i class="fas fa-upload"></i> Upload to Whiteboard</button>' +
-                                            '<img style="width:100%;" src=""/>' +
-                                            "</div>"
-                                        );
-
-                                        modalDiv.find("select").change(function() {
-                                            showPDFPageAsImage(parseInt($(this).val()));
-                                        });
-
-                                        modalDiv
-                                            .find("button")
-                                            .off("click")
-                                            .click(function() {
-                                                if (currentDataUrl) {
-                                                    $(".basicalert").remove();
-                                                    uploadImgAndAddToWhiteboard(currentDataUrl);
-                                                }
-                                            });
-
-                                        for (var i = 1; i < pdf.numPages + 1; i++) {
-                                            modalDiv
-                                                .find("select")
-                                                .append('<option value="' + i + '">' + i + "</option>");
-                                        }
-
-                                        $self.showBasicAlert(modalDiv, {
-                                            header: "Pdf to Image",
-                                            okBtnText: "cancel",
-                                            headercolor: "#0082c9",
-                                        });
-
-                                        // render newly added icons
-                                        dom.i2svg();
-
-                                        showPDFPageAsImage(1);
-
-                                        function showPDFPageAsImage(pageNumber) {
-                                            // Fetch the page
-                                            pdf.getPage(pageNumber).then(function(page) {
-                                                console.log("Page loaded");
-
-                                                var scale = 1.5;
-                                                var viewport = page.getViewport({
-                                                    scale: scale
-                                                });
-
-                                                // Prepare canvas using PDF page dimensions
-                                                var canvas = $("<canvas></canvas>")[0];
-                                                var context = canvas.getContext("2d");
-                                                canvas.height = viewport.height;
-                                                canvas.width = viewport.width;
-
-                                                // Render PDF page into canvas context
-                                                var renderContext = {
-                                                    canvasContext: context,
-                                                    viewport: viewport,
-                                                };
-                                                var renderTask = page.render(renderContext);
-                                                renderTask.promise.then(function() {
-                                                    var dataUrl = canvas.toDataURL("image/jpeg", 1.0);
-                                                    currentDataUrl = dataUrl;
-                                                    modalDiv.find("img").attr("src", dataUrl);
-                                                    console.log("Page rendered");
-                                                });
-                                            });
-                                        }
-                                    },
-                                    function(reason) {
-                                        // PDF loading error
-
-                                        $self.showBasicAlert(
-                                            "Error loading pdf as image! Check that this is a vaild pdf file!"
-                                        );
-                                        console.error(reason);
-                                    }
-                                );
-                            };
-                            reader.readAsArrayBuffer(blob);
-                        } else {
-                            $self.showBasicAlert("File must be an image!");
-                        }
-                    } else {
-                        //File from other browser
-
-                        var fileUrl = e.originalEvent.dataTransfer.getData("URL");
-                        var imageUrl = e.originalEvent.dataTransfer.getData("text/html");
-                        var rex = /src="?([^"\s]+)"?\s*/;
-                        var url = rex.exec(imageUrl);
-                        if (url && url.length > 1) {
-                            url = url[1];
-                        } else {
-                            url = "";
-                        }
-
-                        isValidImageUrl(fileUrl, function(isImage) {
-                            if (isImage && isImageFileName(url)) {
-                                whiteboard.addImgToCanvasByUrl(fileUrl);
-                            } else {
-                                isValidImageUrl(url, function(isImage) {
-                                    if (isImage) {
-                                        if (isImageFileName(url) || url.startsWith("http")) {
-                                            whiteboard.addImgToCanvasByUrl(url);
-                                        } else {
-                                            uploadImgAndAddToWhiteboard(url); //Last option maybe its base64
-                                        }
-                                    } else {
-                                        $self.showBasicAlert("Can only upload Imagedata!");
-                                    }
-                                });
-                            }
-                        });
-                    }
-                }
-                dragCounter = 0;
-                whiteboard.dropIndicator.hide();
-            });
-
-            /* new Picker({
-                parent: $("#whiteboardColorpicker")[0],
-                color: "#000000",
-                onChange: function(color) {
-                    whiteboard.setDrawColor(color.rgbaString);
-                },
-            }); */
-
-            whiteboard.setDrawColor(this.color);
-
-            // on startup select mouse
-            shortcutFunctions.setTool_mouse();
-            // fix bug cursor not showing up
-            whiteboard.refreshCursorAppearance();
-
-            if (process.env.NODE_ENV === "production") {
-                if (ConfigService.readOnlyOnWhiteboardLoad) ReadOnlyService.activateReadOnlyMode();
-                else ReadOnlyService.deactivateReadOnlyMode(this);
-
-                if (ConfigService.displayInfoOnWhiteboardLoad) InfoService.displayInfo();
-                else InfoService.hideInfo();
-            } else {
-                // in dev
-                ReadOnlyService.deactivateReadOnlyMode(this);
-                InfoService.displayInfo();
-            }
-
-            // In any case, if we are on read-only whiteboard we activate read-only mode
-            if (ConfigService.isReadOnly) ReadOnlyService.activateReadOnlyMode();
-            // $(document).ready(function() {
-            // });
-
-            //Prevent site from changing tab on drag&drop
-            window.addEventListener(
-                "dragover",
-                function(e) {
-                    e = e || event;
-                    e.preventDefault();
-                },
-                false
-            );
-            window.addEventListener(
-                "drop",
-                function(e) {
-                    e = e || event;
-                    e.preventDefault();
-                },
-                false
-            );
-
-            function uploadImgAndAddToWhiteboard(base64data) {
-                // debugger
-                // let $self = this
-                const date = +new Date();
-                // const url = document.URL.substr(0, document.URL.lastIndexOf("/")) + "/api/upload";
-                // const url = document.URL.substr(0, document.URL.lastIndexOf("/")) + "/v1/upload";
-                /* $.ajax({
-                    type: "POST",
-                    url: '/upload',
-                    data: {
-                        imagedata: base64data,
-                        whiteboardId: $self.whiteboardId,
-                        date: date,
-                        at: jwt,
-                    },
-                    success: function(msg) {
-                        // debugger
-                        const { correspondingReadOnlyWid } = ConfigService;
-                        const filename = `${correspondingReadOnlyWid}_${date}.png`;
-                        const rootUrl = document.URL.substr(0, document.URL.lastIndexOf("/"));
-                        // debugger
-                        whiteboard.addImgToCanvasByUrl(
-                            // `${rootUrl}/uploads/${correspondingReadOnlyWid}/${filename}`
-                            `/uploads/${msg.url}`
-                        ); //Add image to canvas
-                        console.log("Image uploaded!");
-                    },
-                    error: function(err) {
-                        $self.showBasicAlert("Failed to upload frame: " + JSON.stringify(err));
-                    },
-                }); */
-                $self.$axios.$post('/upload', {
-                    data: {
-                        imagedata: base64data,
-                        whiteboardId: $self.whiteboardId,
-                        date: date,
-                        at: jwt,
-                    }
-                }).then(msg => {
-                    const {
-                        correspondingReadOnlyWid
-                    } = ConfigService;
-                    const filename = `${correspondingReadOnlyWid}_${date}.png`;
-                    const rootUrl = document.URL.substr(0, document.URL.lastIndexOf("/"));
-                    whiteboard.addImgToCanvasByUrl(
-                        // `${rootUrl}/uploads/${correspondingReadOnlyWid}/${filename}`
-                        `/uploads/${msg.url}`
-                    ); //Add image to canvas
-                    console.log("Image uploaded!");
-                }).catch((err) => {
-                    debugger
-                    console.log(err.message)
-                    $self.showBasicAlert("Failed to upload frame: " + JSON.stringify(err));
-                })
-            }
-
-            function saveWhiteboardToWebdav(base64data, webdavaccess, callback) {
-                var date = +new Date();
-                $.ajax({
-                    type: "POST",
-                    url: document.URL.substr(0, document.URL.lastIndexOf("/")) + "api/upload",
-                    data: {
-                        imagedata: base64data,
-                        whiteboardId: whiteboardId,
-                        date: date,
-                        at: accessToken,
-                        webdavaccess: JSON.stringify(webdavaccess),
-                    },
-                    success: function(msg) {
-                        $self.showBasicAlert("Whiteboard was saved to Webdav!", {
-                            headercolor: "#5c9e5c",
-                        });
-                        console.log("Image uploaded for webdav!");
-                        callback();
-                    },
-                    error: function(err) {
-                        if (err.status == 403) {
-                            $self.showBasicAlert(
-                                "Could not connect to Webdav folder! Please check the credentials and paths and try again!"
-                            );
-                        } else {
-                            $self.showBasicAlert("Unknown Webdav error! ", err);
-                        }
-                        callback(err);
-                    },
-                });
-            }
-
-            // verify if filename refers to an image
-            function isImageFileName(filename) {
-                var extension = filename.split(".")[filename.split(".").length - 1];
-                var known_extensions = ["png", "jpg", "jpeg", "gif", "tiff", "bmp", "webp"];
-                return known_extensions.includes(extension.toLowerCase());
-            }
-
-            // verify if filename refers to an pdf
-            function isPDFFileName(filename) {
-                var extension = filename.split(".")[filename.split(".").length - 1];
-                var known_extensions = ["pdf"];
-                return known_extensions.includes(extension.toLowerCase());
-            }
-
-            // verify if given url is url to an image
-            function isValidImageUrl(url, callback) {
-                var img = new Image();
-                var timer = null;
-                img.onerror = img.onabort = function() {
-                    clearTimeout(timer);
-                    callback(false);
-                };
-                img.onload = function() {
-                    clearTimeout(timer);
-                    callback(true);
-                };
-                timer = setTimeout(function() {
-                    callback(false);
-                }, 2000);
-                img.src = url;
-            }
-
-            // handle pasting from clipboard
-            /* window.addEventListener("paste", function(e) {
-                if ($(".basicalert").length > 0) {
-                    return;
-                }
-                if (e.clipboardData) {
-                    var items = e.clipboardData.items;
-                    var imgItemFound = false;
-                    if (items) {
-                        // Loop through all items, looking for any kind of image
-                        for (var i = 0; i < items.length; i++) {
-                            if (items[i].type.indexOf("image") !== -1) {
-                                imgItemFound = true;
-                                // We need to represent the image as a file,
-                                var blob = items[i].getAsFile();
-
-                                var reader = new window.FileReader();
-                                reader.readAsDataURL(blob);
-                                reader.onloadend = function() {
-                                    console.log("Uploading image!");
-                                    let base64data = reader.result;
-                                    uploadImgAndAddToWhiteboard(base64data);
-                                };
-                            }
-                        }
-                    }
-
-                    if (!imgItemFound && whiteboard.tool != "text") {
-                        $self.showBasicAlert(
-                            "Please Drag&Drop the image or pdf into the Whiteboard. (Browsers don't allow copy+past from the filesystem directly)"
-                        );
-                    }
-                }
-            }); */
-        },
-    },
+<script setup>
+import { useAuthStore } from '~/stores/auth'
+import keybinds from './js/keybinds'
+import io from 'socket.io-client'
+import whiteboard from './js/whiteboard'
+import { dom } from '@fortawesome/fontawesome-svg-core'
+import pdfjsLib from 'pdfjs-dist'
+import shortcutFunctions from './js/shortcutFunctions'
+import ReadOnlyService from './js/services/ReadOnlyService'
+import InfoService from './js/services/InfoService'
+import { getSubDir } from './js/utils'
+import ConfigService from './js/services/ConfigService'
+import { v4 as uuidv4 } from 'uuid'
+
+definePageMeta({ middleware: ['refresh-token', 'authenticated'] })
+useHead({ title: 'SpotBrush | Whiteboard' })
+
+const auth = useAuthStore()
+const { $axios } = useNuxtApp()
+
+const whiteboardId = ref("")
+const color = ref("#ff6634ff")
+const menu = ref(false)
+const isWebDav = ref(false)
+const readOnlyActive = ref(true)
+const disableTool = ref(false)
+const isJqueryLoaded = ref(false)
+const jQueryUILoaded = ref(false)
+const keyBindings = ref(false)
+const windowSize = reactive({ width: 0, height: 0 })
+let signaling_socket = null
+let previousToolHtmlElem = null
+let myUsername = ""
+
+const swatchStyle = computed(() => ({
+  backgroundColor: color.value,
+  cursor: "pointer",
+  height: "30px",
+  width: "30px",
+  borderRadius: menu.value ? "50%" : "4px",
+  transition: "border-radius 200ms ease-in-out"
+}))
+
+function updateDrawColor() { whiteboard.setDrawColor(color.value) }
+function handleResize() { windowSize.width = window.innerWidth; windowSize.height = window.innerHeight }
+function activateReadOnlyMode(e) {
+  if (e) e.stopImmediatePropagation()
+  readOnlyActive.value = true
+  previousToolHtmlElem = document.querySelector(".whiteboard-tool.active")
+  disableTool.value = true
+}
+function deactivateReadOnlyMode(e) {
+  if (e) e.stopImmediatePropagation()
+  if (ConfigService.isReadOnly) return
+  readOnlyActive.value = false
+  disableTool.value = false
+  previousToolHtmlElem && previousToolHtmlElem.click()
 }
 
+function pasteHandler(e) {
+  if (document.querySelectorAll(".basicalert").length > 0) return
+  if (!e.clipboardData) return
+  const items = e.clipboardData.items
+  let imgItemFound = false
+  if (items) {
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf("image") !== -1) {
+        imgItemFound = true
+        const blob = items[i].getAsFile()
+        const reader = new window.FileReader()
+        reader.readAsDataURL(blob)
+        reader.onloadend = () => { uploadImgAndAddToWhiteboard(reader.result) }
+      }
+    }
+  }
+  if (!imgItemFound && whiteboard.tool !== "text" && whiteboard.tool !== "sticky") {
+    showBasicAlert("Please Drag&Drop the image or pdf into the Whiteboard.")
+  }
+}
 
+function showBasicAlert(html, newOptions) {
+  const options = Object.assign({ header: "INFO MESSAGE", okBtnText: "Ok", headercolor: "#d25d5d", hideAfter: false, onOkClick: false }, newOptions)
+  const alertEl = document.createElement("div")
+  alertEl.className = "basicalert"
+  alertEl.style.cssText = "position:absolute;left:0;width:100%;top:70px;font-family:monospace;z-index:9999"
+  alertEl.innerHTML = `<div style="width:30%;margin:auto;background:#aaa;border-radius:5px;font-size:1.2em;border:1px solid gray"><div style="border-bottom:1px solid #676767;background:${options.headercolor};padding:5px">${options.header}<span style="float:right;cursor:pointer" class="closeAlert">?</span></div><div class="htmlcontent" style="padding:10px"></div><div style="padding:0 12px 12px;text-align:right"><button class="okbtn">${options.okBtnText}</button></div></div>`
+  if (typeof html === "string") alertEl.querySelector(".htmlcontent").innerHTML = html
+  else alertEl.querySelector(".htmlcontent").appendChild(html)
+  document.body.appendChild(alertEl)
+  alertEl.querySelector(".okbtn").addEventListener("click", () => { if (options.onOkClick) options.onOkClick(); alertEl.remove() })
+  alertEl.querySelector(".closeAlert").addEventListener("click", () => alertEl.remove())
+  if (options.hideAfter) setTimeout(() => alertEl.querySelector(".okbtn")?.click(), 1000 * options.hideAfter)
+}
 
+function initWhiteboard(socketIO) {
+  if (!auth.auth) return
+  const { email, jwt } = auth.auth
+  const wid = whiteboardId.value
+  ReadOnlyService.activateReadOnlyMode({ readOnlyActive, disableTool, previousToolHtmlElem })
+  if (new URLSearchParams(window.location.search).get("webdav") === "true") isWebDav.value = true
+  whiteboard.loadWhiteboard("#whiteboardContainer", {
+    whiteboardId: wid,
+    username: btoa(myUsername),
+    backgroundGridUrl: "./images/" + ConfigService.backgroundGridImage,
+    sendFunction(content) {
+      if (readOnlyActive.value || !auth.auth) return
+      content.at = auth.auth.jwt
+      socketIO.emit("drawToWhiteboard", content)
+      InfoService.incrementNbMessagesSent()
+    },
+  })
+  $axios.get(`/api/loadwhiteboard?wid=${wid}&at=${jwt}`, { headers: { Authorization: `Bearer ${jwt}` } })
+    .then(res => whiteboard.loadData(res.data?.ret))
+    .catch(err => console.error(err.message))
+  // jQuery-based toolbar wiring (runs after mount)
+  setupToolbar(socketIO, jwt)
+}
+
+function setupToolbar(socketIO, jwt) {
+  const $ = window.$
+  if (!$) return
+  const $self = { readOnlyActive, disableTool, whiteboardId, showBasicAlert, $axios }
+  $(".whiteboard-tool").off("click").click(function() {
+    $(".whiteboard-tool").removeClass("active"); $(this).addClass("active")
+    const activeTool = $(this).attr("tool")
+    whiteboard.setTool(activeTool)
+    if (activeTool === "mouse" || activeTool === "recSelect") $(".activeToolIcon").empty()
+    else $(".activeToolIcon").html($(this).html())
+  })
+  $("#whiteboardTrashBtn").off("click").click(function() { $("#whiteboardTrashBtnConfirm").show().focus(); $(this).css({ visibility: "hidden" }) })
+  $("#whiteboardTrashBtnConfirm").mouseout(function() { $(this).hide(); $("#whiteboardTrashBtn").css({ visibility: "inherit" }) })
+  $("#whiteboardTrashBtnConfirm").off("click").click(function() {
+    $(this).hide(); $("#whiteboardTrashBtn").css({ visibility: "inherit" })
+    whiteboard.clearWhiteboard()
+    $axios.delete("/clearWhiteboard").catch(err => console.error(err.message))
+  })
+  $("#whiteboardUndoBtn").off("click").click(() => whiteboard.undoWhiteboardClick())
+  $("#whiteboardRedoBtn").off("click").click(() => whiteboard.redoWhiteboardClick())
+  $("#saveAsImageBtn").off("click").click(() => {
+    whiteboard.getImageDataBase64({ imageFormat: ConfigService.imageDownloadFormat, drawBackgroundGrid: ConfigService.drawBackgroundGrid }, (imgData) => {
+      const a = document.createElement("a"); a.href = imgData; a.download = "whiteboard." + ConfigService.imageDownloadFormat; document.body.appendChild(a); a.click(); document.body.removeChild(a)
+    })
+  })
+  $("#saveAsJSONBtn").off("click").click(() => {
+    const a = document.createElement("a")
+    a.href = window.URL.createObjectURL(new Blob([whiteboard.getImageDataJson()], { type: "text/json" }))
+    a.download = "whiteboard.json"; document.body.appendChild(a); a.click(); document.body.removeChild(a)
+  })
+  $("#whiteboardThicknessSlider").on("input", function() { if (!readOnlyActive.value) whiteboard.setStrokeThickness($(this).val()) })
+  whiteboard.setDrawColor(color.value)
+  shortcutFunctions.setTool_mouse()
+  whiteboard.refreshCursorAppearance()
+  ReadOnlyService.deactivateReadOnlyMode({ readOnlyActive, disableTool, previousToolHtmlElem })
+  InfoService.displayInfo()
+  if (ConfigService.isReadOnly) ReadOnlyService.activateReadOnlyMode()
+}
+
+function main() {
+  if (!auth.auth) return
+  const { jwt } = auth.auth
+  const socketEndPoint = useRuntimeConfig().public.baseURL
+  signaling_socket = io(socketEndPoint, { transports: ["websocket"] })
+  signaling_socket.on("connect", () => {
+    signaling_socket.on("whiteboardConfig", (cfg) => { ConfigService.initFromServer(cfg); initWhiteboard(signaling_socket) })
+    signaling_socket.on("whiteboardInfoUpdate", (info) => { InfoService.updateInfoFromServer(info); whiteboard.updateSmallestScreenResolution() })
+    signaling_socket.on("drawToWhiteboard", (content) => { whiteboard.handleEventsAndData(content, true); InfoService.incrementNbMessagesReceived() })
+    signaling_socket.on("refreshUserBadges", () => whiteboard.refreshUserBadges())
+    signaling_socket.on("wrongAccessToken", () => showBasicAlert("Access denied! Wrong accessToken!"))
+    signaling_socket.emit("joinWhiteboard", { wid: whiteboardId.value, at: jwt, windowWidthHeight: { w: windowSize.width, h: windowSize.height } })
+  })
+}
+
+function uploadImgAndAddToWhiteboard(base64data) {
+  const date = +new Date()
+  $axios.post("/upload", { data: { imagedata: base64data, whiteboardId: whiteboardId.value, date, at: auth.auth?.jwt } })
+    .then(msg => whiteboard.addImgToCanvasByUrl(`/uploads/${msg.data.url}`))
+    .catch(err => showBasicAlert("Failed to upload: " + err.message))
+}
+
+onMounted(() => {
+  window.addEventListener("resize", handleResize)
+  window.addEventListener("paste", pasteHandler)
+  handleResize()
+  const urlParams = new URLSearchParams(window.location.search)
+  let wid = urlParams.get("whiteboardid")
+  const randomid = urlParams.get("randomid")
+  if (randomid) { wid = uuidv4(); urlParams.delete("randomid"); window.location.search = urlParams.toString() }
+  if (!wid) wid = "myNewWhiteboard"
+  wid = unescape(encodeURIComponent(wid)).replace(/[^a-zA-Z0-9-]/g, "")
+  whiteboardId.value = wid
+  myUsername = urlParams.get("username") || "Anonymus" + (Math.random() + "").substring(2, 6)
+  auth.setWhiteboard(true)
+  main()
+})
+
+onUnmounted(() => {
+  window.removeEventListener("resize", handleResize)
+  window.removeEventListener("paste", pasteHandler)
+  auth.removeKeyBinds(false)
+  auth.setWhiteboard(false)
+  if (signaling_socket) signaling_socket.disconnect()
+})
 </script>
 <style lang="scss" scoped>
-@import '~assets/css/whiteboard/main.css';
+@import '~/assets/css/whiteboard/main.css';
 
 i.v-icon {
     color: black;

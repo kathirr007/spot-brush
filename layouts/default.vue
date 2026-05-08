@@ -2,43 +2,25 @@
   <v-app>
     <topNavBar />
     <v-main>
-        <nuxt />
-      <!-- <v-container fluid>
-      </v-container> -->
+      <slot />
     </v-main>
-
-    <v-footer
-      :absolute="!fixed"
-      app
-      class="justify-center"
-      v-if="$store.state.auth != null ? false : true"
-    >
-      <span class="primary--text mr-2">{{ title }}</span> <span>&copy; {{ new Date().getFullYear() }}</span>
+    <v-footer v-if="!auth.isAuthenticated" app class="justify-center">
+      <span class="text-primary mr-2">{{ title }}</span>
+      <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
   </v-app>
 </template>
 
-<script>
-import topNavBar from '~/components/shared/topNavBar'
-export default {
-  name: 'Default',
-  data() {
-    return {
-      fixed: false,
-      title: 'spotbrush'
-    }
-  },
-  components: {
-    topNavBar
-  }
-}
+<script setup lang="ts">
+import topNavBar from '~/components/shared/topNavBar.vue'
+import { useAuthStore } from '~/stores/auth'
+
+const auth = useAuthStore()
+const title = 'spotbrush'
 </script>
+
 <style lang="scss">
-  .v-main__wrap, .container {
-    // display: flex;
-    // flex: 1;
-  }
-  .flex-basis-0 {
-    flex-basis: 0;
-  }
+.flex-basis-0 {
+  flex-basis: 0;
+}
 </style>

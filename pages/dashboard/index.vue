@@ -1,655 +1,117 @@
 <template>
-  <v-container
-    :class="[$vuetify.breakpoint.lgAndUp ? 'container--fluid pa-8' : '']"
-  >
+  <v-container>
     <v-row align="center">
-      <v-col cols="12" sm="4" class="align-center">
-        <h2 class="grey--text text--darken-3 text-h4">Dashboard</h2>
-        <!-- <v-spacer></v-spacer> -->
-      </v-col>
-      <v-spacer></v-spacer>
-      <v-col cols="12" sm="6" md="4" class>
-        <v-text-field
-          v-model="searchDash"
-          hide-details
-          solo
-          prepend-inner-icon="mdi-magnify"
-          label="Search"
-          clearable
-        ></v-text-field>
+      <v-col cols="12" sm="4"><h2 class="text-h4">Dashboard</h2></v-col>
+      <v-spacer />
+      <v-col cols="12" sm="6" md="4">
+        <v-text-field v-model="searchDash" hide-details variant="solo" prepend-inner-icon="mdi-magnify" label="Search" clearable />
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="12" sm="6" md="4" lg="3">
-        <v-card
-          class="rounded-lg h-100 info-card d-flex flex-column"
-          min-height="130"
-        >
-          <v-card-title class="grey--text text--darken-3 text-h5"
-            >Storage</v-card-title
-          >
-          <v-card-text class="text-center text-h5 grey--text">
-            <span class="text-h3 primary--text">10</span> / 100 GB
-          </v-card-text>
+        <v-card class="rounded-lg" min-height="130">
+          <v-card-title class="text-h5">Storage</v-card-title>
+          <v-card-text class="text-center text-h5"><span class="text-h3 text-primary">10</span> / 100 GB</v-card-text>
         </v-card>
       </v-col>
       <v-col cols="12" sm="6" md="4" lg="3">
-        <v-card
-          class="rounded-lg h-100 info-card d-flex flex-column"
-          min-height="130"
-        >
-          <v-card-title class="grey--text text--darken-3 text-h5"
-            >Shared</v-card-title
-          >
-          <v-card-text
-            class="text-h6 grey--text d-flex font-weight-regular justify-space-between"
-          >
-            <span> <span class="text-h4 primary--text">100</span> Files </span>
-            <span> <span class="text-h4 primary--text">60</span> Folders </span>
+        <v-card class="rounded-lg" min-height="130">
+          <v-card-title class="text-h5">Shared</v-card-title>
+          <v-card-text class="d-flex justify-space-between">
+            <span><span class="text-h4 text-primary">100</span> Files</span>
+            <span><span class="text-h4 text-primary">60</span> Folders</span>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
     <v-row>
       <v-col offset="3" offset-sm="0" cols="6" sm="4" md="3" lg="2">
-        <div class="dashboard-actions">
-          <v-btn
-            class="w-100 text-capitalize text-body-1 mb-5"
-            outlined
-            color="primary"
-            @click.stop="dialog = true"
-            >+ Create</v-btn
-          >
-          <!-- <v-btn class="w-100 text-capitalize text-body-1 mb-5" outlined color="primary">+ Folder</v-btn>
-          <v-btn class="w-100 text-capitalize text-body-1 mb-5" outlined color="primary">Shared</v-btn>
-          <v-btn class="w-100 text-capitalize text-body-1 mb-5" outlined color="primary">Archived</v-btn>
-          <v-btn class="w-100 text-capitalize text-body-1" outlined color="primary">Trash</v-btn> -->
-        </div>
+        <v-btn class="w-100 text-capitalize mb-5" variant="outlined" color="primary" @click.stop="dialog = true">+ Create</v-btn>
       </v-col>
       <v-col cols="12" sm="8" md="9" lg="10" class="py-0">
-        <v-container fluid class="py-0">
-          <v-row class="dashboard-contents-list">
-            <v-col cols="12" sm="6" md="4" lg="3" xl="2">
-              <v-card class="text-center">
-                <v-menu
-                  v-model="showMenu"
-                  absolute
-                  :position-x="x"
-                  :position-y="y"
-                  offset-y
-                  origin="center center"
-                  transition="scale-transition"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon v-bind="attrs" v-on="on">
-                      <v-icon class="grey--text text--lighten-1"
-                        >mdi-dots-vertical</v-icon
-                      >
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 1</v-list-item-title
-                      >
-                    </v-list-item>
-                    <v-list-item disabled>
-                      <v-list-item-title>Option 2</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 3</v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-                <v-card-title class="justify-center">
-                  <v-icon class="primary--text text-h1">mdi-folder</v-icon>
-                  <span
-                    class="white--text position-absolute text-body-1 mt-2 font-weight-bold"
-                    >10</span
-                  >
-                </v-card-title>
-                <v-card-text class="grey--text text--darken-3 px-2 pb-2">
-                  Folder Name
-                  <small class="grey--text d-block">136MB | 6 months ago</small>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="3" xl="2">
-              <v-card class="text-center">
-                <v-menu origin="center center" transition="scale-transition">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon v-bind="attrs" v-on="on">
-                      <v-icon class="grey--text text--lighten-1"
-                        >mdi-dots-vertical</v-icon
-                      >
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 1</v-list-item-title
-                      >
-                    </v-list-item>
-                    <v-list-item disabled>
-                      <v-list-item-title>Option 2</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 3</v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-                <v-card-title class="justify-center">
-                  <v-icon class="primary--text text-h1">mdi-folder</v-icon>
-                  <span
-                    class="white--text position-absolute text-body-1 mt-2 font-weight-bold"
-                    >9</span
-                  >
-                </v-card-title>
-                <v-card-text class="grey--text text--darken-3 px-2 pb-2">
-                  Folder Name
-                  <small class="grey--text d-block">136MB | 6 months ago</small>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="3" xl="2">
-              <v-card class="text-center">
-                <v-menu origin="center center" transition="scale-transition">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon v-bind="attrs" v-on="on">
-                      <v-icon class="grey--text text--lighten-1"
-                        >mdi-dots-vertical</v-icon
-                      >
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 1</v-list-item-title
-                      >
-                    </v-list-item>
-                    <v-list-item disabled>
-                      <v-list-item-title>Option 2</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 3</v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-                <v-card-title class="justify-center">
-                  <v-icon class="primary--text text-h1">mdi-file</v-icon>
-                </v-card-title>
-                <v-card-text class="grey--text text--darken-3 px-2 pb-2">
-                  File Name
-                  <small class="grey--text d-block">136MB | 6 months ago</small>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="3" xl="2">
-              <v-card class="text-center">
-                <v-menu origin="center center" transition="scale-transition">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon v-bind="attrs" v-on="on">
-                      <v-icon class="grey--text text--lighten-1"
-                        >mdi-dots-vertical</v-icon
-                      >
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 1</v-list-item-title
-                      >
-                    </v-list-item>
-                    <v-list-item disabled>
-                      <v-list-item-title>Option 2</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 3</v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-                <v-card-title class="justify-center">
-                  <v-icon class="primary--text text-h1">mdi-folder</v-icon>
-                  <span
-                    class="white--text position-absolute text-body-1 mt-2 font-weight-bold"
-                    >150</span
-                  >
-                </v-card-title>
-                <v-card-text class="grey--text text--darken-3 px-2 pb-2">
-                  Folder Name
-                  <small class="grey--text d-block">136MB | 6 months ago</small>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="3" xl="2">
-              <v-card class="text-center">
-                <v-menu origin="center center" transition="scale-transition">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon v-bind="attrs" v-on="on">
-                      <v-icon class="grey--text text--lighten-1"
-                        >mdi-dots-vertical</v-icon
-                      >
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 1</v-list-item-title
-                      >
-                    </v-list-item>
-                    <v-list-item disabled>
-                      <v-list-item-title>Option 2</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 3</v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-                <v-card-title class="justify-center">
-                  <v-icon class="primary--text text-h1">mdi-folder</v-icon>
-                  <span
-                    class="white--text position-absolute text-body-1 mt-2 font-weight-bold"
-                    >30</span
-                  >
-                </v-card-title>
-                <v-card-text class="grey--text text--darken-3 px-2 pb-2">
-                  Folder Name
-                  <small class="grey--text d-block">136MB | 6 months ago</small>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="3" xl="2">
-              <v-card class="text-center">
-                <v-menu origin="center center" transition="scale-transition">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon v-bind="attrs" v-on="on">
-                      <v-icon class="grey--text text--lighten-1"
-                        >mdi-dots-vertical</v-icon
-                      >
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 1</v-list-item-title
-                      >
-                    </v-list-item>
-                    <v-list-item disabled>
-                      <v-list-item-title>Option 2</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 3</v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-                <v-card-title class="justify-center">
-                  <v-icon class="primary--text text-h1">mdi-folder</v-icon>
-                  <span
-                    class="white--text position-absolute text-body-1 mt-2 font-weight-bold"
-                    >7</span
-                  >
-                </v-card-title>
-                <v-card-text class="grey--text text--darken-3 px-2 pb-2">
-                  Folder Name
-                  <small class="grey--text d-block">136MB | 6 months ago</small>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="3" xl="2">
-              <v-card class="text-center">
-                <v-menu origin="center center" transition="scale-transition">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon v-bind="attrs" v-on="on">
-                      <v-icon class="grey--text text--lighten-1"
-                        >mdi-dots-vertical</v-icon
-                      >
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 1</v-list-item-title
-                      >
-                    </v-list-item>
-                    <v-list-item disabled>
-                      <v-list-item-title>Option 2</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 3</v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-                <v-card-title class="justify-center">
-                  <v-icon class="primary--text text-h1">mdi-file</v-icon>
-                </v-card-title>
-                <v-card-text class="grey--text text--darken-3 px-2 pb-2">
-                  File Name
-                  <small class="grey--text d-block">136MB | 6 months ago</small>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="3" xl="2">
-              <v-card class="text-center">
-                <v-menu origin="center center" transition="scale-transition">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon v-bind="attrs" v-on="on">
-                      <v-icon class="grey--text text--lighten-1"
-                        >mdi-dots-vertical</v-icon
-                      >
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 1</v-list-item-title
-                      >
-                    </v-list-item>
-                    <v-list-item disabled>
-                      <v-list-item-title>Option 2</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 3</v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-                <v-card-title class="justify-center">
-                  <v-icon class="primary--text text-h1">mdi-folder</v-icon>
-                  <span
-                    class="white--text position-absolute text-body-1 mt-2 font-weight-bold"
-                    >30</span
-                  >
-                </v-card-title>
-                <v-card-text class="grey--text text--darken-3 px-2 pb-2">
-                  Folder Name
-                  <small class="grey--text d-block">136MB | 6 months ago</small>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="3" xl="2">
-              <v-card class="text-center">
-                <v-menu origin="center center" transition="scale-transition">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon v-bind="attrs" v-on="on">
-                      <v-icon class="grey--text text--lighten-1"
-                        >mdi-dots-vertical</v-icon
-                      >
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 1</v-list-item-title
-                      >
-                    </v-list-item>
-                    <v-list-item disabled>
-                      <v-list-item-title>Option 2</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 3</v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-                <v-card-title class="justify-center">
-                  <v-icon class="primary--text text-h1">mdi-folder</v-icon>
-                  <span
-                    class="white--text position-absolute text-body-1 mt-2 font-weight-bold"
-                    >7</span
-                  >
-                </v-card-title>
-                <v-card-text class="grey--text text--darken-3 px-2 pb-2">
-                  Folder Name
-                  <small class="grey--text d-block">136MB | 6 months ago</small>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="3" xl="2">
-              <v-card class="text-center">
-                <v-menu origin="center center" transition="scale-transition">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon v-bind="attrs" v-on="on">
-                      <v-icon class="grey--text text--lighten-1"
-                        >mdi-dots-vertical</v-icon
-                      >
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 1</v-list-item-title
-                      >
-                    </v-list-item>
-                    <v-list-item disabled>
-                      <v-list-item-title>Option 2</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 3</v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-                <v-card-title class="justify-center">
-                  <v-icon class="primary--text text-h1">mdi-file</v-icon>
-                </v-card-title>
-                <v-card-text class="grey--text text--darken-3 px-2 pb-2">
-                  File Name
-                  <small class="grey--text d-block">136MB | 6 months ago</small>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" sm="6" md="4" lg="3" xl="2">
-              <v-card class="text-center">
-                <v-menu origin="center center" transition="scale-transition">
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon v-bind="attrs" v-on="on">
-                      <v-icon class="grey--text text--lighten-1"
-                        >mdi-dots-vertical</v-icon
-                      >
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 1</v-list-item-title
-                      >
-                    </v-list-item>
-                    <v-list-item disabled>
-                      <v-list-item-title>Option 2</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title @click.prevent
-                        >Option 3</v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-                <v-card-title class="justify-center">
-                  <v-icon class="primary--text text-h1">mdi-folder</v-icon>
-                  <span
-                    class="white--text position-absolute text-body-1 mt-2 font-weight-bold"
-                    >30</span
-                  >
-                </v-card-title>
-                <v-card-text class="grey--text text--darken-3 px-2 pb-2">
-                  Folder Name
-                  <small class="grey--text d-block">136MB | 6 months ago</small>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-container>
+        <v-row>
+          <v-col v-for="item in contentItems" :key="item.id" cols="12" sm="6" md="4" lg="3" xl="2">
+            <v-card class="text-center" style="position:relative">
+              <v-menu>
+                <template #activator="{ props }">
+                  <v-btn icon v-bind="props" variant="text" style="position:absolute;top:0;right:0">
+                    <v-icon>mdi-dots-vertical</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item title="Option 1" /><v-list-item title="Option 2" disabled /><v-list-item title="Option 3" />
+                </v-list>
+              </v-menu>
+              <v-card-title class="justify-center">
+                <v-icon class="text-primary" size="64">{{ item.icon }}</v-icon>
+              </v-card-title>
+              <v-card-text class="px-2 pb-2">
+                {{ item.name }}<small class="d-block text-grey">{{ item.meta }}</small>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
+
     <v-dialog v-model="dialog" persistent max-width="600px">
       <v-card>
-        <v-card-title>
-          <h3 class="headline">Create whiteboard</h3>
-        </v-card-title>
+        <v-card-title>Create whiteboard</v-card-title>
         <v-container class="py-0">
           <v-form v-model="valid">
             <v-col cols="12">
-              <v-text-field
-                :rules="[
-                  rules.required('Board Name'),
-                  rules.length('Board Name', 10),
-                ]"
-                v-model="boardName"
-                label="Please provide name for your whiteboard"
-                @keyup.enter.native="createBoard"
-                required
-              ></v-text-field>
+              <v-text-field v-model="boardName" :rules="[rules.required('Board Name'), rules.length('Board Name', 3)]" label="Board name" required @keyup.enter="createBoard" />
             </v-col>
           </v-form>
         </v-container>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn @click="dialog = false">Cancel</v-btn>
-          <v-btn
-            color="primary darken-1"
-            :disabled="!valid"
-            @click.native="createBoard"
-            >Create Board</v-btn
-          >
+          <v-spacer /><v-btn @click="dialog = false">Cancel</v-btn>
+          <v-btn color="primary" :disabled="!valid" @click="createBoard">Create Board</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
   </v-container>
 </template>
 
-<script>
-export default {
-  middleware: ["refreshToken", "authenticated"],
-  data() {
-    return {
-      dialog: false,
-      boardName: null,
-      searchDash: "",
-      error: "",
-      valid: false,
-      showMenu: false,
-      x: 0,
-      y: 0,
-      rules: {
-        required(propName) {
-          return (v) => !!v || `${propName} field is required`;
-        },
-        length(propName, len) {
-          return (v) =>
-            (v || "").length >= len ||
-            `${propName} should be at least ${len} characters`;
-        },
-      },
-    };
-  },
-  methods: {
-    /* show(e) {
-                e.preventDefault()
-                this.showMenu = false
-                this.x = e.clientX
-                this.y = e.clientY
-                this.$nextTick(() => {
-                    this.showMenu = true
-                })
-            }, */
-    createBoard() {
-      // debugger
-      this.dialog = false;
-      const { email, given_name } = this.$store.state.auth;
-      const data = { email, given_name, boardName: this.boardName };
-      if (process.client) {
-        // const localStorage = localStorage.getItem('auth')
-      }
-      const accessToken = this.$store.state.auth.jwt;
-      // console.log('checking create...')
-      /* axios.post(url, {
-                    //...data
-                }, {
-                    headers: {
-                        'Authorization': `Basic ${token}`
-                    }
-                }) */
-      this.$axios
-        .post(
-          "/auth/createboard",
-          {
-            data: data,
-          },
-          {
-            headers: {
-              Accept: "application/json",
-              Content: "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        )
-        .then((res) => {
-          // debugger
-          // const data = {}
+<script setup lang="ts">
+import { useToast } from 'vue-toastification'
+import { useAuthStore } from '~/stores/auth'
 
-          const boardName = res.data.boardName;
-          const email = res.data.email;
-          // const userName = res.data.userName
-          //   this.$store.commit('setAuth', auth)
-          // console.log(data.token)
-          this.$toasted.show(
-            `Hello..! Welcome to our SbotBrush. A Collabarative Whiteboard...`,
-            { duration: 6000 }
-          );
-          // debugger
-          // window.open(`http://localhost:8080/?whiteboardid=${data.boardName}&username=${data.email}`, '_blank')
-          this.$router.push(
-            `/whiteboard?whiteboardid=${boardName}&username=${data.given_name}`
-          );
-        })
-        .catch((err) => {
-          debugger;
-          console.log(err.message);
-        });
-    },
-  },
-};
+definePageMeta({ middleware: ['refresh-token', 'authenticated'] })
+
+const auth = useAuthStore()
+const router = useRouter()
+const { $axios } = useNuxtApp()
+const toast = useToast()
+
+const dialog = ref(false)
+const boardName = ref('')
+const searchDash = ref('')
+const valid = ref(false)
+
+const rules = {
+  required: (name: string) => (v: string) => !!v || `${name} field is required`,
+  length: (name: string, len: number) => (v: string) => (v || '').length >= len || `${name} should be at least ${len} characters`,
+}
+
+const contentItems = [
+  { id: 1, icon: 'mdi-folder', name: 'Folder Name', meta: '136MB | 6 months ago' },
+  { id: 2, icon: 'mdi-folder', name: 'Folder Name', meta: '136MB | 6 months ago' },
+  { id: 3, icon: 'mdi-file', name: 'File Name', meta: '136MB | 6 months ago' },
+  { id: 4, icon: 'mdi-folder', name: 'Folder Name', meta: '136MB | 6 months ago' },
+]
+
+async function createBoard() {
+  dialog.value = false
+  try {
+    const res = await $axios.post('/auth/createboard',
+      { data: { email: auth.auth?.email, given_name: auth.auth?.given_name, boardName: boardName.value } },
+      { headers: { Authorization: `Bearer ${auth.auth?.jwt}` } }
+    )
+    toast.success('Board created!')
+    router.push(`/whiteboard?whiteboardid=${res.data.boardName}&username=${auth.auth?.given_name}`)
+  } catch (err: any) {
+    console.error(err.message)
+  }
+}
 </script>
-
-<style lang="scss" scoped>
-.dashboard-actions {
-  button {
-    // margin-bottom: 30px;
-    background-color: rgba($primary, 0.23);
-    border-radius: 5px;
-    border-width: 2px;
-    &:last-child {
-      // margin-bottom: 0;
-    }
-  }
-}
-.info-card {
-  justify-content: space-between;
-}
-.dashboard-contents-list {
-  .v-card {
-    .v-btn--icon {
-      position: absolute;
-      top: 0;
-      right: 0;
-    }
-  }
-}
-</style>

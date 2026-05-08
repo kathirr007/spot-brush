@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 
 const ajv = new Ajv({ allErrors: true });
 
-import configSchema from './config-schema.json' assert {type: 'json'};
+import configSchema from './config-schema.json' with {type: 'json'};
 // const configSchema = "./config-schema.json"
 
 /**
