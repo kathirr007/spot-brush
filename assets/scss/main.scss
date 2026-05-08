@@ -1,7 +1,7 @@
-@import './variables';
-@import './transitions';
-@import './helpers/sizing';
-@import './helpers/position';
+@use './variables' as *;
+@use './transitions' as *;
+@use './helpers/sizing' as *;
+@use './helpers/position' as *;
 
 body {
   font-family: "Roboto", sans-serif;

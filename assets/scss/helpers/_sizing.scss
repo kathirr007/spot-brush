@@ -1,6 +1,8 @@
 // This variable affects the `.h-*` and `.w-*` classes.
+@use 'sass:map';
+
 $sizes: () !default;
-$sizes: map-merge(
+$sizes: map.merge(
   (
     25: 25%,
     30: 30%,

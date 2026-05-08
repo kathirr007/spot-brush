@@ -4,8 +4,6 @@ const app = express()
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-import override from 'method-override'
-
 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }))

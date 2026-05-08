@@ -57,11 +57,5 @@ export default defineNuxtConfig({
     }
   },
 
-  nitro: {
-    externals: {
-      inline: ['socket.io', 'express'],
-    },
-  },
-
   compatibilityDate: '2024-01-01',
 })
