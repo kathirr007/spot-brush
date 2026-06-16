@@ -33,7 +33,7 @@
     "core-js": "^3.33.0",
     "cors": "^2.8.5",
     "cross-env": "^7.0.2",
-    "dompurify": "^2.0.15",
+    "dompurify": "^3.4.9",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "eventsource-polyfill": "^0.9.6",
